@@ -1,0 +1,216 @@
+import React, { useState } from 'react';
+import { motion, useDragControls, AnimatePresence } from 'framer-motion';
+import { X, Minus, Maximize2 } from 'lucide-react';
+import { useOSStore } from '../store/useOSStore';
+import type { WindowState } from '../types';
+import { ResizableBox, type ResizeCallbackData } from 'react-resizable';
+import 'react-resizable/css/styles.css';
+
+interface WindowProps {
+  window: WindowState;
+  component: React.ComponentType<any>;
+}
+
+export const Window: React.FC<WindowProps> = ({ window: win, component: App }) => {
+  const { focusWindow, closeWindow, minimizeWindow, maximizeWindow, snapWindow, restoreWindow, updateWindowPosition, updateWindowSize, dockItems } = useOSStore();
+  const dragControls = useDragControls();
+  const [isDragging, setIsDragging] = useState(false);
+  const [snapPreview, setSnapPreview] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
+
+  // Calculate target position for minimize animation
+  const dockRect = dockItems[win.appId];
+  const minimizeTarget = dockRect ? {
+      x: dockRect.left + dockRect.width / 2 - win.size.width / 2, // Center horizontally on icon
+      y: dockRect.top + dockRect.height / 2 - win.size.height / 2, // Center vertically on icon
+      scale: 0.1,
+      opacity: 0
+  } : {
+      x: win.position.x,
+      y: window.innerHeight,
+      scale: 0,
+      opacity: 0
+  };
+
+  const handleDragStart = (event: any) => {
+      setIsDragging(true);
+      if (win.isMaximized && win.prevSize) {
+          restoreWindow(win.id);
+          if (event.clientX) {
+              const newX = event.clientX - (win.prevSize.width / 2);
+              updateWindowPosition(win.id, { x: newX, y: win.position.y });
+          }
+      }
+  };
+  
+  const handleDragEnd = (_: any, info: any) => {
+      setIsDragging(false);
+      setSnapPreview(null);
+      
+      const screenW = window.innerWidth;
+      const screenH = window.innerHeight;
+      const { x, y } = info.point; 
+
+      // Corner Snaps (Top Priority)
+      const cornerSize = 50;
+      
+      if (x < cornerSize && y < cornerSize) { // Top Left
+          snapWindow(win.id, { position: { x: 0, y: 32 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          return;
+      }
+      if (x > screenW - cornerSize && y < cornerSize) { // Top Right
+          snapWindow(win.id, { position: { x: screenW / 2, y: 32 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          return;
+      }
+      if (x < cornerSize && y > screenH - cornerSize) { // Bottom Left
+          snapWindow(win.id, { position: { x: 0, y: 32 + (screenH - 32 - 96) / 2 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          return;
+      }
+      if (x > screenW - cornerSize && y > screenH - cornerSize) { // Bottom Right
+          snapWindow(win.id, { position: { x: screenW / 2, y: 32 + (screenH - 32 - 96) / 2 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          return;
+      }
+
+      // Edge Snaps
+      if (x < 20) { 
+          snapWindow(win.id, { position: { x: 0, y: 32 }, size: { width: screenW / 2, height: screenH - 32 - 96 } });
+          return;
+      }
+      if (x > screenW - 20) { 
+          snapWindow(win.id, { position: { x: screenW / 2, y: 32 }, size: { width: screenW / 2, height: screenH - 32 - 96 } });
+          return;
+      }
+      if (y < 20) { 
+          maximizeWindow(win.id);
+          return;
+      }
+
+      updateWindowPosition(win.id, { x: win.position.x + info.offset.x, y: win.position.y + info.offset.y });
+  };
+
+  const handleDrag = (_: any, info: any) => {
+      const screenW = window.innerWidth;
+      const screenH = window.innerHeight;
+      const { x, y } = info.point;
+      const cornerSize = 50;
+      const halfH = (screenH - 32 - 96) / 2;
+
+      if (x < cornerSize && y < cornerSize) setSnapPreview({ x: 10, y: 42, width: screenW / 2 - 20, height: halfH - 20 });
+      else if (x > screenW - cornerSize && y < cornerSize) setSnapPreview({ x: screenW / 2 + 10, y: 42, width: screenW / 2 - 20, height: halfH - 20 });
+      else if (x < cornerSize && y > screenH - cornerSize) setSnapPreview({ x: 10, y: 42 + halfH, width: screenW / 2 - 20, height: halfH - 20 });
+      else if (x > screenW - cornerSize && y > screenH - cornerSize) setSnapPreview({ x: screenW / 2 + 10, y: 42 + halfH, width: screenW / 2 - 20, height: halfH - 20 });
+      else if (x < 20) setSnapPreview({ x: 10, y: 42, width: screenW / 2 - 20, height: screenH - 42 - 100 });
+      else if (x > screenW - 20) setSnapPreview({ x: screenW / 2 + 10, y: 42, width: screenW / 2 - 20, height: screenH - 42 - 100 });
+      else if (y < 20) setSnapPreview({ x: 10, y: 42, width: screenW - 20, height: screenH - 42 - 100 });
+      else setSnapPreview(null);
+  };
+
+  return (
+    <>
+        <AnimatePresence>
+            {isDragging && snapPreview && (
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="fixed z-40 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl pointer-events-none"
+                    style={{
+                        left: snapPreview.x,
+                        top: snapPreview.y,
+                        width: snapPreview.width,
+                        height: snapPreview.height
+                    }}
+                />
+            )}
+        </AnimatePresence>
+
+        <motion.div
+        drag={true}
+        dragControls={dragControls}
+        dragListener={false}
+        dragMomentum={false}
+        dragElastic={0.05}
+        onDragStart={handleDragStart}
+        onDrag={handleDrag}
+        onDragEnd={handleDragEnd}
+        initial={false}
+        animate={{ 
+            x: win.isMinimized ? minimizeTarget.x : win.position.x,
+            y: win.isMinimized ? minimizeTarget.y : win.position.y,
+            width: win.size.width,
+            height: win.size.height,
+            scale: win.isMinimized ? minimizeTarget.scale : 1, 
+            opacity: win.isMinimized ? minimizeTarget.opacity : 1,
+            pointerEvents: win.isMinimized ? 'none' : 'auto' 
+        }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        style={{ 
+            zIndex: win.zIndex,
+            position: 'absolute',
+            // Origin point for transform should be bottom center to look like it goes to dock
+            transformOrigin: 'center center'
+        }}
+        className="absolute flex flex-col pointer-events-auto"
+        onMouseDown={() => focusWindow(win.id)}
+        >
+        <ResizableBox
+            width={win.size.width}
+            height={win.size.height}
+            onResize={(_: any, data: ResizeCallbackData) => {
+                updateWindowSize(win.id, { width: data.size.width, height: data.size.height });
+            }}
+            draggableOpts={{ enableUserSelectHack: false }}
+            minConstraints={[350, 250]}
+            maxConstraints={[3000, 2000]}
+            handle={
+                !win.isMaximized ? (
+                    <span className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize z-50 flex items-center justify-center group">
+                        {/* Visible subtle handle */}
+                        <div className="w-2 h-2 border-r-2 border-b-2 border-white/30 group-hover:border-white/80 transition-colors" />
+                    </span>
+                ) : <span />
+            }
+            className="relative w-full h-full flex flex-col rounded-xl overflow-hidden shadow-[0_25px_60px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10 bg-[#1e1e1e]/80 backdrop-blur-2xl transition-colors duration-300 pointer-events-auto"
+        >
+            {/* Title Bar */}
+            <div 
+                onPointerDown={(e) => dragControls.start(e)}
+                onDoubleClick={() => maximizeWindow(win.id)}
+                className="h-10 flex items-center px-4 justify-between shrink-0 select-none cursor-default border-b border-white/5 bg-white/5"
+            >
+                <div className="flex space-x-2 items-center group" onPointerDown={(e) => e.stopPropagation()}>
+                <button 
+                    onClick={() => closeWindow(win.id)} 
+                    className="w-3 h-3 rounded-full bg-[#FF5F56] hover:bg-[#FF5F56]/80 flex items-center justify-center shadow-inner border border-black/20"
+                >
+                    <X size={8} className="opacity-0 group-hover:opacity-100 text-black/50" strokeWidth={3} />
+                </button>
+                <button 
+                    onClick={() => minimizeWindow(win.id)} 
+                    className="w-3 h-3 rounded-full bg-[#FFBD2E] hover:bg-[#FFBD2E]/80 flex items-center justify-center shadow-inner border border-black/20"
+                >
+                    <Minus size={8} className="opacity-0 group-hover:opacity-100 text-black/50" strokeWidth={3} />
+                </button>
+                <button 
+                    onClick={() => maximizeWindow(win.id)} 
+                    className="w-3 h-3 rounded-full bg-[#27C93F] hover:bg-[#27C93F]/80 flex items-center justify-center shadow-inner border border-black/20"
+                >
+                    <Maximize2 size={6} className="opacity-0 group-hover:opacity-100 text-black/50" strokeWidth={3} />
+                </button>
+                </div>
+                
+                <div className="text-sm font-medium text-white/70 drop-shadow-sm pointer-events-none absolute left-1/2 transform -translate-x-1/2">
+                    {win.title}
+                </div>
+                
+                <div className="w-10" />
+            </div>
+
+            {/* App Content */}
+            <div className="flex-1 overflow-hidden relative bg-transparent cursor-auto" onPointerDown={(e) => e.stopPropagation()}>
+                <App windowId={win.id} size={win.size} {...win.props} />
+            </div>
+        </ResizableBox>
+        </motion.div>
+    </>
+  );
+};
