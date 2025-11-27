@@ -47,13 +47,16 @@ jobs:
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Create directory for certs
+            mkdir -p /root/certs
+
+            # Write secrets to files (securely)
+            echo "${{ secrets.SSL_CERT }}" > /root/certs/origin.pem
+            echo "${{ secrets.SSL_KEY }}" > /root/certs/origin.key
+
             # Stop the container if it exists
             docker stop glass-os-portfolio || true
             docker rm glass-os-portfolio || true
-            
-            # Login to registry (using the workflow token passed via environment variables isn't easy here, 
-            # so we'll assume the package is Public OR rely on a pre-configured login.
-            # BETTER OPTION: If your repo is private, you might need to create a PAT and add it as a secret called CR_PAT)
             
             # Pull the latest image
             docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:master
@@ -62,5 +65,6 @@ jobs:
             docker run -d \
               --name glass-os-portfolio \
               --restart always \
-              -p 80:80 \
+              -p 80:80 -p 443:443 \
+              -v /root/certs:/etc/nginx/ssl:ro \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:master
