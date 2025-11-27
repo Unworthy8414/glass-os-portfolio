@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: unworthy8414/glass-os-portfolio
 
 jobs:
   build-and-deploy:
