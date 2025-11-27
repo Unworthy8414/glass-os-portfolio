@@ -42,7 +42,7 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
       opacity: 0
   };
 
-  const handleDragStart = (event: any) => {
+  const handleDragStart = () => {
       setIsDragging(true);
   };
   
@@ -58,31 +58,53 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
 
       // Corner Snaps (Top Priority)
       const cornerSize = 50;
+      const GAP = 8;
+      const TOP_BAR = 32;
+      const BOTTOM_SPACE = 96;
+      const availableH = screenH - TOP_BAR - BOTTOM_SPACE;
       
       if (currentX < cornerSize && currentY < cornerSize) { // Top Left
-          snapWindow(win.id, { position: { x: 0, y: 32 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          snapWindow(win.id, { 
+              position: { x: GAP, y: TOP_BAR + GAP }, 
+              size: { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) } 
+          });
           return;
       }
       if (currentX > screenW - cornerSize && currentY < cornerSize) { // Top Right
-          snapWindow(win.id, { position: { x: screenW / 2, y: 32 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          snapWindow(win.id, { 
+              position: { x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP }, 
+              size: { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) } 
+          });
           return;
       }
       if (currentX < cornerSize && currentY > screenH - cornerSize) { // Bottom Left
-          snapWindow(win.id, { position: { x: 0, y: 32 + (screenH - 32 - 96) / 2 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          snapWindow(win.id, { 
+              position: { x: GAP, y: TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP) }, 
+              size: { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) } 
+          });
           return;
       }
       if (currentX > screenW - cornerSize && currentY > screenH - cornerSize) { // Bottom Right
-          snapWindow(win.id, { position: { x: screenW / 2, y: 32 + (screenH - 32 - 96) / 2 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
+          snapWindow(win.id, { 
+              position: { x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP) }, 
+              size: { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) } 
+          });
           return;
       }
 
       // Edge Snaps
-      if (currentX < 20) { 
-          snapWindow(win.id, { position: { x: 0, y: 32 }, size: { width: screenW / 2, height: screenH - 32 - 96 } });
+      if (currentX < 20) { // Left Half
+          snapWindow(win.id, { 
+              position: { x: GAP, y: TOP_BAR + GAP }, 
+              size: { width: (screenW / 2) - (1.5 * GAP), height: availableH - (2 * GAP) } 
+          });
           return;
       }
-      if (currentX > screenW - 20) { 
-          snapWindow(win.id, { position: { x: screenW / 2, y: 32 }, size: { width: screenW / 2, height: screenH - 32 - 96 } });
+      if (currentX > screenW - 20) { // Right Half
+          snapWindow(win.id, { 
+              position: { x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP }, 
+              size: { width: (screenW / 2) - (1.5 * GAP), height: availableH - (2 * GAP) } 
+          });
           return;
       }
       if (currentY < 20) { 
@@ -96,15 +118,35 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
       const screenH = window.innerHeight;
       const { x, y } = info.point;
       const cornerSize = 50;
-      const halfH = (screenH - 32 - 96) / 2;
+      const GAP = 8;
+      const TOP_BAR = 32;
+      const BOTTOM_SPACE = 96;
+      const availableH = screenH - TOP_BAR - BOTTOM_SPACE;
+      const halfW = (screenW / 2) - (1.5 * GAP);
+      const halfH = (availableH / 2) - (1.5 * GAP);
+      const fullH = availableH - (2 * GAP);
 
-      if (x < cornerSize && y < cornerSize) setSnapPreview({ x: 10, y: 42, width: screenW / 2 - 20, height: halfH - 20 });
-      else if (x > screenW - cornerSize && y < cornerSize) setSnapPreview({ x: screenW / 2 + 10, y: 42, width: screenW / 2 - 20, height: halfH - 20 });
-      else if (x < cornerSize && y > screenH - cornerSize) setSnapPreview({ x: 10, y: 42 + halfH, width: screenW / 2 - 20, height: halfH - 20 });
-      else if (x > screenW - cornerSize && y > screenH - cornerSize) setSnapPreview({ x: screenW / 2 + 10, y: 42 + halfH, width: screenW / 2 - 20, height: halfH - 20 });
-      else if (x < 20) setSnapPreview({ x: 10, y: 42, width: screenW / 2 - 20, height: screenH - 42 - 100 });
-      else if (x > screenW - 20) setSnapPreview({ x: screenW / 2 + 10, y: 42, width: screenW / 2 - 20, height: screenH - 42 - 100 });
-      else if (y < 20) setSnapPreview({ x: 10, y: 42, width: screenW - 20, height: screenH - 42 - 100 });
+      if (x < cornerSize && y < cornerSize) setSnapPreview({ 
+          x: GAP, y: TOP_BAR + GAP, width: halfW, height: halfH 
+      });
+      else if (x > screenW - cornerSize && y < cornerSize) setSnapPreview({ 
+          x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP, width: halfW, height: halfH 
+      });
+      else if (x < cornerSize && y > screenH - cornerSize) setSnapPreview({ 
+          x: GAP, y: TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP), width: halfW, height: halfH 
+      });
+      else if (x > screenW - cornerSize && y > screenH - cornerSize) setSnapPreview({ 
+          x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP), width: halfW, height: halfH 
+      });
+      else if (x < 20) setSnapPreview({ 
+          x: GAP, y: TOP_BAR + GAP, width: halfW, height: fullH 
+      });
+      else if (x > screenW - 20) setSnapPreview({ 
+          x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP, width: halfW, height: fullH 
+      });
+      else if (y < 20) setSnapPreview({ 
+          x: GAP, y: TOP_BAR + GAP, width: screenW - (2 * GAP), height: fullH 
+      });
       else setSnapPreview(null);
   };
 
@@ -201,7 +243,7 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
                              updateWindowPosition(win.id, { x: newX, y: win.position.y });
                         });
                     }
-                    dragControls.start(e, { cursor: 'grabbing' });
+                    dragControls.start(e);
                 }}
                 onDoubleClick={() => maximizeWindow(win.id)}
                 className="h-10 flex items-center px-4 justify-between shrink-0 select-none cursor-default border-b border-white/5 bg-white/5"

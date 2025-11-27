@@ -42,17 +42,69 @@ function App() {
   }, []);
 
   const handleWelcomeClick = () => {
-      desktopItems.forEach(item => {
-          if (item.type !== 'file') return;
+      const files = desktopItems.filter(item => item.type === 'file');
+      const shouldTile = files.length > 0 && files.length < 5;
+      
+      const screenW = window.innerWidth;
+      const screenH = window.innerHeight;
+      const GAP = 8;
+      const TOP_BAR = 32;
+      const BOTTOM_SPACE = 96;
+      const availableH = screenH - TOP_BAR - BOTTOM_SPACE;
 
+      files.forEach((item, index) => {
           let appId = 'editor';
           if (item.kind === 'pdf') appId = 'pdf';
           else if (item.kind === 'image') appId = 'photos';
           
           const appConfig = apps.find(a => a.id === appId);
-          if (appConfig) {
-              launchApp(appConfig, { fileId: item.id, title: item.name, forceNew: true });
+          if (!appConfig) return;
+
+          let launchProps: any = { fileId: item.id, title: item.name, forceNew: true };
+
+          if (shouldTile) {
+              let pos = { x: 0, y: 0 };
+              let size = { width: 0, height: 0 };
+
+              if (files.length === 1) {
+                  // Centered Large
+                  size = { width: screenW * 0.6, height: availableH * 0.8 };
+                  pos = { x: (screenW - size.width) / 2, y: TOP_BAR + (availableH - size.height) / 2 };
+              } else if (files.length === 2) {
+                  // Split Left/Right
+                  size = { width: (screenW / 2) - (1.5 * GAP), height: availableH - (2 * GAP) };
+                  if (index === 0) pos = { x: GAP, y: TOP_BAR + GAP };
+                  else pos = { x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP };
+              } else if (files.length === 3) {
+                  // 0: Left Half, 1: Top Right, 2: Bottom Right
+                  if (index === 0) {
+                      size = { width: (screenW / 2) - (1.5 * GAP), height: availableH - (2 * GAP) };
+                      pos = { x: GAP, y: TOP_BAR + GAP };
+                  } else {
+                      size = { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) };
+                      pos = { 
+                          x: (screenW / 2) + (0.5 * GAP), 
+                          y: index === 1 ? TOP_BAR + GAP : TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP) 
+                      };
+                  }
+              } else if (files.length === 4) {
+                  // Grid
+                  size = { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) };
+                  // 0: TL, 1: TR, 2: BL, 3: BR
+                  const isRight = index % 2 === 1;
+                  const isBottom = index >= 2;
+                  
+                  pos = {
+                      x: isRight ? (screenW / 2) + (0.5 * GAP) : GAP,
+                      y: isBottom ? TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP) : TOP_BAR + GAP
+                  };
+              }
+              
+              launchProps.initialPosition = pos;
+              launchProps.initialSize = size;
           }
+
+          launchApp(appConfig, launchProps);
       });
       localStorage.setItem('hasVisited', 'true');
       setShowWelcomeToast(false);

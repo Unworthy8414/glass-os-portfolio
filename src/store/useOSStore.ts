@@ -74,8 +74,8 @@ export const useOSStore = create<OSState>((set, get) => ({
       title: props?.title || appConfig.title,
       isMinimized: false,
       isMaximized: false,
-      position: { x: basePos.x + offset, y: basePos.y + offset },
-      size: appConfig.defaultSize,
+      position: props?.initialPosition || { x: basePos.x + offset, y: basePos.y + offset },
+      size: props?.initialSize || appConfig.defaultSize,
       zIndex: maxZIndex + 1,
       props
     };
