@@ -56,11 +56,11 @@ jobs:
             # BETTER OPTION: If your repo is private, you might need to create a PAT and add it as a secret called CR_PAT)
             
             # Pull the latest image
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:master
             
             # Run the new container
             docker run -d \
               --name glass-os-portfolio \
               --restart always \
               -p 80:80 \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:master
