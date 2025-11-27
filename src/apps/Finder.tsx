@@ -4,7 +4,6 @@ import { useFileSystem } from '../store/useFileSystem';
 import { useOSStore } from '../store/useOSStore';
 import { apps } from '../utils/apps';
 import { PythonIcon } from '../components/icons/PythonIcon';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const SidebarItem = ({ icon: Icon, label, active, onClick }: any) => (
     <div 

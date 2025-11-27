@@ -9,7 +9,7 @@ import { useFileSystem } from '../store/useFileSystem';
 
 export const Dock = () => {
   const [hoveredApp, setHoveredApp] = useState<{ id: string; title: string; rect: DOMRect } | null>(null);
-  const { windows, activeWindowId, focusWindow, showAppWindows, hideAppWindows, quitApp, launchApp, openContextMenu, closeContextMenu, globalContextMenu } = useOSStore();
+  const { launchApp, openContextMenu, closeContextMenu, globalContextMenu } = useOSStore();
   const { deleteItem } = useFileSystem();
 
   // Close context menu on click outside

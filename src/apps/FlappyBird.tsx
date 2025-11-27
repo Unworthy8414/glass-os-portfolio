@@ -13,7 +13,7 @@ export const FlappyBird: React.FC = () => {
     const [gameOver, setGameOver] = useState(false);
     const [gameStarted, setGameStarted] = useState(false);
     
-    const gameLoop = useRef<number>();
+    const gameLoop = useRef<number | null>(null);
     const lastPipeTime = useRef<number>(0);
 
     const resetGame = () => {

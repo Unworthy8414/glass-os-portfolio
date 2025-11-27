@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { Menubar } from './components/Menubar';
 
 function App() {
-  const { windows, activeWindowId, launchApp, closeWindow, maximizeWindow, snapWindow, wallpaper, setWallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusWindow, showAppWindows, hideAppWindows, quitApp } = useOSStore();
+  const { windows, activeWindowId, launchApp, snapWindow, wallpaper, setWallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusWindow, showAppWindows, hideAppWindows, quitApp } = useOSStore();
   const { getItemsInFolder, deleteItem, restoreItem, resetFileSystem, getItem, emptyTrash } = useFileSystem();
   const [time, setTime] = useState(new Date());
   // Local contextMenu state removed, using global store instead

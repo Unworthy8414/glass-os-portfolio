@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const D20Icon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
     <svg 
         width={size} 

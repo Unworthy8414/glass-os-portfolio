@@ -12,7 +12,7 @@ export const Terminal: React.FC = () => {
     const [history, setHistory] = useState(['Welcome to GlassOS Terminal v1.0.0', 'Type "help" for commands.']);
     const [input, setInput] = useState('');
     const [currentDir, setCurrentDir] = useState('desktop'); // ID of current folder
-    const { getItemsInFolder, getItem, items } = useFileSystem(); // Need 'items' for parent lookup
+    const { getItemsInFolder, getItem } = useFileSystem(); // Need 'items' for parent lookup
     const [isPythonMode, setIsPythonMode] = useState(false);
     const [isPyodideLoading, setIsPyodideLoading] = useState(false);
     const endRef = useRef<HTMLDivElement>(null);
