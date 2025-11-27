@@ -19,6 +19,7 @@ function App() {
   // Local contextMenu state removed, using global store instead
   const [selectionBox, setSelectionBox] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [showWelcomeToast, setShowWelcomeToast] = useState(false);
   const isDraggingSelection = useRef(false);
   const dragStart = useRef<{ x: number, y: number } | null>(null);
   
@@ -32,6 +33,30 @@ function App() {
       animationDuration: `${Math.random() * 2 + 1}s`,
       animationDelay: `${Math.random() * 2}s`
   }))).current;
+
+  useEffect(() => {
+      const hasVisited = localStorage.getItem('hasVisited');
+      if (!hasVisited) {
+          setShowWelcomeToast(true);
+      }
+  }, []);
+
+  const handleWelcomeClick = () => {
+      desktopItems.forEach(item => {
+          if (item.type !== 'file') return;
+
+          let appId = 'editor';
+          if (item.kind === 'pdf') appId = 'pdf';
+          else if (item.kind === 'image') appId = 'photos';
+          
+          const appConfig = apps.find(a => a.id === appId);
+          if (appConfig) {
+              launchApp(appConfig, { fileId: item.id, title: item.name, forceNew: true });
+          }
+      });
+      localStorage.setItem('hasVisited', 'true');
+      setShowWelcomeToast(false);
+  };
 
   useEffect(() => {
     const handleHellscape = () => {
@@ -192,7 +217,7 @@ function App() {
          <div className="absolute inset-0 bg-noise opacity-[0.04] pointer-events-none mix-blend-overlay desktop-bg" />
          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none overflow-hidden gap-2">
              <span className="text-white/30 text-[2vw] font-bold tracking-[0.5em] uppercase select-none">UX Researcher</span>
-             <span className="text-white/10 text-[10vw] font-black tracking-tighter select-none whitespace-nowrap leading-none">caylin.yeung</span>
+             <span className="text-white/10 text-[10vw] font-black select-none whitespace-nowrap leading-none">caylin.yeung</span>
          </div>
       </div>
 
@@ -274,6 +299,24 @@ function App() {
 
       <Dock />
       
+      {/* Welcome Toast */}
+      {showWelcomeToast && (
+          <div 
+              onClick={handleWelcomeClick}
+              className="absolute top-12 right-4 z-[5000] bg-[#1e1e1e]/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-lg p-4 max-w-sm cursor-pointer hover:bg-[#1e1e1e]/90 transition-all animate-in slide-in-from-right-10 fade-in duration-500 group"
+          >
+              <div className="flex items-start gap-3">
+                  <div className="bg-blue-500/20 p-2 rounded-full text-blue-400 group-hover:text-blue-300 transition-colors">
+                      <Search size={20} />
+                  </div>
+                  <div>
+                      <h3 className="font-bold text-sm text-white mb-1">Not sure where to start?</h3>
+                      <p className="text-xs text-white/60 group-hover:text-white/80 transition-colors">Click here to explore my files and projects.</p>
+                  </div>
+              </div>
+          </div>
+      )}
+
       {/* Context Menu */}
       {globalContextMenu && (
           <div 

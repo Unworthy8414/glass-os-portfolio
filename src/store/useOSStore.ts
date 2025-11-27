@@ -16,7 +16,7 @@ interface OSState {
   minimizeWindow: (id: string) => void;
   maximizeWindow: (id: string) => void;
   snapWindow: (id: string, target: { position: Position, size: Size }) => void;
-  restoreWindow: (id: string) => void;
+  restoreWindow: (id: string, newPosition?: Position) => void;
   updateWindowPosition: (id: string, pos: Position) => void;
   updateWindowSize: (id: string, size: Size) => void;
   updateWindowProps: (id: string, props: any) => void;
@@ -37,7 +37,6 @@ export const useOSStore = create<OSState>((set, get) => ({
   wallpaper: 'breathing', // Default
   dockItems: {},
   globalContextMenu: null,
-
   launchApp: (appConfig, props) => {
     const { windows, maxZIndex, focusWindow } = get();
     
@@ -229,7 +228,7 @@ export const useOSStore = create<OSState>((set, get) => ({
       }));
   },
 
-  restoreWindow: (id) => {
+  restoreWindow: (id, newPosition) => {
       set((state) => ({
           windows: state.windows.map((w) => {
               if (w.id !== id) return w;
@@ -237,7 +236,7 @@ export const useOSStore = create<OSState>((set, get) => ({
               return {
                   ...w,
                   isMaximized: false,
-                  position: w.prevPosition,
+                  position: newPosition || w.prevPosition,
                   size: w.prevSize,
                   prevPosition: undefined,
                   prevSize: undefined

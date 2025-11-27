@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { motion, useDragControls, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { flushSync } from 'react-dom';
+import { motion, useDragControls, AnimatePresence, useMotionValue } from 'framer-motion';
 import { X, Minus, Maximize2 } from 'lucide-react';
 import { useOSStore } from '../store/useOSStore';
 import type { WindowState } from '../types';
@@ -17,6 +18,16 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
   const [isDragging, setIsDragging] = useState(false);
   const [snapPreview, setSnapPreview] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
 
+  const x = useMotionValue(win.position.x);
+  const y = useMotionValue(win.position.y);
+
+  useEffect(() => {
+    if (!isDragging) {
+      x.set(win.position.x);
+      y.set(win.position.y);
+    }
+  }, [win.position.x, win.position.y, x, y, isDragging]);
+
   // Calculate target position for minimize animation
   const dockRect = dockItems[win.appId];
   const minimizeTarget = dockRect ? {
@@ -33,13 +44,6 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
 
   const handleDragStart = (event: any) => {
       setIsDragging(true);
-      if (win.isMaximized && win.prevSize) {
-          restoreWindow(win.id);
-          if (event.clientX) {
-              const newX = event.clientX - (win.prevSize.width / 2);
-              updateWindowPosition(win.id, { x: newX, y: win.position.y });
-          }
-      }
   };
   
   const handleDragEnd = (_: any, info: any) => {
@@ -48,43 +52,43 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
       
       const screenW = window.innerWidth;
       const screenH = window.innerHeight;
-      const { x, y } = info.point; 
+      const { x: currentX, y: currentY } = info.point; 
+
+      updateWindowPosition(win.id, { x: x.get(), y: y.get() });
 
       // Corner Snaps (Top Priority)
       const cornerSize = 50;
       
-      if (x < cornerSize && y < cornerSize) { // Top Left
+      if (currentX < cornerSize && currentY < cornerSize) { // Top Left
           snapWindow(win.id, { position: { x: 0, y: 32 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
           return;
       }
-      if (x > screenW - cornerSize && y < cornerSize) { // Top Right
+      if (currentX > screenW - cornerSize && currentY < cornerSize) { // Top Right
           snapWindow(win.id, { position: { x: screenW / 2, y: 32 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
           return;
       }
-      if (x < cornerSize && y > screenH - cornerSize) { // Bottom Left
+      if (currentX < cornerSize && currentY > screenH - cornerSize) { // Bottom Left
           snapWindow(win.id, { position: { x: 0, y: 32 + (screenH - 32 - 96) / 2 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
           return;
       }
-      if (x > screenW - cornerSize && y > screenH - cornerSize) { // Bottom Right
+      if (currentX > screenW - cornerSize && currentY > screenH - cornerSize) { // Bottom Right
           snapWindow(win.id, { position: { x: screenW / 2, y: 32 + (screenH - 32 - 96) / 2 }, size: { width: screenW / 2, height: (screenH - 32 - 96) / 2 } });
           return;
       }
 
       // Edge Snaps
-      if (x < 20) { 
+      if (currentX < 20) { 
           snapWindow(win.id, { position: { x: 0, y: 32 }, size: { width: screenW / 2, height: screenH - 32 - 96 } });
           return;
       }
-      if (x > screenW - 20) { 
+      if (currentX > screenW - 20) { 
           snapWindow(win.id, { position: { x: screenW / 2, y: 32 }, size: { width: screenW / 2, height: screenH - 32 - 96 } });
           return;
       }
-      if (y < 20) { 
+      if (currentY < 20) { 
           maximizeWindow(win.id);
           return;
       }
-
-      updateWindowPosition(win.id, { x: win.position.x + info.offset.x, y: win.position.y + info.offset.y });
   };
 
   const handleDrag = (_: any, info: any) => {
@@ -133,21 +137,30 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         initial={false}
-        animate={{ 
-            x: win.isMinimized ? minimizeTarget.x : win.position.x,
-            y: win.isMinimized ? minimizeTarget.y : win.position.y,
-            width: win.size.width,
-            height: win.size.height,
-            scale: win.isMinimized ? minimizeTarget.scale : 1, 
-            opacity: win.isMinimized ? minimizeTarget.opacity : 1,
-            pointerEvents: win.isMinimized ? 'none' : 'auto' 
-        }}
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        animate={
+            win.isMinimized ? { 
+                x: minimizeTarget.x,
+                y: minimizeTarget.y,
+                width: win.size.width,
+                height: win.size.height,
+                scale: minimizeTarget.scale, 
+                opacity: minimizeTarget.opacity,
+                pointerEvents: 'none' 
+            } : {
+                width: win.size.width,
+                height: win.size.height,
+                scale: 1, 
+                opacity: 1,
+                pointerEvents: 'auto' 
+            }
+        }
+        transition={isDragging ? { duration: 0 } : { type: "spring", damping: 25, stiffness: 300 }}
         style={{ 
             zIndex: win.zIndex,
             position: 'absolute',
-            // Origin point for transform should be bottom center to look like it goes to dock
-            transformOrigin: 'center center'
+            x,
+            y,
+            transformOrigin: 'top left'
         }}
         className="absolute flex flex-col pointer-events-auto"
         onMouseDown={() => focusWindow(win.id)}
@@ -173,7 +186,23 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
         >
             {/* Title Bar */}
             <div 
-                onPointerDown={(e) => dragControls.start(e)}
+                onPointerDown={(e) => {
+                    if (win.isMaximized && win.prevSize) {
+                        e.preventDefault();
+                        // Calculate
+                        const clientX = e.clientX;
+                        const relativeX = (clientX - win.position.x) / win.size.width;
+                        const newOffset = relativeX * win.prevSize.width;
+                        const newX = clientX - newOffset;
+
+                        // Flush updates
+                        flushSync(() => {
+                             restoreWindow(win.id);
+                             updateWindowPosition(win.id, { x: newX, y: win.position.y });
+                        });
+                    }
+                    dragControls.start(e, { cursor: 'grabbing' });
+                }}
                 onDoubleClick={() => maximizeWindow(win.id)}
                 className="h-10 flex items-center px-4 justify-between shrink-0 select-none cursor-default border-b border-white/5 bg-white/5"
             >
