@@ -30,10 +30,11 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
 
   // Calculate target position for minimize animation
   const dockRect = dockItems[win.appId];
+  const scale = 0.1;
   const minimizeTarget = dockRect ? {
-      x: dockRect.left + dockRect.width / 2 - win.size.width / 2, // Center horizontally on icon
-      y: dockRect.top + dockRect.height / 2 - win.size.height / 2, // Center vertically on icon
-      scale: 0.1,
+      x: dockRect.left + dockRect.width / 2 - (win.size.width * scale) / 2, 
+      y: dockRect.top + dockRect.height / 2 - (win.size.height * scale) / 2,
+      scale: scale,
       opacity: 0
   } : {
       x: win.position.x,
@@ -189,6 +190,8 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
                 opacity: minimizeTarget.opacity,
                 pointerEvents: 'none' 
             } : {
+                x: win.position.x,
+                y: win.position.y,
                 width: win.size.width,
                 height: win.size.height,
                 scale: 1, 
