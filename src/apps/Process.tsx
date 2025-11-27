@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
     LayoutDashboard, 
     Search, 
@@ -33,7 +33,15 @@ export const Process: React.FC = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [showPersona, setShowPersona] = useState(false);
     const { launchApp, setFocusModeActive } = useOSStore();
+    const scrollRef = useRef<HTMLDivElement>(null);
     
+    // Reset scroll position when tab changes
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = 0;
+        }
+    }, [activeTab]);
+
     // Interaction: Focus Mode Simulation
     const triggerFocusMode = () => {
         setFocusModeActive(true);
@@ -75,6 +83,23 @@ export const Process: React.FC = () => {
 
     return (
         <div className="flex w-full h-full bg-[#f8f9fa] text-slate-800 font-sans transition-colors duration-700">
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 10px;
+                    height: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: rgba(0,0,0,0.02);
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background-color: rgba(0,0,0,0.2);
+                    border-radius: 10px;
+                    border: 2px solid rgba(255,255,255,0.8); 
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background-color: rgba(0,0,0,0.3);
+                }
+            `}</style>
             
             {/* Sidebar */}
             <div className="w-64 border-r border-slate-200 bg-slate-50 flex flex-col shrink-0 transition-colors duration-500">
@@ -119,7 +144,7 @@ export const Process: React.FC = () => {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 overflow-y-auto relative scroll-smooth">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto relative custom-scrollbar">
                 <div className="max-w-5xl mx-auto p-12 space-y-16 pb-32">
                     
                     {/* PERSONA CARD OVERLAY */}

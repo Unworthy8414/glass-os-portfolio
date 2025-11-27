@@ -4,7 +4,7 @@ import { useFileSystem } from './store/useFileSystem';
 import { Window } from './components/Window';
 import { Dock } from './components/Dock';
 import { apps } from './utils/apps';
-import { Wifi, Battery, Command, Search, Globe, FileText, Folder, Image as ImageIcon, Trash2, RotateCcw, Check, Smartphone, RotateCw } from 'lucide-react';
+import { Wifi, Battery, Command, Search, Globe, FileText, Folder, Image as ImageIcon, Trash2, RotateCcw, Check, Smartphone, RotateCw, X } from 'lucide-react';
 import { PythonIcon } from './components/icons/PythonIcon';
 import { format } from 'date-fns';
 import { Menubar } from './components/Menubar';
@@ -42,9 +42,6 @@ function App() {
   }, []);
 
   const handleWelcomeClick = () => {
-      const files = desktopItems.filter(item => item.type === 'file');
-      const shouldTile = files.length > 0 && files.length < 5;
-      
       const screenW = window.innerWidth;
       const screenH = window.innerHeight;
       const GAP = 8;
@@ -52,60 +49,41 @@ function App() {
       const BOTTOM_SPACE = 96;
       const availableH = screenH - TOP_BAR - BOTTOM_SPACE;
 
-      files.forEach((item, index) => {
-          let appId = 'editor';
-          if (item.kind === 'pdf') appId = 'pdf';
-          else if (item.kind === 'image') appId = 'photos';
-          
-          const appConfig = apps.find(a => a.id === appId);
-          if (!appConfig) return;
+      // Launch Process App (Left Half)
+      const processApp = apps.find(a => a.id === 'process');
+      if (processApp) {
+          launchApp(processApp, { 
+              forceNew: true,
+              initialSize: { width: (screenW / 2) - (1.5 * GAP), height: availableH - (2 * GAP) },
+              initialPosition: { x: GAP, y: TOP_BAR + GAP }
+          });
+      }
 
-          let launchProps: any = { fileId: item.id, title: item.name, forceNew: true };
+      // Launch Calendar App (Top Right)
+      const calendarApp = apps.find(a => a.id === 'calendar');
+      if (calendarApp) {
+          launchApp(calendarApp, { 
+              forceNew: true,
+              initialSize: { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) },
+              initialPosition: { x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP }
+          });
+      }
 
-          if (shouldTile) {
-              let pos = { x: 0, y: 0 };
-              let size = { width: 0, height: 0 };
-
-              if (files.length === 1) {
-                  // Centered Large
-                  size = { width: screenW * 0.6, height: availableH * 0.8 };
-                  pos = { x: (screenW - size.width) / 2, y: TOP_BAR + (availableH - size.height) / 2 };
-              } else if (files.length === 2) {
-                  // Split Left/Right
-                  size = { width: (screenW / 2) - (1.5 * GAP), height: availableH - (2 * GAP) };
-                  if (index === 0) pos = { x: GAP, y: TOP_BAR + GAP };
-                  else pos = { x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR + GAP };
-              } else if (files.length === 3) {
-                  // 0: Left Half, 1: Top Right, 2: Bottom Right
-                  if (index === 0) {
-                      size = { width: (screenW / 2) - (1.5 * GAP), height: availableH - (2 * GAP) };
-                      pos = { x: GAP, y: TOP_BAR + GAP };
-                  } else {
-                      size = { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) };
-                      pos = { 
-                          x: (screenW / 2) + (0.5 * GAP), 
-                          y: index === 1 ? TOP_BAR + GAP : TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP) 
-                      };
-                  }
-              } else if (files.length === 4) {
-                  // Grid
-                  size = { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) };
-                  // 0: TL, 1: TR, 2: BL, 3: BR
-                  const isRight = index % 2 === 1;
-                  const isBottom = index >= 2;
-                  
-                  pos = {
-                      x: isRight ? (screenW / 2) + (0.5 * GAP) : GAP,
-                      y: isBottom ? TOP_BAR + GAP + (availableH / 2) + (0.5 * GAP) : TOP_BAR + GAP
-                  };
+      // Launch Resume (PDF) (Bottom Right)
+      const pdfApp = apps.find(a => a.id === 'pdf');
+      if (pdfApp) {
+          launchApp(pdfApp, { 
+              fileId: 'resume', 
+              title: 'Resume 2025.pdf', 
+              forceNew: true,
+              initialSize: { width: (screenW / 2) - (1.5 * GAP), height: (availableH / 2) - (1.5 * GAP) },
+              initialPosition: { 
+                  x: (screenW / 2) + (0.5 * GAP), 
+                  y: TOP_BAR + GAP + ((availableH / 2) - (1.5 * GAP)) + GAP
               }
-              
-              launchProps.initialPosition = pos;
-              launchProps.initialSize = size;
-          }
-
-          launchApp(appConfig, launchProps);
-      });
+          });
+      }
+      
       localStorage.setItem('hasVisited', 'true');
       setShowWelcomeToast(false);
   };
@@ -380,16 +358,28 @@ function App() {
       {/* Welcome Toast */}
       {showWelcomeToast && (
           <div 
-              onClick={handleWelcomeClick}
-              className="absolute top-12 right-4 z-[5000] bg-[#1e1e1e]/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-lg p-4 max-w-sm cursor-pointer hover:bg-[#1e1e1e]/90 transition-all animate-in slide-in-from-right-10 fade-in duration-500 group"
+              className="absolute top-12 right-4 z-[5000] bg-[#1e1e1e]/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-lg p-4 max-w-sm animate-in slide-in-from-right-10 fade-in duration-500 group"
           >
-              <div className="flex items-start gap-3">
+              <button 
+                  onClick={(e) => {
+                      e.stopPropagation();
+                      setShowWelcomeToast(false);
+                      localStorage.setItem('hasVisited', 'true');
+                  }}
+                  className="absolute top-2 right-2 text-white/40 hover:text-white transition-colors z-10"
+              >
+                  <X size={14} />
+              </button>
+              <div 
+                  onClick={handleWelcomeClick}
+                  className="flex items-start gap-3 cursor-pointer relative z-0"
+              >
                   <div className="bg-blue-500/20 p-2 rounded-full text-blue-400 group-hover:text-blue-300 transition-colors">
                       <Search size={20} />
                   </div>
                   <div>
                       <h3 className="font-bold text-sm text-white mb-1">Not sure where to start?</h3>
-                      <p className="text-xs text-white/60 group-hover:text-white/80 transition-colors">Click here to explore my files and projects.</p>
+                      <p className="text-xs text-white/60 group-hover:text-white/80 transition-colors pr-4">Click here to explore my files and projects.</p>
                   </div>
               </div>
           </div>
