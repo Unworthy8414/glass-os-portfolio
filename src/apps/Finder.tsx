@@ -79,6 +79,7 @@ export const Finder: React.FC<{ path?: string }> = ({ path }) => {
         let appId = 'editor';
         if (item.kind === 'pdf') appId = 'pdf';
         else if (item.kind === 'image') appId = 'photos';
+        else if (item.kind === 'app') appId = item.content;
         
         const appConfig = apps.find(a => a.id === appId);
         if (appConfig) {
@@ -156,7 +157,13 @@ export const Finder: React.FC<{ path?: string }> = ({ path }) => {
                     {items.length === 0 && (
                         <div className="col-span-4 text-center text-gray-500 mt-10 text-sm">Folder is empty</div>
                     )}
-                    {items.map((item) => (
+                    {items.map((item) => {
+                        let AppIcon = null;
+                        if (item.kind === 'app') {
+                            const app = apps.find(a => a.id === item.content);
+                            if (app) AppIcon = app.icon;
+                        }
+                        return (
                         <div 
                             key={item.id}
                             draggable={!item.isSystem}
@@ -195,13 +202,14 @@ export const Finder: React.FC<{ path?: string }> = ({ path }) => {
                             {item.kind === 'pdf' ? <FileText size={48} strokeWidth={1} className="text-red-400 drop-shadow-lg" /> :
                              item.kind === 'image' ? <ImageIcon size={48} strokeWidth={1} className="text-purple-400 drop-shadow-lg" /> :
                              item.kind === 'python' ? <PythonIcon size={48} className="drop-shadow-lg" /> :
+                             item.kind === 'app' && AppIcon ? <AppIcon size={48} strokeWidth={1} className="text-blue-500 drop-shadow-lg" /> :
                              item.kind === 'text' ? <FileText size={48} strokeWidth={1} className="text-gray-400 drop-shadow-lg" /> :
                              <Folder size={48} strokeWidth={1} className="text-blue-400 fill-blue-400/20 drop-shadow-lg" />}
                             <span className="text-xs text-center group-hover:text-white text-gray-300 break-all line-clamp-2 w-full select-none">
                                 {item.name}
                             </span>
                         </div>
-                    ))}
+                    );})}
                 </div>
             </div>
         </div>

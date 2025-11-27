@@ -11,7 +11,7 @@ import { Menubar } from './components/Menubar';
 import './App.css';
 
 function App() {
-  const { windows, activeWindowId, launchApp, snapWindow, wallpaper, setWallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusWindow, showAppWindows, hideAppWindows, quitApp } = useOSStore();
+  const { windows, activeWindowId, launchApp, snapWindow, wallpaper, setWallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusWindow, showAppWindows, hideAppWindows, quitApp, focusModeActive } = useOSStore();
   const { getItemsInFolder, deleteItem, moveItem, restoreItem, resetFileSystem, getItem, emptyTrash } = useFileSystem();
   const [time, setTime] = useState(new Date());
   const [showHellscape, setShowHellscape] = useState(false);
@@ -227,6 +227,7 @@ function App() {
       let appId = 'editor';
       if (item.kind === 'pdf') appId = 'pdf';
       else if (item.kind === 'image') appId = 'photos';
+      else if (item.kind === 'app') appId = item.content;
       
       const appConfig = apps.find(a => a.id === appId);
       if (appConfig) {
@@ -265,7 +266,10 @@ function App() {
             if (id) moveItem(id, 'desktop');
         }}
     >
-      <div className={`absolute inset-0 z-0 desktop-bg ${getWallpaperClass()}`}>
+      <div 
+        className={`absolute inset-0 z-0 desktop-bg ${getWallpaperClass()} transition-all duration-500 ease-in-out`}
+        style={{ filter: focusModeActive ? 'blur(8px) brightness(0.7)' : 'none' }}
+      >
          <div className="absolute inset-0 bg-noise opacity-[0.04] pointer-events-none mix-blend-overlay desktop-bg" />
          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none overflow-hidden gap-2">
              <span className="text-white/30 text-[2vw] font-bold tracking-[0.5em] uppercase select-none">UX Researcher</span>
@@ -285,8 +289,19 @@ function App() {
           />
       )}
 
-      <div className="absolute top-10 right-4 bottom-24 z-0 flex flex-col flex-wrap-reverse content-start items-end gap-6 p-4 pointer-events-none">
-          {desktopItems.map((item) => (
+      <div 
+        className="absolute top-10 right-4 bottom-24 z-0 flex flex-col flex-wrap-reverse content-start items-end gap-6 p-4 pointer-events-none transition-all duration-500"
+        style={{ filter: focusModeActive ? 'blur(8px)' : 'none' }}
+      >
+          {desktopItems.map((item) => {
+              // Resolve icon for apps
+              let AppIcon = null;
+              if (item.kind === 'app') {
+                  const app = apps.find(a => a.id === item.content);
+                  if (app) AppIcon = app.icon;
+              }
+
+              return (
               <div 
                 key={item.id}
                 data-id={item.id}
@@ -308,6 +323,7 @@ function App() {
                    {item.kind === 'pdf' ? <FileText size={48} strokeWidth={1} className="text-red-400 drop-shadow-lg mb-1" /> :
                    item.kind === 'image' ? <ImageIcon size={48} strokeWidth={1} className="text-purple-400 drop-shadow-lg mb-1" /> :
                    item.kind === 'python' ? <PythonIcon size={48} className="drop-shadow-lg mb-1" /> :
+                   item.kind === 'app' && AppIcon ? <AppIcon size={48} strokeWidth={1} className="text-blue-500 drop-shadow-lg mb-1" /> :
                    item.kind === 'text' ? <FileText size={48} strokeWidth={1} className="text-gray-300 drop-shadow-lg mb-1" /> :
                    <Folder size={48} strokeWidth={1} className="text-blue-400 fill-blue-400/20 drop-shadow-lg mb-1" />}
                   <span className={`
@@ -317,7 +333,7 @@ function App() {
                       {item.name}
                   </span>
               </div>
-          ))}
+          );})}
       </div>
 
       <div className="absolute top-0 left-0 right-0 h-8 bg-black/20 backdrop-blur-xl flex items-center justify-between px-4 z-[2000] text-xs font-medium border-b border-white/10 shadow-sm text-white/90">
@@ -343,8 +359,18 @@ function App() {
          {windows.map((win) => {
             const AppComp = apps.find(a => a.id === win.appId)?.component;
             if (!AppComp) return null;
+            const isDimmed = focusModeActive && win.id !== activeWindowId;
             return (
-                <Window key={win.id} window={win} component={AppComp} />
+                <div 
+                    key={win.id} 
+                    className="pointer-events-auto transition-all duration-500"
+                    style={{ 
+                        filter: isDimmed ? 'blur(4px) brightness(0.8)' : 'none',
+                        opacity: isDimmed ? 0.7 : 1
+                    }}
+                >
+                    <Window window={win} component={AppComp} />
+                </div>
             );
          })}
       </div>

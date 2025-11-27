@@ -7,7 +7,7 @@ export interface FileSystemItem {
   originalParentId?: string | null; // For restoration
   name: string;
   type: 'folder' | 'file';
-  kind?: 'text' | 'image' | 'pdf' | 'python'; 
+  kind?: 'text' | 'image' | 'pdf' | 'python' | 'app'; 
   content?: string; 
   dateModified: Date;
   isSystem?: boolean;
@@ -35,6 +35,7 @@ const initialItems: FileSystemItem[] = [
   { id: 'downloads', parentId: null, name: 'Downloads', type: 'folder', dateModified: new Date(), isSystem: true },
   { id: 'pictures', parentId: null, name: 'Pictures', type: 'folder', dateModified: new Date(), isSystem: true },
   
+  { id: 'process-app', parentId: 'desktop', name: 'Process', type: 'file', kind: 'app', dateModified: new Date(), content: 'process', isSystem: false },
   { id: 'resume', parentId: 'desktop', name: 'Resume 2025.pdf', type: 'file', kind: 'pdf', dateModified: new Date(), content: 'resume-data', isSystem: false },
   { id: 'project-alpha', parentId: 'desktop', name: 'Time Management App - UX Research Case Study.pdf', type: 'file', kind: 'pdf', dateModified: new Date(), content: '/Time Management App - UX Research Case Study.pdf', isSystem: false },
   { id: 'notes', parentId: 'desktop', name: 'Instructions.txt', type: 'file', kind: 'text', dateModified: new Date(), content: 'Welcome to Glass OS!\n\n- Double-click icons to open applications.\n- Drag windows to move them around the desktop.\n- Use the dock at the bottom to switch between apps.\n- Click the "Finder" icon to browse your files.', isSystem: false },

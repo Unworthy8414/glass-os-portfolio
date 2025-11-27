@@ -1,4 +1,4 @@
-import { Folder, Globe, Calculator as CalcIcon, FileText, Code, Image as ImageIcon, Terminal as TerminalIcon, Gamepad, Search } from 'lucide-react';
+import { Folder, Globe, Calculator as CalcIcon, FileText, Code, Image as ImageIcon, Terminal as TerminalIcon, Gamepad, Search, PenTool, Calendar as CalendarIcon } from 'lucide-react';
 import type { AppConfig } from '../types';
 import { Finder } from '../apps/Finder';
 import { Calculator } from '../apps/Calculator';
@@ -9,6 +9,8 @@ import { Photos } from '../apps/Photos';
 import { GameLauncher } from '../apps/GameLauncher';
 import { Terminal } from '../apps/Terminal';
 import { D20 } from '../apps/D20';
+import { Process } from '../apps/Process';
+import { Calendar } from '../apps/Calendar';
 import { D20Icon } from '../components/icons/D20Icon';
 import { FilePicker } from '../components/FilePicker';
 
@@ -20,6 +22,22 @@ export const apps: AppConfig[] = [
     component: Finder,
     defaultSize: { width: 800, height: 500 },
     defaultPosition: { x: 100, y: 100 }
+  },
+  {
+    id: 'process',
+    title: 'Process',
+    icon: PenTool,
+    component: Process,
+    defaultSize: { width: 950, height: 700 },
+    defaultPosition: { x: 180, y: 80 }
+  },
+  {
+    id: 'calendar',
+    title: 'SmartCal',
+    icon: CalendarIcon,
+    component: Calendar,
+    defaultSize: { width: 1000, height: 700 },
+    defaultPosition: { x: 220, y: 120 }
   },
   {
     id: 'browser',
