@@ -22,10 +22,26 @@ export const Finder: React.FC<{ path?: string }> = ({ path }) => {
         if (path) setCurrentPath(path);
     }, [path]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
-    const { getItemsInFolder, deleteItem } = useFileSystem();
+    const { getItemsInFolder, deleteItem, moveItem } = useFileSystem();
     const { launchApp, openContextMenu, closeContextMenu } = useOSStore();
     
     const items = getItemsInFolder(currentPath);
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleDrop = (e: React.DragEvent, targetId?: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const itemId = e.dataTransfer.getData('text/plain');
+        const target = targetId || currentPath;
+
+        if (itemId && itemId !== target) { // Prevent dropping on itself if logic allows
+             moveItem(itemId, target);
+        }
+    };
 
     // Clear selection/context menu on click outside
     useEffect(() => {
@@ -131,7 +147,12 @@ export const Finder: React.FC<{ path?: string }> = ({ path }) => {
                 </div>
                 
                 {/* Grid */}
-                <div className="flex-1 p-4 grid grid-cols-4 gap-4 content-start overflow-auto" onClick={() => setSelectedId(null)}>
+                <div 
+                    className="flex-1 p-4 grid grid-cols-4 gap-4 content-start overflow-auto" 
+                    onClick={() => setSelectedId(null)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e)} // Drop onto background = move to current path
+                >
                     {items.length === 0 && (
                         <div className="col-span-4 text-center text-gray-500 mt-10 text-sm">Folder is empty</div>
                     )}
@@ -142,6 +163,17 @@ export const Finder: React.FC<{ path?: string }> = ({ path }) => {
                             onDragStart={(e) => {
                                 e.dataTransfer.setData('text/plain', item.id);
                                 e.dataTransfer.effectAllowed = 'move';
+                            }}
+                            onDragOver={(e) => {
+                                if (item.type === 'folder') {
+                                    e.preventDefault(); 
+                                    e.stopPropagation(); // Prioritize folder drop over background
+                                }
+                            }}
+                            onDrop={(e) => {
+                                if (item.type === 'folder') {
+                                    handleDrop(e, item.id);
+                                }
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();

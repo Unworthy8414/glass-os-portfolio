@@ -11,7 +11,7 @@ import { Menubar } from './components/Menubar';
 
 function App() {
   const { windows, activeWindowId, launchApp, snapWindow, wallpaper, setWallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusWindow, showAppWindows, hideAppWindows, quitApp } = useOSStore();
-  const { getItemsInFolder, deleteItem, restoreItem, resetFileSystem, getItem, emptyTrash } = useFileSystem();
+  const { getItemsInFolder, deleteItem, moveItem, restoreItem, resetFileSystem, getItem, emptyTrash } = useFileSystem();
   const [time, setTime] = useState(new Date());
   // Local contextMenu state removed, using global store instead
   const [selectionBox, setSelectionBox] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
@@ -162,11 +162,18 @@ function App() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text/plain');
+            if (id) moveItem(id, 'desktop');
+        }}
     >
       <div className={`absolute inset-0 z-0 desktop-bg ${getWallpaperClass()}`}>
          <div className="absolute inset-0 bg-noise opacity-[0.04] pointer-events-none mix-blend-overlay desktop-bg" />
-         <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-             <span className="text-white/5 text-[12vw] font-black tracking-tighter select-none whitespace-nowrap">caylin.yeung</span>
+         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none overflow-hidden gap-2">
+             <span className="text-white/30 text-[2vw] font-bold tracking-[0.5em] uppercase select-none">UX Researcher</span>
+             <span className="text-white/10 text-[10vw] font-black tracking-tighter select-none whitespace-nowrap leading-none">caylin.yeung</span>
          </div>
       </div>
 

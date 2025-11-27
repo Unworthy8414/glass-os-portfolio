@@ -18,6 +18,7 @@ interface FileSystemState {
   
   createItem: (item: Omit<FileSystemItem, 'dateModified'>) => void;
   updateFileContent: (id: string, content: string) => void;
+  moveItem: (itemId: string, targetFolderId: string) => void;
   deleteItem: (id: string) => void;
   restoreItem: (id: string) => void;
   emptyTrash: () => void;
@@ -53,6 +54,14 @@ export const useFileSystem = create<FileSystemState>()(
       updateFileContent: (id, content) => set((state) => ({
         items: state.items.map(i => i.id === id ? { ...i, content, dateModified: new Date() } : i)
       })),
+
+      moveItem: (itemId, targetFolderId) => set((state) => {
+        const item = state.items.find(i => i.id === itemId);
+        if (!item || item.isSystem) return state; 
+        return {
+            items: state.items.map(i => i.id === itemId ? { ...i, parentId: targetFolderId } : i)
+        };
+      }),
       
       deleteItem: (id) => set((state) => {
           const item = state.items.find(i => i.id === id);
