@@ -8,11 +8,14 @@ import { Wifi, Battery, Command, Search, Globe, FileText, Folder, Image as Image
 import { PythonIcon } from './components/icons/PythonIcon';
 import { format } from 'date-fns';
 import { Menubar } from './components/Menubar';
+import './App.css';
 
 function App() {
   const { windows, activeWindowId, launchApp, snapWindow, wallpaper, setWallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusWindow, showAppWindows, hideAppWindows, quitApp } = useOSStore();
   const { getItemsInFolder, deleteItem, moveItem, restoreItem, resetFileSystem, getItem, emptyTrash } = useFileSystem();
   const [time, setTime] = useState(new Date());
+  const [showHellscape, setShowHellscape] = useState(false);
+  
   // Local contextMenu state removed, using global store instead
   const [selectionBox, setSelectionBox] = useState<{ x: number, y: number, width: number, height: number } | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -22,6 +25,22 @@ function App() {
   const activeApp = windows.find(w => w.id === activeWindowId);
   const appTitle = activeApp ? activeApp.title : 'Finder';
   const desktopItems = getItemsInFolder('desktop');
+
+  // Memoize emoji generation to prevent re-renders from resetting their position
+  const fallingEmojis = useRef(Array.from({ length: 50 }).map(() => ({
+      left: `${Math.random() * 95}vw`,
+      animationDuration: `${Math.random() * 2 + 1}s`,
+      animationDelay: `${Math.random() * 2}s`
+  }))).current;
+
+  useEffect(() => {
+    const handleHellscape = () => {
+        setShowHellscape(true);
+        setTimeout(() => setShowHellscape(false), 5000);
+    };
+    window.addEventListener('trigger-hellscape', handleHellscape);
+    return () => window.removeEventListener('trigger-hellscape', handleHellscape);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -157,7 +176,7 @@ function App() {
 
   return (
     <div 
-        className="relative w-screen h-screen overflow-hidden bg-black text-white select-none font-sans"
+        className="relative w-screen max-w-[100vw] h-screen overflow-hidden bg-black text-white select-none font-sans"
         onContextMenu={handleContextMenu}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -406,6 +425,28 @@ function App() {
                     <div onClick={() => { setWallpaper('sunset'); closeContextMenu(); }} className="hover:bg-blue-600 hover:text-white p-1.5 rounded-md cursor-default text-xs transition-colors">Sunset</div>
                  </>
              ) : null}
+          </div>
+      )}
+      {showHellscape && (
+          <div className="fixed inset-0 z-[99999] bg-red-600/90 flex items-center justify-center pointer-events-none overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center animate-bounce">
+                  <h1 className="text-[10vw] font-black text-white drop-shadow-[0_0_30px_rgba(0,0,0,1)] text-center leading-none tracking-tighter">
+                      YOUR SINS<br/>WILL NOT BE<br/>FORGIVEN
+                  </h1>
+              </div>
+              {fallingEmojis.map((style, i) => (
+                  <div 
+                    key={i} 
+                    className="absolute text-6xl animate-fall"
+                    style={{
+                        ...style,
+                        top: '-10vh',
+                        zIndex: 100000 
+                    }}
+                  >
+                      😈
+                  </div>
+              ))}
           </div>
       )}
     </div>

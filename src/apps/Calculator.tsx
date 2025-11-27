@@ -8,9 +8,16 @@ interface CalculatorProps {
 export const Calculator: React.FC<CalculatorProps> = ({ size }) => {
   const [display, setDisplay] = useState('0');
   const [memory, setMemory] = useState(0);
+  const [isTrapped, setIsTrapped] = useState(false);
   const isScientific = size.width > 350;
 
   const safeEval = (expr: string) => {
+      // Trap: Check for malicious keywords before any replacement
+      if (/alert|script|document|window|console|eval|Function/.test(expr)) {
+          setIsTrapped(true);
+          throw new Error("Nice try");
+      }
+
       // Replace visual symbols with JS math
       let cleanExpr = expr
           .replace(/×/g, '*')
@@ -91,18 +98,26 @@ export const Calculator: React.FC<CalculatorProps> = ({ size }) => {
       // Numbers / Constants
       if (/^[0-9.]$/.test(key) || key === 'π' || key === 'e') {
           setDisplay(prev => prev === '0' || prev === 'Error' ? key : prev + key);
+          return;
       }
       
       // Parenthesis
       if (key === '(' || key === ')') {
           setDisplay(prev => prev === '0' ? key : prev + key);
+          return;
+      }
+
+      // Allow any other single char (letters for traps)
+      if (key.length === 1) {
+          setDisplay(prev => prev === '0' || prev === 'Error' ? key : prev + key);
       }
 
   }, [display, memory]);
 
   useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-          if (/[0-9.+\-*/=]|Enter|Backspace|Escape|\(|\)/.test(e.key)) {
+          // Allow alphabet for "scientific" keys... and traps ;)
+          if (/[0-9a-zA-Z.+\-*/=]|Enter|Backspace|Escape|\(|\)/.test(e.key)) {
               e.preventDefault(); 
               if (e.key === 'Escape') handleInput('C');
               else handleInput(e.key);
@@ -129,9 +144,9 @@ export const Calculator: React.FC<CalculatorProps> = ({ size }) => {
   ];
 
   return (
-    <div className="w-full h-full bg-[#1c1c1c] text-white flex flex-col p-2 select-none font-light">
+    <div className={`w-full h-full bg-[#1c1c1c] text-white flex flex-col p-2 select-none font-light transition-all duration-1000 ${isTrapped ? 'rotate-180 grayscale pointer-events-none animate-pulse' : ''}`}>
       <div className="flex-1 flex items-end justify-end text-5xl px-4 pb-4 break-all overflow-hidden tabular-nums tracking-tight text-right">
-        {display}
+        {isTrapped ? '🙃' : display}
       </div>
       <div className="flex gap-2 h-[80%]">
         {isScientific && (

@@ -23,7 +23,7 @@ interface FileSystemState {
   restoreItem: (id: string) => void;
   emptyTrash: () => void;
   resetFileSystem: () => void;
-  getItemsInFolder: (folderId: string | null) => FileSystemItem[];
+  getItemsInFolder: (folderId: string | null, showHidden?: boolean) => FileSystemItem[];
   getItem: (id: string) => FileSystemItem | undefined;
   resolvePath: (path: string) => FileSystemItem | undefined; // Helper for Terminal
 }
@@ -39,6 +39,7 @@ const initialItems: FileSystemItem[] = [
   { id: 'project-alpha', parentId: 'desktop', name: 'Time Management App - UX Research Case Study.pdf', type: 'file', kind: 'pdf', dateModified: new Date(), content: '/Time Management App - UX Research Case Study.pdf', isSystem: false },
   { id: 'notes', parentId: 'desktop', name: 'Instructions.txt', type: 'file', kind: 'text', dateModified: new Date(), content: 'Welcome to Glass OS!\n\n- Double-click icons to open applications.\n- Drag windows to move them around the desktop.\n- Use the dock at the bottom to switch between apps.\n- Click the "Finder" icon to browse your files.', isSystem: false },
   { id: 'design-sys', parentId: 'documents', name: 'Design System.txt', type: 'file', kind: 'text', dateModified: new Date(), content: '// Typography\nPrimary: Inter\nSecondary: Merriweather\n\n// Colors\nPrimary: #3B82F6\nSecondary: #10B981', isSystem: false },
+  { id: 'env-trap', parentId: 'desktop', name: '.env', type: 'file', kind: 'text', dateModified: new Date(), content: 'RICK_ROLL=true', isSystem: false },
   { id: 'mockup1', parentId: 'pictures', name: 'Dashboard_Mockup.png', type: 'file', kind: 'image', dateModified: new Date(), content: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop', isSystem: false }
 ];
 
@@ -87,8 +88,12 @@ export const useFileSystem = create<FileSystemState>()(
 
       resetFileSystem: () => set({ items: initialItems }),
 
-      getItemsInFolder: (folderId) => {
-        return get().items.filter(i => i.parentId === folderId);
+      getItemsInFolder: (folderId, showHidden = false) => {
+        return get().items.filter(i => {
+            if (i.parentId !== folderId) return false;
+            if (!showHidden && i.name.startsWith('.')) return false;
+            return true;
+        });
       },
 
       getItem: (id) => get().items.find(i => i.id === id),

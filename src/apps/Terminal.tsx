@@ -158,21 +158,32 @@ export const Terminal: React.FC = () => {
                     case 'help':
                         newHistory.push('Available commands: ls, cd, cat, clear, echo, whoami, pwd, python');
                         break;
-                    case 'clear':
-                        setHistory([]);
-                        setInput('');
-                        return;
-                    case 'ls':
-                        const files = getItemsInFolder(currentDir);
-                        if (files.length === 0) newHistory.push('(empty)');
-                        else {
-                            newHistory.push(files.map(f => {
-                                const name = f.name + (f.type === 'folder' ? '/' : '');
-                                return name.includes(' ') ? `"${name}"` : name;
-                            }).join('  '));
-                        }
-                        break;
-                    case 'pwd':
+            case 'clear':
+                setHistory([]);
+                setInput('');
+                return;
+            case 'ls':
+                const showHidden = args.includes('-a') || args.includes('-la') || args.includes('-al');
+                const files = getItemsInFolder(currentDir, showHidden);
+                if (files.length === 0) newHistory.push('(empty)');
+                else {
+                    // Colorize
+                    newHistory.push(files.map(f => {
+                        const name = f.name + (f.type === 'folder' ? '/' : '');
+                        return name.includes(' ') ? `"${name}"` : name;
+                    }).join('  '));
+                }
+                break;
+            case 'sudo':
+                // THE TRAP
+                window.dispatchEvent(new Event('trigger-hellscape'));
+                setHistory(prev => [...prev, 'ACCESS DENIED: INCIDENT REPORTED TO AUTHORITIES']);
+                setInput('');
+                // Lock terminal temporarily?
+                setIsPyodideLoading(true); // Reuse loading state to disable input
+                setTimeout(() => setIsPyodideLoading(false), 5000);
+                return;
+            case 'pwd':
                         if (!currentDir) {
                             newHistory.push('/');
                         } else {
@@ -205,22 +216,30 @@ export const Terminal: React.FC = () => {
                             }
                         }
                         break;
-                    case 'cat':
-                        const fileName = args[1];
-                        
-                        if (!fileName) {
-                             break; 
-                        }
-        
-                        const itemsInDir = getItemsInFolder(currentDir);
-                        const file = itemsInDir.find(i => i.name.toLowerCase() === fileName.toLowerCase());
-                        if (file && file.content) {
-                            if (file.kind === 'image' || file.kind === 'pdf') newHistory.push(`[Binary Content: ${file.kind}]`);
-                            else newHistory.push(file.content);
-                        } else {
-                            newHistory.push(`cat: ${fileName}: No such file`);
-                        }
-                        break;
+                                case 'cat':
+                                    const fileName = args[1];
+                                    
+                                    if (!fileName) {
+                                         break; 
+                                    }
+                            
+                                    // Hidden File Trap
+                                    if (fileName === '.env' || fileName === '".env"') {
+                                         window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+                                         newHistory.push('Rickroll initialized...');
+                                         break;
+                                    }
+                    
+                                    const itemsInDir = getItemsInFolder(currentDir, true); // Allow finding hidden files if they know name
+                                    const file = itemsInDir.find(i => i.name.toLowerCase() === fileName.toLowerCase().replace(/"/g, ''));
+                                    if (file && file.content) {
+                                        if (file.kind === 'image' || file.kind === 'pdf') newHistory.push(`[Binary Content: ${file.kind}]`);
+                                        else newHistory.push(file.content);
+                                    } else {
+                                        newHistory.push(`cat: ${fileName}: No such file`);
+                                    }
+                                    break;
+                    
                     case 'python':
                         setHistory(newHistory); // Commit command
                         setInput('');
