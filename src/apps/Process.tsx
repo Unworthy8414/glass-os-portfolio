@@ -22,6 +22,34 @@ import {
 import { useOSStore } from '../store/useOSStore';
 import { apps } from '../utils/apps';
 
+// Helper to render legends for bar charts
+const renderLegend = (data: { color: string; label: string }[]) => (
+    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm mt-4">
+        {data.map((item, i) => (
+            <div key={i} className="flex items-center">
+                <span className={`w-3 h-3 rounded-full ${item.color.replace('bg-', 'bg-')} mr-2`} />
+                <span>{item.label}</span>
+            </div>
+        ))}
+    </div>
+);
+
+// Data for Q1 chart
+const q1Data = [
+    { value: 15, label: "Personal", color: "bg-blue-800" },
+    { value: 13, label: "Work", color: "bg-teal-500" },
+    { value: 6, label: "Collab", color: "bg-yellow-500" },
+    { value: 5, label: "Academic", color: "bg-slate-500" },
+];
+
+// Data for Q7 chart
+const q7Data = [
+    { value: 9, label: "Deadlines", color: "bg-blue-800" },
+    { value: 9, label: "Breakdown", color: "bg-teal-500" },
+    { value: 6, label: "None", color: "bg-yellow-500" },
+    { value: 1, label: "Blocking", color: "bg-slate-500" },
+];
+
 interface Section {
     id: string;
     label: string;
@@ -29,12 +57,18 @@ interface Section {
     color: string;
 }
 
-export const Process: React.FC = () => {
+interface ProcessProps {
+    size?: { width: number; height: number };
+}
+
+export const Process: React.FC<ProcessProps> = ({ size }) => {
     const [activeTab, setActiveTab] = useState('overview');
     const [showPersona, setShowPersona] = useState(false);
     const { launchApp, setFocusModeActive } = useOSStore();
     const scrollRef = useRef<HTMLDivElement>(null);
     
+    const isCompact = size ? size.width < 900 : false;
+
     // Reset scroll position when tab changes
     useEffect(() => {
         if (scrollRef.current) {
@@ -82,7 +116,7 @@ export const Process: React.FC = () => {
     ];
 
     return (
-        <div className="flex w-full h-full bg-[#f8f9fa] text-slate-800 font-sans transition-colors duration-700">
+        <div className={`flex w-full h-full bg-[#f8f9fa] text-slate-800 font-sans transition-colors duration-700 ${isCompact ? 'flex-col' : ''}`}>
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 10px;
@@ -102,50 +136,52 @@ export const Process: React.FC = () => {
             `}</style>
             
             {/* Sidebar */}
-            <div className="w-64 border-r border-slate-200 bg-slate-50 flex flex-col shrink-0 transition-colors duration-500">
-                <div className="p-6 border-b border-inherit">
+            <div className={`${isCompact ? 'w-full border-b h-auto' : 'w-64 border-r h-full'} border-slate-200 bg-slate-50 flex flex-col shrink-0 transition-colors duration-500`}>
+                <div className={`p-6 border-b border-inherit ${isCompact ? 'flex justify-between items-center py-4' : ''}`}>
                     <div className="font-bold text-xl tracking-tight flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm bg-blue-600">
                             <Target size={18} />
                         </div>
                         <span>Case Study</span>
                     </div>
-                    <div className="text-xs mt-2 text-slate-500">Time Management App • Q1 2025</div>
+                    {!isCompact && <div className="text-xs mt-2 text-slate-500">Time Management App • Q1 2025</div>}
                 </div>
                 
-                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                <nav className={`${isCompact ? 'flex overflow-x-auto space-x-2 p-2' : 'flex-1 flex-col space-y-1 p-4 overflow-y-auto'}`}>
                     {sections.map((section) => (
                         <button
                             key={section.id}
                             onClick={() => setActiveTab(section.id)}
-                            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium text-left group
+                            className={`${isCompact ? 'whitespace-nowrap px-3 py-2 text-xs flex-none' : 'w-full px-4 py-3 text-sm'} flex items-center gap-3 rounded-lg transition-all duration-200 font-medium text-left group
                                 ${activeTab === section.id 
                                     ? 'bg-white shadow-sm text-blue-600 ring-1 ring-slate-200' 
                                     : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
                                 }`}
                         >
-                            <section.icon size={18} className={`${activeTab === section.id ? section.color : 'text-slate-400'} group-hover:scale-110 transition-transform`} />
+                            <section.icon size={isCompact ? 14 : 18} className={`${activeTab === section.id ? section.color : 'text-slate-400'} group-hover:scale-110 transition-transform`} />
                             <span>{section.label}</span>
-                            {activeTab === section.id && <ArrowRight size={14} className="ml-auto opacity-50" />}
+                            {!isCompact && activeTab === section.id && <ArrowRight size={14} className="ml-auto opacity-50" />}
                         </button>
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-inherit space-y-2">
-                    <button onClick={launchFullReport} className="w-full py-2 px-3 rounded-md text-xs flex items-center justify-center gap-2 border transition-colors bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100">
-                        <FileText size={12} />
-                        View Full Report
-                    </button>
-                    <button onClick={() => setShowPersona(!showPersona)} className="w-full py-2 px-3 rounded-md text-xs flex items-center justify-center gap-2 border transition-colors bg-white border-slate-200 hover:bg-slate-50 text-slate-600">
-                        <User size={12} />
-                        {showPersona ? 'Hide Persona' : 'View Persona: Alex'}
-                    </button>
-                </div>
+                {!isCompact && (
+                    <div className="p-4 border-t border-inherit space-y-2">
+                        <button onClick={launchFullReport} className="w-full py-2 px-3 rounded-md text-xs flex items-center justify-center gap-2 border transition-colors bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100">
+                            <FileText size={12} />
+                            View Full Report
+                        </button>
+                        <button onClick={() => setShowPersona(!showPersona)} className="w-full py-2 px-3 rounded-md text-xs flex items-center justify-center gap-2 border transition-colors bg-white border-slate-200 hover:bg-slate-50 text-slate-600">
+                            <User size={12} />
+                            {showPersona ? 'Hide Persona' : 'View Persona: Alex'}
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Main Content */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto relative custom-scrollbar">
-                <div className="max-w-5xl mx-auto p-12 space-y-16 pb-32">
+                <div className={`max-w-5xl mx-auto ${isCompact ? 'p-6 space-y-8 pb-24' : 'p-12 space-y-16 pb-32'}`}>
                     
                     {/* PERSONA CARD OVERLAY */}
                     {showPersona && (
@@ -161,8 +197,8 @@ export const Process: React.FC = () => {
                                         <button onClick={() => setShowPersona(false)} className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded text-xs">Close</button>
                                     </div>
                                     
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-                                        <div className="col-span-2">
+                                    <div className={`grid gap-6 text-sm ${isCompact ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-4'}`}>
+                                        <div className={`${isCompact ? '' : 'col-span-2'}`}>
                                             <h4 className="font-bold text-blue-400 uppercase text-xs mb-2 tracking-wider">Goals</h4>
                                             <ul className="space-y-1 text-slate-300 list-disc list-inside">
                                                 <li>Reduce time wasted on distractions</li>
@@ -170,7 +206,7 @@ export const Process: React.FC = () => {
                                                 <li>Complete all tasks set for the week</li>
                                             </ul>
                                         </div>
-                                        <div className="col-span-2">
+                                        <div className={`${isCompact ? '' : 'col-span-2'}`}>
                                             <h4 className="font-bold text-red-400 uppercase text-xs mb-2 tracking-wider">Pain Points</h4>
                                             <ul className="space-y-1 text-slate-300 list-disc list-inside">
                                                 <li>Task Switching: Frequent interruptions by coworkers</li>
@@ -204,13 +240,13 @@ export const Process: React.FC = () => {
                     {activeTab === 'overview' && (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
                             <header className="border-b border-slate-200 pb-8">
-                                <h1 className="text-4xl font-extrabold mb-4 tracking-tight text-slate-900">Time Management App: UX Research Case Study</h1>
-                                <p className="text-xl text-slate-500 leading-relaxed">
+                                <h1 className={`${isCompact ? 'text-2xl' : 'text-4xl'} font-extrabold mb-4 tracking-tight text-slate-900`}>Time Management App: UX Research Case Study</h1>
+                                <p className={`${isCompact ? 'text-lg' : 'text-xl'} text-slate-500 leading-relaxed`}>
                                     Designing a time management app that aligns with user expectations and actual usage patterns.
                                 </p>
                             </header>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div className={`grid gap-6 ${isCompact ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-4'}`}>
                                 <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
                                     <div className="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Role</div>
                                     <div className="font-semibold text-slate-800">UX Researcher</div>
@@ -229,7 +265,7 @@ export const Process: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-8">
+                            <div className={`grid gap-8 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                 <div className="space-y-4">
                                     <h2 className="text-2xl font-bold text-slate-900">The Challenge</h2>
                                     <p className="text-slate-600 leading-relaxed">
@@ -260,22 +296,22 @@ export const Process: React.FC = () => {
                             <div>
                                 <h2 className="text-2xl font-bold text-slate-900 mb-4">My Approach</h2>
                                 <p className="text-slate-600 mb-6">I designed and executed a three-phase mixed-methods research study to understand user behavior from multiple angles.</p>
-                                <div className="flex flex-col md:flex-row gap-4">
-                                    <div className="flex-1 bg-white p-5 rounded-lg border border-slate-200 flex items-center gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-white p-5 rounded-lg border border-slate-200 flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">1</div>
                                         <div>
                                             <div className="font-bold text-slate-900">Exploratory</div>
                                             <div className="text-sm text-slate-500">Focus Group</div>
                                         </div>
                                     </div>
-                                    <div className="flex-1 bg-white p-5 rounded-lg border border-slate-200 flex items-center gap-4">
+                                    <div className="bg-white p-5 rounded-lg border border-slate-200 flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">2</div>
                                         <div>
                                             <div className="font-bold text-slate-900">Validation</div>
                                             <div className="text-sm text-slate-500">Online Survey</div>
                                         </div>
                                     </div>
-                                    <div className="flex-1 bg-white p-5 rounded-lg border border-slate-200 flex items-center gap-4">
+                                    <div className="bg-white p-5 rounded-lg border border-slate-200 flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold">3</div>
                                         <div>
                                             <div className="font-bold text-slate-900">In-Context</div>
@@ -329,7 +365,7 @@ export const Process: React.FC = () => {
                                     </div>
                                 </div>
 
-                                <div className="grid md:grid-cols-2 gap-6">
+                                <div className={`grid gap-6 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                     <div className="bg-slate-100 p-6 rounded-xl">
                                         <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><StickyNote size={16} /> Sticky Note Findings: Challenges</h4>
                                         <div className="flex flex-wrap gap-2">
@@ -358,7 +394,7 @@ export const Process: React.FC = () => {
                                     <h2 className="text-2xl font-bold text-slate-900">Online Survey (Validation)</h2>
                                 </div>
                                 
-                                <div className="grid md:grid-cols-3 gap-4 mb-4">
+                                <div className={`grid gap-4 mb-4 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-3'}`}>
                                     <div className="bg-white p-4 rounded border border-slate-200">
                                         <div className="text-xs text-slate-500 uppercase font-bold">Participants</div>
                                         <div className="text-lg font-bold">17 self-identified</div>
@@ -376,49 +412,29 @@ export const Process: React.FC = () => {
                                     </div>
                                 </div>
 
-                                <div className="grid md:grid-cols-2 gap-8">
+                                <div className={`grid gap-8 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                     <div className="space-y-2">
                                         <h4 className="font-bold text-slate-800 text-sm">Q1: What type of tasks do you manage?</h4>
-                                        <div className="h-48 flex items-end space-x-4 bg-white p-4 rounded-lg border border-slate-200">
-                                            <div className="w-1/4 bg-blue-800 rounded-t relative group h-[88%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">15</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">Personal</div>
-                                            </div>
-                                            <div className="w-1/4 bg-teal-500 rounded-t relative group h-[76%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">13</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">Work</div>
-                                            </div>
-                                            <div className="w-1/4 bg-yellow-500 rounded-t relative group h-[35%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">6</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">Collab</div>
-                                            </div>
-                                            <div className="w-1/4 bg-slate-500 rounded-t relative group h-[29%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">5</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">Academic</div>
-                                            </div>
+                                        <div className="h-48 flex items-end space-x-4 bg-white p-4 pt-8 rounded-lg border border-slate-200">
+                                            {q1Data.map((item, i) => (
+                                                <div key={i} className={`w-1/4 ${item.color} rounded-t relative group`} style={{ height: `${Math.round(item.value / 15 * 100)}%` }}>
+                                                    <span className="absolute -top-6 w-full text-center text-xs font-bold">{item.value}</span>
+                                                </div>
+                                            ))}
                                         </div>
+                                        {renderLegend(q1Data)}
                                     </div>
 
                                     <div className="space-y-2">
                                         <h4 className="font-bold text-slate-800 text-sm">Q7: Strategy to avoid procrastination?</h4>
-                                        <div className="h-48 flex items-end space-x-4 bg-white p-4 rounded-lg border border-slate-200">
-                                            <div className="w-1/4 bg-blue-800 rounded-t relative h-[53%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">9</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">Deadlines</div>
-                                            </div>
-                                            <div className="w-1/4 bg-teal-500 rounded-t relative h-[53%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">9</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">Breakdown</div>
-                                            </div>
-                                            <div className="w-1/4 bg-yellow-500 rounded-t relative h-[35%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">6</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">None</div>
-                                            </div>
-                                            <div className="w-1/4 bg-slate-500 rounded-t relative h-[6%]">
-                                                <span className="absolute -top-6 w-full text-center text-xs font-bold">1</span>
-                                                <div className="absolute bottom-2 w-full text-center text-[10px] text-white/80">Blocking</div>
-                                            </div>
+                                        <div className="h-48 flex items-end space-x-4 bg-white p-4 pt-8 rounded-lg border border-slate-200">
+                                            {q7Data.map((item, i) => (
+                                                <div key={i} className={`w-1/4 ${item.color} rounded-t relative`} style={{ height: `${Math.round(item.value / 9 * 100)}%` }}>
+                                                    <span className="absolute -top-6 w-full text-center text-xs font-bold">{item.value}</span>
+                                                </div>
+                                            ))}
                                         </div>
+                                        {renderLegend(q7Data)}
                                     </div>
                                 </div>
 
@@ -453,10 +469,10 @@ export const Process: React.FC = () => {
                                     <strong>Goal:</strong> Observe real-world behavior and tool interactions over time (10-day study, 4 participants).
                                 </p>
                                 
-                                <div className="grid md:grid-cols-2 gap-6">
+                                <div className={`grid gap-6 ${isCompact ? 'grid-cols-1' : 'lg:grid-cols-2'}`}>
                                     <div className="bg-white p-6 rounded-xl border border-slate-200">
                                         <h4 className="font-bold text-slate-800 mb-4">Common Distractions</h4>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                                             <div className="bg-pink-100 p-3 rounded text-xs text-center font-medium text-pink-800">Social Media</div>
                                             <div className="bg-pink-100 p-3 rounded text-xs text-center font-medium text-pink-800">Emails</div>
                                             <div className="bg-pink-100 p-3 rounded text-xs text-center font-medium text-pink-800">Colleagues</div>
@@ -467,7 +483,7 @@ export const Process: React.FC = () => {
                                     </div>
                                     <div className="bg-white p-6 rounded-xl border border-slate-200">
                                         <h4 className="font-bold text-slate-800 mb-4">Strategies to Refocus</h4>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                                             <div className="bg-yellow-100 p-3 rounded text-xs text-center font-medium text-yellow-800">Outlook & Teams</div>
                                             <div className="bg-yellow-100 p-3 rounded text-xs text-center font-medium text-yellow-800">Focus on one task</div>
                                             <div className="bg-teal-100 p-3 rounded text-xs text-center font-medium text-teal-800">To-Do List</div>
@@ -485,7 +501,7 @@ export const Process: React.FC = () => {
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
                             <section>
                                 <h2 className="text-3xl font-bold mb-8">Key Findings</h2>
-                                <div className="grid md:grid-cols-2 gap-6">
+                                <div className={`grid gap-6 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                     {[
                                         { title: "1. Frequency Drives Engagement", desc: "Users who successfully manage their time use tools multiple times daily. Constant touchpoints keep them organized." },
                                         { title: "2. Mood Impacts Productivity", desc: "Low mood dramatically increases procrastination. Users need motivators, not just reminders." },
@@ -614,7 +630,7 @@ export const Process: React.FC = () => {
                                 </div>
 
                                 {/* Rec 4 & 5 */}
-                                <div className="grid md:grid-cols-2 gap-8">
+                                <div className={`grid gap-8 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                     <div className="bg-white p-6 rounded-xl border border-slate-200">
                                         <div className="flex items-center gap-3 mb-3">
                                             <Clock className="text-teal-500" />
@@ -645,7 +661,7 @@ export const Process: React.FC = () => {
                                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                                         <RefreshCw size={18} /> System Features
                                     </h3>
-                                    <div className="grid md:grid-cols-2 gap-6">
+                                    <div className={`grid gap-6 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                         <div>
                                             <h4 className="font-bold text-slate-800 text-sm mb-1">6. Cross-Device Syncing</h4>
                                             <p className="text-xs text-slate-500 mb-2">Identified as the #1 biggest challenge. Critical for adoption.</p>
@@ -696,7 +712,7 @@ export const Process: React.FC = () => {
                             {/* Business Value */}
                             <section>
                                 <h2 className="text-2xl font-bold mb-6">Business Value</h2>
-                                <div className="grid md:grid-cols-2 gap-4">
+                                <div className={`grid gap-4 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                     <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-lg">
                                         <div className="font-bold text-emerald-800 mb-1">Reduced Risk</div>
                                         <p className="text-sm text-emerald-700">Validated demand before development. Avoided building complex customization features that users wouldn't use.</p>
@@ -713,7 +729,7 @@ export const Process: React.FC = () => {
                             </section>
 
                             {/* Methodology */}
-                            <section className="grid md:grid-cols-2 gap-8">
+                            <section className={`grid gap-8 ${isCompact ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
                                 <div>
                                     <h3 className="font-bold text-lg mb-4 text-slate-900">Methodology Highlights</h3>
                                     <div className="space-y-4">
