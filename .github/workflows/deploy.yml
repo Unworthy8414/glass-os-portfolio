@@ -1,0 +1,66 @@
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Deploy to Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Stop the container if it exists
+            docker stop glass-os-portfolio || true
+            docker rm glass-os-portfolio || true
+            
+            # Login to registry (using the workflow token passed via environment variables isn't easy here, 
+            # so we'll assume the package is Public OR rely on a pre-configured login.
+            # BETTER OPTION: If your repo is private, you might need to create a PAT and add it as a secret called CR_PAT)
+            
+            # Pull the latest image
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            
+            # Run the new container
+            docker run -d \
+              --name glass-os-portfolio \
+              --restart always \
+              -p 80:80 \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
