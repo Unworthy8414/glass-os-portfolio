@@ -29,9 +29,9 @@ export const Dock = () => {
 
   return (
     <>
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[5000] pb-2 pointer-events-auto">
-            <div className="relative h-20 px-4 flex items-center gap-4 rounded-[24px] overflow-visible shadow-2xl ring-1 ring-white/20">
-                <div className="absolute inset-0 -z-10 rounded-[24px] overflow-hidden pointer-events-none">
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[5000] pb-2 pointer-events-auto w-auto max-w-[95vw]">
+            <div className="relative h-20 px-4 flex items-center gap-4 rounded-[24px] overflow-x-auto overflow-y-visible shadow-2xl ring-1 ring-white/20 scrollbar-hide">
+                <div className="absolute inset-0 -z-10 rounded-[24px] overflow-hidden pointer-events-none fixed top-0 left-0 right-0 bottom-0">
                     {/* @ts-ignore */}
                     <LiquidGlass className="w-full h-full" blurAmount={15} />
                     <div className="absolute inset-0 bg-white/10 backdrop-saturate-150" />

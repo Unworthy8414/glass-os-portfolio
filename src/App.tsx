@@ -4,7 +4,7 @@ import { useFileSystem } from './store/useFileSystem';
 import { Window } from './components/Window';
 import { Dock } from './components/Dock';
 import { apps } from './utils/apps';
-import { Wifi, Battery, Command, Search, Globe, FileText, Folder, Image as ImageIcon, Trash2, RotateCcw, Check } from 'lucide-react';
+import { Wifi, Battery, Command, Search, Globe, FileText, Folder, Image as ImageIcon, Trash2, RotateCcw, Check, Smartphone, RotateCw } from 'lucide-react';
 import { PythonIcon } from './components/icons/PythonIcon';
 import { format } from 'date-fns';
 import { Menubar } from './components/Menubar';
@@ -449,6 +449,18 @@ function App() {
               ))}
           </div>
       )}
+
+      {/* Mobile Portrait Warning */}
+      <div className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center md:hidden portrait:flex hidden">
+          <div className="relative mb-6">
+              <Smartphone size={64} className="text-gray-400" />
+              <RotateCw size={32} className="absolute -right-2 -bottom-2 text-blue-500 animate-spin-slow" />
+          </div>
+          <h2 className="text-2xl font-bold mb-3 text-white">Please Rotate Device</h2>
+          <p className="text-gray-400 text-sm max-w-xs leading-relaxed">
+              Glass OS is designed for desktop or landscape viewing. For the best experience, please rotate your phone or switch to a larger screen.
+          </p>
+      </div>
     </div>
   );
 }

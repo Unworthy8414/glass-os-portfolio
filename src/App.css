@@ -9,3 +9,16 @@
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
+
+.animate-spin-slow {
+  animation: logo-spin 3s linear infinite;
+}
+
+/* Utility: Hide Scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
