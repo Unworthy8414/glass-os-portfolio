@@ -110,7 +110,19 @@ export const useFileSystem = create<FileSystemState>()(
     }),
     {
       name: 'glass-os-filesystem',
-      // Serialize dates properly if needed, but JSON default is okay for simple use
+      version: 2,
+      migrate: (persistedState: any, version: number) => {
+        if (version < 2) {
+          const items = persistedState.items?.map((item: any) => {
+            if (item.content === 'process') {
+              return { ...item, content: 'case-studies', name: 'Case Studies' };
+            }
+            return item;
+          }) || initialItems;
+          return { ...persistedState, items };
+        }
+        return persistedState;
+      }
     }
   )
 );
