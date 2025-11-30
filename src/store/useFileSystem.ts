@@ -36,7 +36,7 @@ const initialItems: FileSystemItem[] = [
   { id: 'pictures', parentId: null, name: 'Pictures', type: 'folder', dateModified: new Date(), isSystem: true },
   
   { id: 'case-studies-app', parentId: 'desktop', name: 'Case Studies', type: 'file', kind: 'app', dateModified: new Date(), content: 'case-studies', isSystem: false },
-  { id: 'resume', parentId: 'desktop', name: 'Resume 2025.pdf', type: 'file', kind: 'pdf', dateModified: new Date(), content: 'resume-data', isSystem: false },
+  { id: 'resume', parentId: 'desktop', name: 'Resume 2025.pdf', type: 'file', kind: 'pdf', dateModified: new Date(), content: '/Resume (2025).pdf', isSystem: false },
   { id: 'project-alpha', parentId: 'desktop', name: 'Time Management App - UX Research Case Study.pdf', type: 'file', kind: 'pdf', dateModified: new Date(), content: '/Time Management App - UX Research Case Study.pdf', isSystem: false },
   { id: 'notes', parentId: 'desktop', name: 'Instructions.txt', type: 'file', kind: 'text', dateModified: new Date(), content: 'Welcome to Glass OS!\n\n- Double-click icons to open applications.\n- Drag windows to move them around the desktop.\n- Use the dock at the bottom to switch between apps.\n- Click the "Finder" icon to browse your files.', isSystem: false },
   { id: 'design-sys', parentId: 'documents', name: 'Design System.txt', type: 'file', kind: 'text', dateModified: new Date(), content: '// Typography\nPrimary: Inter\nSecondary: Merriweather\n\n// Colors\nPrimary: #3B82F6\nSecondary: #10B981', isSystem: false },
