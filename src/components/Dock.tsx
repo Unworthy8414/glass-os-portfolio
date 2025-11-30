@@ -6,13 +6,13 @@ import { useOSStore } from '../store/useOSStore';
 import LiquidGlass from 'liquid-glass-react';
 import { Trash2, LayoutGrid } from 'lucide-react';
 import { useFileSystem } from '../store/useFileSystem';
+import type { AppConfig } from '../types';
 
 export const Dock = () => {
   const [hoveredApp, setHoveredApp] = useState<{ id: string; title: string; rect: DOMRect } | null>(null);
-  const { launchApp, openContextMenu, closeContextMenu, globalContextMenu, toggleLauncher } = useOSStore();
+  const { launchApp, openContextMenu, closeContextMenu, globalContextMenu, toggleLauncher, windows } = useOSStore();
   const { deleteItem } = useFileSystem();
 
-  // Close context menu on click outside
   useEffect(() => {
     const handleClick = () => closeContextMenu();
     window.addEventListener('click', handleClick);
@@ -26,6 +26,17 @@ export const Dock = () => {
           deleteItem(fileId);
       }
   };
+
+  // Get permanent dock apps (not hidden)
+  const permanentApps = apps.filter(app => !app.dockHidden);
+
+  // Get running apps that aren't in permanent dock
+  const runningAppIds = [...new Set(windows.map(w => w.appId))];
+  const runningHiddenApps = apps.filter(app =>
+    app.dockHidden &&
+    runningAppIds.includes(app.id) &&
+    app.id !== 'file-picker'
+  );
 
   return (
     <>
@@ -51,11 +62,11 @@ export const Dock = () => {
                     </motion.button>
                 </div>
 
-                {/* Finder */}
+                {/* Finder (always first) */}
                 {apps.filter(a => a.id === 'finder').map(app => (
-                    <DockItem 
-                        key={app.id} 
-                        app={app} 
+                    <DockItem
+                        key={app.id}
+                        app={app}
                         onHover={(rect) => setHoveredApp({ id: app.id, title: app.title, rect })}
                         onLeave={() => setHoveredApp(null)}
                         onContextMenu={(e) => {
@@ -66,11 +77,26 @@ export const Dock = () => {
                     />
                 ))}
 
-                {/* Other Apps */}
-                {apps.filter(app => !app.dockHidden && app.id !== 'finder').map((app) => (
-                    <DockItem 
-                        key={app.id} 
-                        app={app} 
+                {/* Other Permanent Apps */}
+                {permanentApps.filter(app => app.id !== 'finder').map((app) => (
+                    <DockItem
+                        key={app.id}
+                        app={app}
+                        onHover={(rect) => setHoveredApp({ id: app.id, title: app.title, rect })}
+                        onLeave={() => setHoveredApp(null)}
+                        onContextMenu={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openContextMenu('dock-item', e.clientX, e.clientY, app.id);
+                        }}
+                    />
+                ))}
+
+                {/* Running Apps (launched from Launchpad) */}
+                {runningHiddenApps.map((app) => (
+                    <DockItem
+                        key={app.id}
+                        app={app}
                         onHover={(rect) => setHoveredApp({ id: app.id, title: app.title, rect })}
                         onLeave={() => setHoveredApp(null)}
                         onContextMenu={(e) => {
@@ -85,7 +111,7 @@ export const Dock = () => {
                 <div className="w-px h-10 bg-white/20 mx-1" />
 
                 {/* Trash Can */}
-                 <div 
+                 <div
                     className="relative flex flex-col items-center justify-center h-full dock-item pointer-events-auto"
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={handleTrashDrop}
@@ -121,7 +147,7 @@ export const Dock = () => {
                         style={{
                             position: 'fixed',
                             left: hoveredApp.rect.left + hoveredApp.rect.width / 2,
-                            top: hoveredApp.rect.top - 10, 
+                            top: hoveredApp.rect.top - 10,
                             transform: 'translateX(-50%) translateY(-100%)',
                             zIndex: 9999,
                             pointerEvents: 'none'
@@ -143,9 +169,9 @@ export const Dock = () => {
   );
 };
 
-function DockItem({ app, onHover, onLeave, onContextMenu }: { 
-    app: any, 
-    onHover: (rect: DOMRect) => void, 
+function DockItem({ app, onHover, onLeave, onContextMenu }: {
+    app: AppConfig,
+    onHover: (rect: DOMRect) => void,
     onLeave: () => void,
     onContextMenu: (e: React.MouseEvent, rect: DOMRect) => void
 }) {
@@ -162,14 +188,12 @@ function DockItem({ app, onHover, onLeave, onContextMenu }: {
   const handleMouseEnter = () => {
       if (ref.current) {
           onHover(ref.current.getBoundingClientRect());
-          // Update rect on hover just in case
           registerDockItem(app.id, ref.current.getBoundingClientRect());
       }
   };
 
   const handleClick = () => {
       if (isOpen) {
-          // Bring all to front instead of toggle
           showAppWindows(app.id);
       } else {
           launchApp(app);
@@ -177,7 +201,7 @@ function DockItem({ app, onHover, onLeave, onContextMenu }: {
   };
 
   return (
-    <div 
+    <div
         className="relative flex flex-col items-center justify-center h-full dock-item pointer-events-auto"
         data-dock-app-id={app.id}
     >
@@ -186,7 +210,6 @@ function DockItem({ app, onHover, onLeave, onContextMenu }: {
             onClick={handleClick}
             onContextMenu={(e) => {
                 if (ref.current) {
-                    // Update rect before opening context menu
                     const rect = ref.current.getBoundingClientRect();
                     registerDockItem(app.id, rect);
                     onContextMenu(e, rect);
@@ -200,7 +223,7 @@ function DockItem({ app, onHover, onLeave, onContextMenu }: {
                 <app.icon className="w-3/5 h-3/5 text-white drop-shadow-lg" strokeWidth={1.5} />
              </div>
         </motion.button>
-        
+
         {isOpen && (
             <div className="absolute bottom-1 w-1 h-1 bg-white/60 rounded-full shadow-[0_0_4px_rgba(255,255,255,0.5)]" />
         )}

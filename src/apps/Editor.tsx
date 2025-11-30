@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useOSStore } from '../store/useOSStore';
 import { useFileSystem } from '../store/useFileSystem';
+import { SYSTEM_FOLDERS } from '../constants/layout';
 
 export const Editor: React.FC<{ windowId: string }> = ({ windowId }) => {
-    const { windows } = useOSStore(); // We might need setWindowProps later to update title/id
+    const { windows } = useOSStore();
     const { getItem, updateFileContent, createItem } = useFileSystem();
     const [content, setContent] = useState('');
     const [isDirty, setIsDirty] = useState(false);
     const [cursorPos, setCursorPos] = useState(0);
-    
+
     const win = windows.find(w => w.id === windowId);
     const fileId = win?.props?.fileId;
-    const file = getItem(fileId);
+    const file = getItem(fileId || '');
 
     useEffect(() => {
         if (file && file.content !== undefined) {
@@ -41,26 +42,20 @@ function init() {
             updateFileContent(fileId, content);
             setIsDirty(false);
         } else {
-            // Save As Logic
             const filename = prompt("Enter filename to save (e.g. script.py or note.txt):", "Untitled.txt");
             if (filename) {
                 const newId = filename.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
                 const isPython = filename.endsWith('.py');
-                
+
                 createItem({
                     id: newId,
-                    parentId: 'desktop', // Default to desktop
+                    parentId: SYSTEM_FOLDERS.DESKTOP,
                     name: filename,
                     type: 'file',
                     kind: isPython ? 'python' : 'text',
                     content: content
                 });
-                
-                // Update window to point to new file
-                // This requires a store action to update window props, or we force a reload.
-                // Since we don't have updateWindowProps exposed yet, we'll just reload the app or let the user find it.
-                // Ideally, we should update the window state.
-                
+
                 alert(`File saved to Desktop as ${filename}`);
                 setIsDirty(false);
             }
@@ -73,9 +68,9 @@ function init() {
             handleSave();
         }
     };
-    
-    const updateCursor = (e: any) => {
-        setCursorPos(e.target.selectionStart);
+
+    const updateCursor = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+        setCursorPos(e.currentTarget.selectionStart);
     };
 
     return (
@@ -84,11 +79,10 @@ function init() {
                  <span className="cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors text-gray-300 font-medium" onClick={handleSave}>
                      {fileId ? 'Save' : 'Save As...'}
                  </span>
-                 {/* Removed "Edit" button as requested */}
                  <div className="flex-1" />
                  <span className="text-gray-500">{file ? file.name : 'Untitled'}{isDirty ? '*' : ''}</span>
              </div>
-             <textarea 
+             <textarea
                 className="flex-1 bg-[#1e1e1e] resize-none p-4 focus:outline-none leading-relaxed selection:bg-blue-500/40 text-gray-300"
                 value={content}
                 onChange={(e) => {

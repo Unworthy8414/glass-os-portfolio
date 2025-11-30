@@ -11,7 +11,7 @@ export const PDFViewer: React.FC<{ windowId: string }> = ({ windowId }) => {
     
     const win = windows.find(w => w.id === windowId);
     const fileId = win?.props?.fileId;
-    const file = getItem(fileId);
+    const file = fileId ? getItem(fileId) : undefined;
 
     useEffect(() => {
         const handleZoom = (e: CustomEvent) => {

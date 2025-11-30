@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 interface CalculatorProps {
-  windowId: string;
-  size: { width: number; height: number };
+  windowId?: string;
+  size?: { width: number; height: number };
 }
 
-export const Calculator: React.FC<CalculatorProps> = ({ size }) => {
+export const Calculator: React.FC<CalculatorProps> = ({ size = { width: 300, height: 400 } }) => {
   const [display, setDisplay] = useState('0');
   const [memory, setMemory] = useState(0);
   const [isTrapped, setIsTrapped] = useState(false);

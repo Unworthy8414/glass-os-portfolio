@@ -10,7 +10,7 @@ export const Photos: React.FC<{ windowId: string }> = ({ windowId }) => {
     
     const win = windows.find(w => w.id === windowId);
     const fileId = win?.props?.fileId;
-    const file = getItem(fileId);
+    const file = fileId ? getItem(fileId) : undefined;
 
     const handleOpenFile = () => {
         const picker = apps.find(a => a.id === 'file-picker');

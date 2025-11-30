@@ -1,18 +1,19 @@
 import { create } from 'zustand';
-import type { WindowState, Size, Position, AppConfig } from '../types';
+import type { WindowState, Size, Position, AppConfig, ContextMenuType, ContextMenuState, WindowProps } from '../types';
+import { LAYOUT } from '../constants/layout';
 
 interface OSState {
   windows: WindowState[];
   activeWindowId: string | null;
   maxZIndex: number;
-  wallpaper: string; // Add wallpaper state
-  
+  wallpaper: string;
+
   dockItems: Record<string, DOMRect>;
-  globalContextMenu: { type: 'desktop-bg' | 'desktop-item' | 'dock-item' | 'finder-item', targetId?: string, x: number, y: number, data?: any } | null;
+  globalContextMenu: ContextMenuState | null;
   focusModeActive: boolean;
   isLauncherOpen: boolean;
 
-  launchApp: (appConfig: AppConfig, props?: any) => void;
+  launchApp: (appConfig: AppConfig, props?: WindowProps) => void;
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
@@ -21,7 +22,7 @@ interface OSState {
   restoreWindow: (id: string, newPosition?: Position) => void;
   updateWindowPosition: (id: string, pos: Position) => void;
   updateWindowSize: (id: string, size: Size) => void;
-  updateWindowProps: (id: string, props: any) => void;
+  updateWindowProps: (id: string, props: Partial<WindowProps>) => void;
   toggleWindow: (id: string) => void;
   showAppWindows: (appId: string) => void;
   hideAppWindows: (appId: string) => void;
@@ -31,7 +32,7 @@ interface OSState {
   setFocusModeActive: (active: boolean) => void;
   setIsLauncherOpen: (isOpen: boolean) => void;
   toggleLauncher: () => void;
-  openContextMenu: (type: 'desktop-bg' | 'desktop-item' | 'dock-item' | 'finder-item', x: number, y: number, targetId?: string, data?: any) => void;
+  openContextMenu: (type: ContextMenuType, x: number, y: number, targetId?: string) => void;
   closeContextMenu: () => void;
 }
 
@@ -39,27 +40,27 @@ export const useOSStore = create<OSState>((set, get) => ({
   windows: [],
   activeWindowId: null,
   maxZIndex: 100,
-  wallpaper: 'breathing', // Default
+  wallpaper: 'breathing',
   dockItems: {},
   globalContextMenu: null,
   focusModeActive: false,
   isLauncherOpen: false,
+
   launchApp: (appConfig, props) => {
     const { windows, maxZIndex, focusWindow } = get();
-    
+
     if (!props?.forceNew) {
         let existingWindow: WindowState | undefined;
         if (props?.fileId) {
              existingWindow = windows.find(w => w.appId === appConfig.id && w.props?.fileId === props.fileId);
         } else {
-             // If checking for existing window, prefer one that is not minimized if possible, or just the last one
              existingWindow = windows.filter(w => w.appId === appConfig.id).pop();
         }
 
         if (existingWindow) {
           set(state => ({
-               windows: state.windows.map(w => w.id === existingWindow!.id ? { 
-                   ...w, 
+               windows: state.windows.map(w => w.id === existingWindow!.id ? {
+                   ...w,
                    isMinimized: false,
                    title: props?.title || w.title,
                    props: { ...w.props, ...props }
@@ -69,12 +70,11 @@ export const useOSStore = create<OSState>((set, get) => ({
           return;
         }
     }
-    
+
     const id = `${appConfig.id}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-    // Add random offset to cascade windows so they don't stack perfectly
-    const offset = windows.length * 20; 
+    const offset = windows.length * 20;
     const basePos = appConfig.defaultPosition || { x: 100, y: 50 };
-    
+
     const newWindow: WindowState = {
       id,
       appId: appConfig.id,
@@ -87,10 +87,10 @@ export const useOSStore = create<OSState>((set, get) => ({
       props
     };
 
-    set({ 
-      windows: [...windows, newWindow], 
-      activeWindowId: id, 
-      maxZIndex: maxZIndex + 1 
+    set({
+      windows: [...windows, newWindow],
+      activeWindowId: id,
+      maxZIndex: maxZIndex + 1
     });
   },
 
@@ -123,21 +123,21 @@ export const useOSStore = create<OSState>((set, get) => ({
   minimizeWindow: (id) => {
     set((state) => ({
       windows: state.windows.map((w) => w.id === id ? { ...w, isMinimized: true } : w),
-      activeWindowId: null, 
+      activeWindowId: null,
     }));
   },
-  
+
   registerDockItem: (appId, rect) => {
       set((state) => ({
           dockItems: { ...state.dockItems, [appId]: rect }
       }));
   },
-  
+
   toggleWindow: (id) => {
      const state = get();
      const win = state.windows.find(w => w.id === id);
      if (!win) return;
-     
+
      if (win.isMinimized) {
          state.focusWindow(id);
          set(s => ({ windows: s.windows.map(w => w.id === id ? { ...w, isMinimized: false } : w) }));
@@ -154,10 +154,6 @@ export const useOSStore = create<OSState>((set, get) => ({
           const appWindows = state.windows.filter(w => w.appId === appId);
           if (appWindows.length === 0) return state;
 
-          // Sort windows by their current z-index to maintain relative order when bringing to front
-          // or just bring them all to front. 
-          // Simple approach: bring them all to front, maintaining internal order is harder but let's just increment zIndex for each.
-          
           let currentMaxZ = maxZ;
           const newWindows = state.windows.map(w => {
               if (w.appId === appId) {
@@ -166,10 +162,9 @@ export const useOSStore = create<OSState>((set, get) => ({
               }
               return w;
           });
-          
-          // Set the last one as active
+
           const lastAppWindow = appWindows[appWindows.length - 1];
-          
+
           return {
               windows: newWindows,
               maxZIndex: currentMaxZ,
@@ -189,9 +184,8 @@ export const useOSStore = create<OSState>((set, get) => ({
     set((state) => ({
       windows: state.windows.map((w) => {
         if (w.id !== id) return w;
-        
+
         if (w.isMaximized) {
-          // Restore
           return {
             ...w,
             isMaximized: false,
@@ -201,14 +195,13 @@ export const useOSStore = create<OSState>((set, get) => ({
             prevSize: undefined
           };
         } else {
-          // Maximize
           return {
             ...w,
             isMaximized: true,
             prevPosition: w.position,
             prevSize: w.size,
-            position: { x: 0, y: 32 }, // Account for Top Bar
-            size: { width: window.innerWidth, height: window.innerHeight - 32 - 96 }, // Minus dock height + margins
+            position: { x: 0, y: LAYOUT.TOP_BAR_HEIGHT },
+            size: { width: window.innerWidth, height: window.innerHeight - LAYOUT.TOP_BAR_HEIGHT - LAYOUT.DOCK_SPACE },
           };
         }
       }),
@@ -221,11 +214,10 @@ export const useOSStore = create<OSState>((set, get) => ({
       set((state) => ({
           windows: state.windows.map((w) => {
               if (w.id !== id) return w;
-              // Save state only if not already snapped/maximized
               const isAlreadySnapped = w.isMaximized || !!w.prevSize;
               return {
                   ...w,
-                  isMaximized: true, 
+                  isMaximized: true,
                   prevPosition: isAlreadySnapped ? w.prevPosition : w.position,
                   prevSize: isAlreadySnapped ? w.prevSize : w.size,
                   position: target.position,
@@ -282,6 +274,6 @@ export const useOSStore = create<OSState>((set, get) => ({
   setIsLauncherOpen: (isOpen) => set({ isLauncherOpen: isOpen }),
   toggleLauncher: () => set((state) => ({ isLauncherOpen: !state.isLauncherOpen })),
 
-  openContextMenu: (type, x, y, targetId, data) => set({ globalContextMenu: { type, x, y, targetId, data } }),
+  openContextMenu: (type, x, y, targetId) => set({ globalContextMenu: { type, x, y, targetId } }),
   closeContextMenu: () => set({ globalContextMenu: null })
 }));
