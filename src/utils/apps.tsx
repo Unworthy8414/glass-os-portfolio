@@ -24,8 +24,8 @@ export const apps: AppConfig[] = [
     defaultPosition: { x: 100, y: 100 }
   },
   {
-    id: 'process',
-    title: 'Process',
+    id: 'case-studies',
+    title: 'Case Studies',
     icon: PenTool,
     component: Process,
     defaultSize: { width: 950, height: 700 },
@@ -41,6 +41,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'browser',
+    dockHidden: true,
     title: 'Safari',
     icon: Globe,
     component: Browser,
@@ -49,6 +50,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'editor',
+    dockHidden: true,
     title: 'Code',
     icon: Code,
     component: Editor,
@@ -57,6 +59,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'terminal',
+    dockHidden: true,
     title: 'Terminal',
     icon: TerminalIcon,
     component: Terminal,
@@ -65,6 +68,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'games',
+    dockHidden: true,
     title: 'Arcade',
     icon: Gamepad,
     component: GameLauncher,
@@ -74,6 +78,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'pdf',
+    dockHidden: true,
     title: 'Preview',
     icon: FileText,
     component: PDFViewer,
@@ -82,6 +87,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'photos',
+    dockHidden: true,
     title: 'Photos',
     icon: ImageIcon,
     component: Photos,
@@ -90,6 +96,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'calculator',
+    dockHidden: true,
     title: 'Calculator',
     icon: CalcIcon,
     component: Calculator,
@@ -99,6 +106,7 @@ export const apps: AppConfig[] = [
   },
   {
     id: 'd20',
+    dockHidden: true,
     title: 'D20',
     icon: D20Icon,
     component: D20,

@@ -4,12 +4,12 @@ import { createPortal } from 'react-dom';
 import { apps } from '../utils/apps';
 import { useOSStore } from '../store/useOSStore';
 import LiquidGlass from 'liquid-glass-react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, LayoutGrid } from 'lucide-react';
 import { useFileSystem } from '../store/useFileSystem';
 
 export const Dock = () => {
   const [hoveredApp, setHoveredApp] = useState<{ id: string; title: string; rect: DOMRect } | null>(null);
-  const { launchApp, openContextMenu, closeContextMenu, globalContextMenu } = useOSStore();
+  const { launchApp, openContextMenu, closeContextMenu, globalContextMenu, toggleLauncher } = useOSStore();
   const { deleteItem } = useFileSystem();
 
   // Close context menu on click outside
@@ -37,7 +37,37 @@ export const Dock = () => {
                     <div className="absolute inset-0 bg-white/10 backdrop-saturate-150" />
                 </div>
 
-                {apps.filter(app => !app.dockHidden).map((app) => (
+                {/* Launcher */}
+                <div className="relative flex flex-col items-center justify-center h-full dock-item pointer-events-auto">
+                    <motion.button
+                        onClick={toggleLauncher}
+                        onMouseEnter={(e) => setHoveredApp({ id: 'launcher', title: 'Launchpad', rect: e.currentTarget.getBoundingClientRect() })}
+                        onMouseLeave={() => setHoveredApp(null)}
+                        className="w-12 h-12 rounded-[14px] flex items-center justify-center relative focus:outline-none cursor-pointer active:scale-95 active:brightness-90"
+                    >
+                        <div className="w-full h-full rounded-[14px] bg-white/5 border border-white/10 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] hover:bg-white/10 transition-colors pointer-events-none relative">
+                            <LayoutGrid className="w-3/5 h-3/5 text-white/90 drop-shadow-lg" strokeWidth={1.5} />
+                        </div>
+                    </motion.button>
+                </div>
+
+                {/* Finder */}
+                {apps.filter(a => a.id === 'finder').map(app => (
+                    <DockItem 
+                        key={app.id} 
+                        app={app} 
+                        onHover={(rect) => setHoveredApp({ id: app.id, title: app.title, rect })}
+                        onLeave={() => setHoveredApp(null)}
+                        onContextMenu={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openContextMenu('dock-item', e.clientX, e.clientY, app.id);
+                        }}
+                    />
+                ))}
+
+                {/* Other Apps */}
+                {apps.filter(app => !app.dockHidden && app.id !== 'finder').map((app) => (
                     <DockItem 
                         key={app.id} 
                         app={app} 

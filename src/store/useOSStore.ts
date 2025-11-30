@@ -10,6 +10,7 @@ interface OSState {
   dockItems: Record<string, DOMRect>;
   globalContextMenu: { type: 'desktop-bg' | 'desktop-item' | 'dock-item' | 'finder-item', targetId?: string, x: number, y: number, data?: any } | null;
   focusModeActive: boolean;
+  isLauncherOpen: boolean;
 
   launchApp: (appConfig: AppConfig, props?: any) => void;
   closeWindow: (id: string) => void;
@@ -28,6 +29,8 @@ interface OSState {
   registerDockItem: (appId: string, rect: DOMRect) => void;
   setWallpaper: (wallpaper: string) => void;
   setFocusModeActive: (active: boolean) => void;
+  setIsLauncherOpen: (isOpen: boolean) => void;
+  toggleLauncher: () => void;
   openContextMenu: (type: 'desktop-bg' | 'desktop-item' | 'dock-item' | 'finder-item', x: number, y: number, targetId?: string, data?: any) => void;
   closeContextMenu: () => void;
 }
@@ -40,6 +43,7 @@ export const useOSStore = create<OSState>((set, get) => ({
   dockItems: {},
   globalContextMenu: null,
   focusModeActive: false,
+  isLauncherOpen: false,
   launchApp: (appConfig, props) => {
     const { windows, maxZIndex, focusWindow } = get();
     
@@ -275,6 +279,8 @@ export const useOSStore = create<OSState>((set, get) => ({
 
   setWallpaper: (wallpaper) => set({ wallpaper }),
   setFocusModeActive: (active) => set({ focusModeActive: active }),
+  setIsLauncherOpen: (isOpen) => set({ isLauncherOpen: isOpen }),
+  toggleLauncher: () => set((state) => ({ isLauncherOpen: !state.isLauncherOpen })),
 
   openContextMenu: (type, x, y, targetId, data) => set({ globalContextMenu: { type, x, y, targetId, data } }),
   closeContextMenu: () => set({ globalContextMenu: null })

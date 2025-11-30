@@ -3,6 +3,7 @@ import { useOSStore } from './store/useOSStore';
 import { useFileSystem } from './store/useFileSystem';
 import { Window } from './components/Window';
 import { Dock } from './components/Dock';
+import { LauncherOverlay } from './components/LauncherOverlay';
 import { apps } from './utils/apps';
 import { Wifi, Battery, Command, Search, Globe, FileText, Folder, Image as ImageIcon, Trash2, RotateCcw, Check, Smartphone, RotateCw, X } from 'lucide-react';
 import { PythonIcon } from './components/icons/PythonIcon';
@@ -50,7 +51,7 @@ function App() {
       const availableH = screenH - TOP_BAR - BOTTOM_SPACE;
 
       // Launch Process App (Left Half)
-      const processApp = apps.find(a => a.id === 'process');
+      const processApp = apps.find(a => a.id === 'case-studies');
       if (processApp) {
           launchApp(processApp, { 
               forceNew: true,
@@ -354,6 +355,7 @@ function App() {
       </div>
 
       <Dock />
+      <LauncherOverlay />
       
       {/* Welcome Toast */}
       {showWelcomeToast && (
