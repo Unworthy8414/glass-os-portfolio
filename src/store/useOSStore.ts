@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { WindowState, Size, Position, AppConfig, ContextMenuType, ContextMenuState, WindowProps } from '../types';
+import type { WindowState, Size, Position, AppConfig, ContextMenuType, ContextMenuState, WindowProps, SnapPreview } from '../types';
 import { LAYOUT } from '../constants/layout';
 
 interface OSState {
@@ -12,6 +12,7 @@ interface OSState {
   globalContextMenu: ContextMenuState | null;
   focusModeActive: boolean;
   isLauncherOpen: boolean;
+  snapPreview: SnapPreview | null;
 
   launchApp: (appConfig: AppConfig, props?: WindowProps) => void;
   closeWindow: (id: string) => void;
@@ -34,6 +35,7 @@ interface OSState {
   toggleLauncher: () => void;
   openContextMenu: (type: ContextMenuType, x: number, y: number, targetId?: string) => void;
   closeContextMenu: () => void;
+  setSnapPreview: (preview: SnapPreview | null) => void;
 }
 
 export const useOSStore = create<OSState>((set, get) => ({
@@ -45,6 +47,7 @@ export const useOSStore = create<OSState>((set, get) => ({
   globalContextMenu: null,
   focusModeActive: false,
   isLauncherOpen: false,
+  snapPreview: null,
 
   launchApp: (appConfig, props) => {
     const { windows, maxZIndex, focusWindow } = get();
@@ -275,5 +278,6 @@ export const useOSStore = create<OSState>((set, get) => ({
   toggleLauncher: () => set((state) => ({ isLauncherOpen: !state.isLauncherOpen })),
 
   openContextMenu: (type, x, y, targetId) => set({ globalContextMenu: { type, x, y, targetId } }),
-  closeContextMenu: () => set({ globalContextMenu: null })
+  closeContextMenu: () => set({ globalContextMenu: null }),
+  setSnapPreview: (preview) => set({ snapPreview: preview })
 }));

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { motion, useDragControls, AnimatePresence, useMotionValue } from 'framer-motion';
+import { motion, useDragControls, useMotionValue } from 'framer-motion';
 import type { PanInfo } from 'framer-motion';
 import { X, Minus, Maximize2 } from 'lucide-react';
 import { useOSStore } from '../store/useOSStore';
-import type { WindowState, BaseAppProps, SnapPreview } from '../types';
+import type { WindowState, BaseAppProps } from '../types';
 import { ResizableBox, type ResizeCallbackData } from 'react-resizable';
 import { detectSnapZone, getSnapTarget, getSnapPreview } from '../utils/snapPositions';
 import 'react-resizable/css/styles.css';
@@ -15,10 +15,10 @@ interface WindowProps {
 }
 
 export const Window: React.FC<WindowProps> = ({ window: win, component: App }) => {
-  const { focusWindow, closeWindow, minimizeWindow, maximizeWindow, snapWindow, restoreWindow, updateWindowPosition, updateWindowSize, dockItems } = useOSStore();
+  const { focusWindow, closeWindow, minimizeWindow, maximizeWindow, snapWindow, restoreWindow, updateWindowPosition, updateWindowSize, dockItems, setSnapPreview } = useOSStore();
   const dragControls = useDragControls();
   const [isDragging, setIsDragging] = useState(false);
-  const [snapPreview, setSnapPreview] = useState<SnapPreview | null>(null);
+  const lastZoneRef = useRef<string | null>(null);
 
   const x = useMotionValue(win.position.x);
   const y = useMotionValue(win.position.y);
@@ -50,6 +50,7 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
       setIsDragging(false);
+      lastZoneRef.current = null;
       setSnapPreview(null);
 
       const screenW = window.innerWidth;
@@ -77,8 +78,12 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
       const { x: posX, y: posY } = info.point;
 
       const zone = detectSnapZone(posX, posY, screenW, screenH);
-      const preview = getSnapPreview(zone, screenW, screenH);
-      setSnapPreview(preview);
+
+      if (zone !== lastZoneRef.current) {
+          lastZoneRef.current = zone;
+          const preview = getSnapPreview(zone, screenW, screenH);
+          setSnapPreview(preview);
+      }
   };
 
   const handleResize = (_: React.SyntheticEvent, data: ResizeCallbackData) => {
@@ -86,24 +91,6 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
   };
 
   return (
-    <>
-        <AnimatePresence>
-            {isDragging && snapPreview && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="fixed z-40 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl pointer-events-none"
-                    style={{
-                        left: snapPreview.x,
-                        top: snapPreview.y,
-                        width: snapPreview.width,
-                        height: snapPreview.height
-                    }}
-                />
-            )}
-        </AnimatePresence>
-
         <motion.div
         drag={true}
         dragControls={dragControls}
@@ -133,7 +120,8 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
                 pointerEvents: 'auto'
             }
         }
-        transition={isDragging ? { duration: 0 } : { type: "spring", damping: 25, stiffness: 300 }}
+        transition={isDragging ? { duration: 0 } : { type: "spring", damping: 25, stiffness: 300, mass: 0.8 }}
+        layout={false}
         style={{
             zIndex: win.zIndex,
             position: 'absolute',
@@ -212,6 +200,5 @@ export const Window: React.FC<WindowProps> = ({ window: win, component: App }) =
             </div>
         </ResizableBox>
         </motion.div>
-    </>
   );
 };

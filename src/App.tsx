@@ -18,7 +18,7 @@ import { Menubar } from './components/Menubar';
 import './App.css';
 
 function App() {
-  const { windows, activeWindowId, launchApp, wallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusModeActive } = useOSStore();
+  const { windows, activeWindowId, launchApp, wallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusModeActive, snapPreview } = useOSStore();
   const { getItemsInFolder, deleteItem, moveItem, resetFileSystem } = useFileSystem();
   const { launchFile } = useAppLauncher();
   const [time, setTime] = useState(new Date());
@@ -250,6 +250,19 @@ function App() {
           );
         })}
       </div>
+
+      {/* Global Snap Preview */}
+      {snapPreview && (
+        <div
+          className="fixed z-40 bg-white/10 border border-white/20 rounded-xl pointer-events-none"
+          style={{
+            left: snapPreview.x,
+            top: snapPreview.y,
+            width: snapPreview.width,
+            height: snapPreview.height
+          }}
+        />
+      )}
 
       <Dock />
       <LauncherOverlay />
