@@ -3,7 +3,7 @@ import { Grid, Clock3, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CaseStudyConfig } from './case-studies/types';
 import { TimeManagementStudy } from './case-studies/TimeManagementStudy';
-import { DemoPlaceholderStudy } from './case-studies/DemoPlaceholderStudy';
+import { AGODigitalStudy } from './case-studies/AGODigitalStudy';
 import { CASE_STUDY_BREAKPOINT } from './case-studies/types';
 
 const caseStudies: CaseStudyConfig[] = [
@@ -18,14 +18,14 @@ const caseStudies: CaseStudyConfig[] = [
         component: TimeManagementStudy
     },
     {
-        id: 'demo-project',
-        title: 'Design System 2.0',
-        subtitle: 'UI Architecture',
-        thumbnailGradient: 'from-emerald-500/80 to-teal-600/80',
+        id: 'ago-digital',
+        title: 'AGO Digital Experience',
+        subtitle: 'Purchase Journey Optimization',
+        thumbnailGradient: 'from-pink-500/80 to-rose-600/80',
         icon: Grid,
-        date: 'In Progress',
-        role: 'Lead Designer',
-        component: DemoPlaceholderStudy
+        date: 'Q4 2024',
+        role: 'Lead UX Researcher',
+        component: AGODigitalStudy
     }
 ];
 

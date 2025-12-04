@@ -152,7 +152,7 @@ export const TimeManagementStudy: React.FC<CaseStudyProps> = ({ onBack, isCompac
                         </button>
                         <button onClick={() => setShowPersona(!showPersona)} className="w-full py-1.5 px-2 rounded-md text-[10px] flex items-center justify-center gap-1.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white/60 transition-colors">
                             <User size={10} />
-                            {showPersona ? 'Hide Persona' : 'View Persona: Alex'}
+                            {showPersona ? 'Hide Persona' : 'View Persona: Alex Lee'}
                         </button>
                     </div>
                 )}
@@ -167,8 +167,8 @@ export const TimeManagementStudy: React.FC<CaseStudyProps> = ({ onBack, isCompac
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="sticky top-0 z-40 mb-6 backdrop-blur-xl rounded-xl p-5 border border-white/10 shadow-2xl"
-                            style={{ background: `linear-gradient(135deg, ${glassos.indigo}40, ${glassos.purple}30)` }}
+                            className="sticky top-0 z-40 mb-6 rounded-xl p-5 border border-white/20 shadow-2xl"
+                            style={{ background: `linear-gradient(135deg, #2d2d4a, #1e1e2e)` }}
                         >
                             <div className="flex items-start gap-4">
                                 <div className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold border-2 border-white/20 shrink-0" style={{ backgroundColor: glassos.blue }}>AL</div>
@@ -176,7 +176,7 @@ export const TimeManagementStudy: React.FC<CaseStudyProps> = ({ onBack, isCompac
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h3 className="text-lg font-semibold text-white">Alex Lee</h3>
-                                            <p className="text-xs" style={{ color: `${glassos.teal}B3` }}>32 | Office Worker | Hybrid Work</p>
+                                            <p className="text-xs" style={{ color: `${glassos.teal}B3` }}>32 M | Office Worker | Hybrid Work</p>
                                         </div>
                                         <button onClick={() => setShowPersona(false)} className="text-white/40 hover:text-white/70 text-xs">Close</button>
                                     </div>
@@ -185,17 +185,36 @@ export const TimeManagementStudy: React.FC<CaseStudyProps> = ({ onBack, isCompac
                                         <div>
                                             <h4 className="font-semibold text-[10px] uppercase mb-1" style={{ color: glassos.blue }}>Goals</h4>
                                             <ul className="space-y-0.5 text-white/60 list-disc list-inside">
-                                                <li>Reduce distractions</li>
-                                                <li>Avoid procrastinating</li>
-                                                <li>Complete weekly tasks</li>
+                                                <li>Reduce time wasted on distractions</li>
+                                                <li>Avoid procrastinating on non-urgent tasks</li>
+                                                <li>Complete all tasks set for the week</li>
                                             </ul>
                                         </div>
                                         <div>
                                             <h4 className="font-semibold text-[10px] uppercase mb-1" style={{ color: glassos.red }}>Pain Points</h4>
                                             <ul className="space-y-0.5 text-white/60 list-disc list-inside">
-                                                <li>Frequent interruptions</li>
-                                                <li>Low motivation</li>
-                                                <li>Tool overload</li>
+                                                <li>Task switching from coworker interruptions</li>
+                                                <li>Low motivation on non-urgent tasks</li>
+                                                <li>Using multiple time management tools</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div className={`grid gap-4 text-xs mt-3 ${isCompact ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                                        <div>
+                                            <h4 className="font-semibold text-[10px] uppercase mb-1" style={{ color: glassos.green }}>Tools & Strategies</h4>
+                                            <ul className="space-y-0.5 text-white/60 list-disc list-inside">
+                                                <li>Calendar blocking</li>
+                                                <li>Whiteboard for reminders</li>
+                                                <li>Prioritizing tasks by urgency</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-[10px] uppercase mb-1" style={{ color: glassos.orange }}>Distractions</h4>
+                                            <ul className="space-y-0.5 text-white/60 list-disc list-inside">
+                                                <li>Texts, emails & social media</li>
+                                                <li>Socializing with colleagues</li>
+                                                <li>Mobile games</li>
                                             </ul>
                                         </div>
                                     </div>
