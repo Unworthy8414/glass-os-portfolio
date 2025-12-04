@@ -102,7 +102,7 @@ export const TimeManagementStudy: React.FC<CaseStudyProps> = ({ onBack, isCompac
     const launchFullReport = () => {
         const pdfApp = apps.find(a => a.id === 'pdf');
         if (pdfApp) {
-            launchApp(pdfApp, { fileId: 'project-alpha', title: 'UX Research Case Study.pdf', forceNew: true });
+            launchApp(pdfApp, { fileId: 'project-alpha', title: 'Time Management App - UX Research Case Study.pdf', forceNew: true });
         }
     };
 
