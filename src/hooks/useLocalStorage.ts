@@ -31,3 +31,13 @@ export function useHasVisited(): [boolean, () => void] {
 
   return [hasVisited, markAsVisited];
 }
+
+export function useCaseStudiesOpened(): [boolean, () => void] {
+  const [hasOpened, setHasOpened] = useLocalStorage('caseStudiesOpened', false);
+
+  const markAsOpened = useCallback(() => {
+    setHasOpened(true);
+  }, [setHasOpened]);
+
+  return [hasOpened, markAsOpened];
+}

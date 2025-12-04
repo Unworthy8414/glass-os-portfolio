@@ -1,4 +1,4 @@
-import { Folder, Globe, Calculator as CalcIcon, FileText, Code, Image as ImageIcon, Terminal as TerminalIcon, Gamepad, Search, PenTool, Calendar as CalendarIcon } from 'lucide-react';
+import { Folder, Globe, Calculator as CalcIcon, FileText, Code, Image as ImageIcon, Terminal as TerminalIcon, Gamepad, Search, BookOpenText, Calendar as CalendarIcon } from 'lucide-react';
 import type { AppConfig } from '../types';
 import { Finder } from '../apps/Finder';
 import { Calculator } from '../apps/Calculator';
@@ -21,12 +21,13 @@ export const apps: AppConfig[] = [
     icon: Folder,
     component: Finder,
     defaultSize: { width: 800, height: 500 },
-    defaultPosition: { x: 100, y: 100 }
+    defaultPosition: { x: 100, y: 100 },
+    dockHidden: true
   },
   {
     id: 'case-studies',
     title: 'Case Studies',
-    icon: PenTool,
+    icon: BookOpenText,
     component: Process,
     defaultSize: { width: 950, height: 700 },
     defaultPosition: { x: 180, y: 80 }
@@ -37,7 +38,8 @@ export const apps: AppConfig[] = [
     icon: CalendarIcon,
     component: Calendar,
     defaultSize: { width: 1000, height: 700 },
-    defaultPosition: { x: 220, y: 120 }
+    defaultPosition: { x: 220, y: 120 },
+    dockHidden: true
   },
   {
     id: 'browser',

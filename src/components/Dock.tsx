@@ -4,14 +4,26 @@ import { createPortal } from 'react-dom';
 import { apps } from '../utils/apps';
 import { useOSStore } from '../store/useOSStore';
 import LiquidGlass from 'liquid-glass-react';
-import { Trash2, LayoutGrid } from 'lucide-react';
+import { Trash2, LayoutGrid, FileText, ScrollText, FolderOpen } from 'lucide-react';
 import { useFileSystem } from '../store/useFileSystem';
+import { useCaseStudiesOpened } from '../hooks/useLocalStorage';
 import type { AppConfig } from '../types';
+
+// Quicklaunch files configuration
+const quickLaunchFiles = [
+  { id: 'resume', fileId: 'resume', title: 'Resume', icon: ScrollText, color: '#30D158' },
+  { id: 'time-mgmt-pdf', fileId: 'project-alpha', title: 'Time Management Case Study', icon: FileText, color: '#0A84FF' },
+  { id: 'ago-pdf', fileId: 'ago-study', title: 'AGO Case Study', icon: FileText, color: '#FF375F' },
+];
+
+export { quickLaunchFiles };
 
 export const Dock = () => {
   const [hoveredApp, setHoveredApp] = useState<{ id: string; title: string; rect: DOMRect } | null>(null);
+  const [quickLaunchOpen, setQuickLaunchOpen] = useState(false);
   const { launchApp, openContextMenu, closeContextMenu, globalContextMenu, toggleLauncher, windows } = useOSStore();
   const { deleteItem } = useFileSystem();
+  const [caseStudiesOpened, markCaseStudiesOpened] = useCaseStudiesOpened();
 
   useEffect(() => {
     const handleClick = () => closeContextMenu();
@@ -62,8 +74,8 @@ export const Dock = () => {
                     </motion.button>
                 </div>
 
-                {/* Finder (always first) */}
-                {apps.filter(a => a.id === 'finder').map(app => (
+                {/* Permanent Apps */}
+                {permanentApps.map((app) => (
                     <DockItem
                         key={app.id}
                         app={app}
@@ -74,21 +86,8 @@ export const Dock = () => {
                             e.stopPropagation();
                             openContextMenu('dock-item', e.clientX, e.clientY, app.id);
                         }}
-                    />
-                ))}
-
-                {/* Other Permanent Apps */}
-                {permanentApps.filter(app => app.id !== 'finder').map((app) => (
-                    <DockItem
-                        key={app.id}
-                        app={app}
-                        onHover={(rect) => setHoveredApp({ id: app.id, title: app.title, rect })}
-                        onLeave={() => setHoveredApp(null)}
-                        onContextMenu={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            openContextMenu('dock-item', e.clientX, e.clientY, app.id);
-                        }}
+                        shouldPulse={app.id === 'case-studies' && !caseStudiesOpened}
+                        onPulseStop={app.id === 'case-studies' ? markCaseStudiesOpened : undefined}
                     />
                 ))}
 
@@ -106,6 +105,15 @@ export const Dock = () => {
                         }}
                     />
                 ))}
+
+                {/* Quicklaunch Button */}
+                <QuickLaunchButton
+                    isOpen={quickLaunchOpen}
+                    onToggle={() => setQuickLaunchOpen(!quickLaunchOpen)}
+                    onClose={() => setQuickLaunchOpen(false)}
+                    onHover={(rect) => setHoveredApp({ id: 'quicklaunch', title: 'Quick Access', rect })}
+                    onLeave={() => setHoveredApp(null)}
+                />
 
                 {/* Separator */}
                 <div className="w-px h-10 bg-white/20 mx-1" />
@@ -169,11 +177,13 @@ export const Dock = () => {
   );
 };
 
-function DockItem({ app, onHover, onLeave, onContextMenu }: {
+function DockItem({ app, onHover, onLeave, onContextMenu, shouldPulse, onPulseStop }: {
     app: AppConfig,
     onHover: (rect: DOMRect) => void,
     onLeave: () => void,
-    onContextMenu: (e: React.MouseEvent, rect: DOMRect) => void
+    onContextMenu: (e: React.MouseEvent, rect: DOMRect) => void,
+    shouldPulse?: boolean,
+    onPulseStop?: () => void
 }) {
   const { launchApp, windows, showAppWindows, registerDockItem } = useOSStore();
   const ref = useRef<HTMLButtonElement>(null);
@@ -193,6 +203,11 @@ function DockItem({ app, onHover, onLeave, onContextMenu }: {
   };
 
   const handleClick = () => {
+      // Stop pulsing when clicked
+      if (shouldPulse && onPulseStop) {
+          onPulseStop();
+      }
+
       if (isOpen) {
           showAppWindows(app.id);
       } else {
@@ -219,9 +234,20 @@ function DockItem({ app, onHover, onLeave, onContextMenu }: {
             onMouseLeave={onLeave}
             className="w-12 h-12 rounded-[14px] flex items-center justify-center relative focus:outline-none cursor-pointer active:scale-95 active:brightness-90"
         >
-             <div className="w-full h-full rounded-[14px] bg-white/5 border border-white/10 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] group-hover:bg-white/10 transition-colors pointer-events-none relative">
-                <app.icon className="w-3/5 h-3/5 text-white drop-shadow-lg" strokeWidth={1.5} />
-             </div>
+             {app.id === 'case-studies' ? (
+                <div className={`w-full h-full rounded-[14px] bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/40 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] hover:brightness-110 transition-all pointer-events-none relative ${shouldPulse ? 'animate-pulse-glow' : ''}`}>
+                    <app.icon className="w-3/5 h-3/5 text-blue-400 drop-shadow-lg" strokeWidth={1.5} />
+                </div>
+             ) : (
+                <div className={`w-full h-full rounded-[14px] bg-white/5 border border-white/10 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] group-hover:bg-white/10 transition-colors pointer-events-none relative ${shouldPulse ? 'animate-pulse-glow' : ''}`}>
+                    <app.icon className="w-3/5 h-3/5 text-white drop-shadow-lg" strokeWidth={1.5} />
+                </div>
+             )}
+
+             {/* Pulse ring effect */}
+             {shouldPulse && (
+                <div className="absolute inset-0 rounded-[14px] animate-ping-slow bg-blue-400/30 pointer-events-none" />
+             )}
         </motion.button>
 
         {isOpen && (
@@ -229,4 +255,132 @@ function DockItem({ app, onHover, onLeave, onContextMenu }: {
         )}
     </div>
   );
+}
+
+function QuickLaunchButton({ isOpen, onToggle, onClose, onHover, onLeave }: {
+    isOpen: boolean,
+    onToggle: () => void,
+    onClose: () => void,
+    onHover: (rect: DOMRect) => void,
+    onLeave: () => void
+}) {
+    const { launchApp } = useOSStore();
+    const { getItem } = useFileSystem();
+    const ref = useRef<HTMLButtonElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (isOpen && menuRef.current && !menuRef.current.contains(e.target as Node) &&
+                ref.current && !ref.current.contains(e.target as Node)) {
+                onClose();
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isOpen, onClose]);
+
+    const handleFileClick = (fileId: string) => {
+        const fileItem = getItem(fileId);
+        if (fileItem) {
+            const pdfApp = apps.find(a => a.id === 'pdf');
+            if (pdfApp) {
+                launchApp(pdfApp, {
+                    fileId: fileId,
+                    title: fileItem.name,
+                    forceNew: true
+                });
+            }
+        }
+        onClose();
+    };
+
+    const handleMouseEnter = () => {
+        if (ref.current) {
+            onHover(ref.current.getBoundingClientRect());
+        }
+    };
+
+    const handleClick = () => {
+        if (ref.current) {
+            setButtonRect(ref.current.getBoundingClientRect());
+        }
+        onToggle();
+    };
+
+    return (
+        <div className="relative flex flex-col items-center justify-center h-full dock-item pointer-events-auto">
+            <motion.button
+                ref={ref}
+                onClick={handleClick}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={onLeave}
+                className="w-12 h-12 rounded-[14px] flex items-center justify-center relative focus:outline-none cursor-pointer active:scale-95 active:brightness-90"
+            >
+                <div className={`w-full h-full rounded-[14px] bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/40 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] hover:brightness-110 transition-all pointer-events-none relative ${isOpen ? 'ring-2 ring-amber-400/50' : ''}`}>
+                    <FolderOpen
+                        className="w-3/5 h-3/5 drop-shadow-lg text-amber-400"
+                        strokeWidth={1.5}
+                    />
+                </div>
+            </motion.button>
+
+            {/* Popover Menu - rendered via portal */}
+            {createPortal(
+                <AnimatePresence>
+                    {isOpen && buttonRect && (
+                        <motion.div
+                            ref={menuRef}
+                            initial={{ opacity: 0, y: 5, scale: 0.9 }}
+                            animate={{ opacity: 1, y: -10, scale: 1 }}
+                            exit={{ opacity: 0, y: 5, scale: 0.9 }}
+                            transition={{ duration: 0.15 }}
+                            style={{
+                                position: 'fixed',
+                                left: buttonRect.left + buttonRect.width / 2,
+                                top: buttonRect.top - 10,
+                                transform: 'translateX(-50%) translateY(-100%)',
+                                zIndex: 9998,
+                            }}
+                        >
+                            <div className="relative flex flex-col items-center -translate-x-1/2 -translate-y-full">
+                            <div className="bg-[#1e1e1e]/95 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl overflow-hidden min-w-[240px]">
+                                <div className="px-3 py-2 border-b border-white/10">
+                                    <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">Quick Access</span>
+                                </div>
+                                <div className="py-1">
+                                    {quickLaunchFiles.map((file, index) => (
+                                        <motion.button
+                                            key={file.id}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: index * 0.05 }}
+                                            onClick={() => handleFileClick(file.fileId)}
+                                            className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-white/10 transition-colors text-left group"
+                                        >
+                                            <div
+                                                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                                                style={{ backgroundColor: `${file.color}20` }}
+                                            >
+                                                <file.icon size={16} style={{ color: file.color }} strokeWidth={1.5} />
+                                            </div>
+                                            <span className="text-sm text-white/80 group-hover:text-white transition-colors truncate">
+                                                {file.title}
+                                            </span>
+                                        </motion.button>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Arrow */}
+                            <div className="w-3 h-3 bg-[#1e1e1e]/95 rotate-45 border-r border-b border-white/20 -mt-1.5" />
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
+        </div>
+    );
 }

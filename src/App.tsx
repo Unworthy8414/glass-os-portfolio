@@ -4,27 +4,27 @@ import { useFileSystem } from './store/useFileSystem';
 import { Window } from './components/Window';
 import { Dock } from './components/Dock';
 import { LauncherOverlay } from './components/LauncherOverlay';
-import { WelcomeToast } from './components/WelcomeToast';
+import { WelcomeModal } from './components/WelcomeModal';
 import { GlobalContextMenu } from './components/GlobalContextMenu';
 import { DesktopIcons } from './components/DesktopIcons';
 import { useDesktopSelection } from './hooks/useDesktopSelection';
 import { useAppLauncher } from './hooks/useAppLauncher';
-import { useHasVisited } from './hooks/useLocalStorage';
+import { useCaseStudiesOpened } from './hooks/useLocalStorage';
 import { apps } from './utils/apps';
-import { LAYOUT, SYSTEM_FOLDERS, getWallpaperClass, getAvailableHeight, getHalfWidth, getHalfHeight, getFullHeight } from './constants/layout';
+import { SYSTEM_FOLDERS, getWallpaperClass } from './constants/layout';
 import { Wifi, Battery, Command, Search, Globe, RotateCcw, Smartphone, RotateCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Menubar } from './components/Menubar';
 import './App.css';
 
 function App() {
-  const { windows, activeWindowId, launchApp, wallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusModeActive, snapPreview } = useOSStore();
+  const { windows, activeWindowId, wallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusModeActive, snapPreview } = useOSStore();
   const { getItemsInFolder, deleteItem, moveItem, resetFileSystem } = useFileSystem();
   const { launchFile } = useAppLauncher();
   const [time, setTime] = useState(new Date());
   const [showHellscape, setShowHellscape] = useState(false);
-  const [hasVisited, markAsVisited] = useHasVisited();
-  const [showWelcomeToast, setShowWelcomeToast] = useState(false);
+  const [caseStudiesOpened, markCaseStudiesOpened] = useCaseStudiesOpened();
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   const {
     selectionBox,
@@ -48,54 +48,15 @@ function App() {
   }))).current;
 
   useEffect(() => {
-    if (!hasVisited) {
-      setShowWelcomeToast(true);
+    // Show modal for first-time visitors who haven't seen case studies
+    if (!caseStudiesOpened) {
+      setShowWelcomeModal(true);
     }
-  }, [hasVisited]);
+  }, [caseStudiesOpened]);
 
-  const handleWelcomeClick = () => {
-    const screenW = window.innerWidth;
-    const screenH = window.innerHeight;
-    const { GAP, TOP_BAR_HEIGHT } = LAYOUT;
-    const availableH = getAvailableHeight(screenH);
-    const halfW = getHalfWidth(screenW);
-    const halfH = getHalfHeight(availableH);
-    const fullH = getFullHeight(availableH);
-
-    const processApp = apps.find(a => a.id === 'case-studies');
-    if (processApp) {
-      launchApp(processApp, {
-        forceNew: true,
-        initialSize: { width: halfW, height: fullH },
-        initialPosition: { x: GAP, y: TOP_BAR_HEIGHT + GAP }
-      });
-    }
-
-    const calendarApp = apps.find(a => a.id === 'calendar');
-    if (calendarApp) {
-      launchApp(calendarApp, {
-        forceNew: true,
-        initialSize: { width: halfW, height: halfH },
-        initialPosition: { x: (screenW / 2) + (0.5 * GAP), y: TOP_BAR_HEIGHT + GAP }
-      });
-    }
-
-    const pdfApp = apps.find(a => a.id === 'pdf');
-    if (pdfApp) {
-      launchApp(pdfApp, {
-        fileId: 'resume',
-        title: 'Resume 2025.pdf',
-        forceNew: true,
-        initialSize: { width: halfW, height: halfH },
-        initialPosition: {
-          x: (screenW / 2) + (0.5 * GAP),
-          y: TOP_BAR_HEIGHT + GAP + halfH + GAP
-        }
-      });
-    }
-
-    markAsVisited();
-    setShowWelcomeToast(false);
+  const handleWelcomeModalClose = () => {
+    setShowWelcomeModal(false);
+    markCaseStudiesOpened();
   };
 
   useEffect(() => {
@@ -267,15 +228,10 @@ function App() {
       <Dock />
       <LauncherOverlay />
 
-      {showWelcomeToast && (
-        <WelcomeToast
-          onExplore={handleWelcomeClick}
-          onDismiss={() => {
-            setShowWelcomeToast(false);
-            markAsVisited();
-          }}
-        />
-      )}
+      <WelcomeModal
+        isOpen={showWelcomeModal}
+        onClose={handleWelcomeModalClose}
+      />
 
       {globalContextMenu && (
         <GlobalContextMenu
