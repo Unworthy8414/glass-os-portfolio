@@ -1,10 +1,15 @@
-import { ChevronLeft, Monitor, FileText, ExternalLink, Clock3, Users, Target, Lightbulb, TrendingUp, CheckCircle2, Grid, Search, PenTool, LayoutDashboard, User, Calendar, ShoppingCart, MapPin, AlertTriangle, Bell, List, Clock, RefreshCw, StickyNote } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { ChevronLeft, Monitor, FileText, ExternalLink, Clock3, Users, Target, Lightbulb, TrendingUp, CheckCircle2, Grid, Search, PenTool, LayoutDashboard, User, Calendar, ShoppingCart, MapPin, AlertTriangle, Bell, List, Clock, RefreshCw, StickyNote, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+type SectionId = 'about' | 'work' | 'contact' | null;
 
 interface StandardCaseStudyProps {
   studyId: string;
   onBack: () => void;
+  onNavigate: (section?: SectionId) => void;
   onSwitchToOS: () => void;
+  onOpenResume: () => void;
 }
 
 // Color palette
@@ -356,7 +361,8 @@ const agoDigitalData = {
   }
 };
 
-export const StandardCaseStudy = ({ studyId, onBack, onSwitchToOS }: StandardCaseStudyProps) => {
+export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, onOpenResume }: StandardCaseStudyProps) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isTimeMgmt = studyId === 'time-mgmt';
   const data = isTimeMgmt ? timeManagementData : agoDigitalData;
 
@@ -379,11 +385,13 @@ export const StandardCaseStudy = ({ studyId, onBack, onSwitchToOS }: StandardCas
           >
             Caylin Yeung
           </button>
-          <div className="flex items-center gap-6">
-            <button onClick={onBack} className="text-sm text-white/70 hover:text-white transition-colors">About</button>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-6">
+            <button onClick={() => onNavigate('about')} className="text-sm text-white/70 hover:text-white transition-colors">About</button>
             <span className="text-sm text-white font-medium">Work</span>
-            <button onClick={onBack} className="text-sm text-white/70 hover:text-white transition-colors">Resume</button>
-            <button onClick={onBack} className="text-sm text-white/70 hover:text-white transition-colors">Contact</button>
+            <button onClick={onOpenResume} className="text-sm text-white/70 hover:text-white transition-colors">Resume</button>
+            <button onClick={() => onNavigate('contact')} className="text-sm text-white/70 hover:text-white transition-colors">Contact</button>
             <a
               href={data.pdfPath}
               target="_blank"
@@ -400,7 +408,49 @@ export const StandardCaseStudy = ({ studyId, onBack, onSwitchToOS }: StandardCas
               <span>Interactive OS</span>
             </button>
           </div>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
+            >
+              <div className="px-6 py-4 space-y-3">
+                <button onClick={() => { setMobileMenuOpen(false); onNavigate('about'); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">About</button>
+                <span className="block w-full text-left text-white font-medium py-2">Work</span>
+                <button onClick={() => { setMobileMenuOpen(false); onOpenResume(); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Resume</button>
+                <button onClick={() => { setMobileMenuOpen(false); onNavigate('contact'); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Contact</button>
+                <a
+                  href={data.pdfPath}
+                  target="_blank"
+                  className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors py-2"
+                >
+                  <FileText size={16} />
+                  <span>Full Report</span>
+                </a>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); onSwitchToOS(); }}
+                  className="flex items-center gap-2 w-full text-left text-white/70 hover:text-white transition-colors py-2"
+                >
+                  <Monitor size={16} />
+                  <span>Interactive OS</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Content */}

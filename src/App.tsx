@@ -29,6 +29,8 @@ function App() {
   const [showHellscape, setShowHellscape] = useState(false);
   const [caseStudiesOpened, markCaseStudiesOpened] = useCaseStudiesOpened();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [dismissedOrientationWarning, setDismissedOrientationWarning] = useState(false);
+  const { switchToStandard } = useViewMode();
 
   // Handle body overflow based on view mode
   useEffect(() => {
@@ -288,16 +290,32 @@ function App() {
         </div>
       )}
 
-      <div className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center md:hidden portrait:flex hidden">
-        <div className="relative mb-6">
-          <Smartphone size={64} className="text-gray-400" />
-          <RotateCw size={32} className="absolute -right-2 -bottom-2 text-blue-500 animate-spin-slow" />
+      {!dismissedOrientationWarning && (
+        <div className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center md:hidden portrait:flex hidden">
+          <div className="relative mb-6">
+            <Smartphone size={64} className="text-gray-400" />
+            <RotateCw size={32} className="absolute -right-2 -bottom-2 text-blue-500 animate-spin-slow" />
+          </div>
+          <h2 className="text-2xl font-bold mb-3 text-white">Please Rotate Device</h2>
+          <p className="text-gray-400 text-sm max-w-xs leading-relaxed mb-6">
+            Glass OS is designed for desktop or landscape viewing. For the best experience, please rotate your phone or switch to a larger screen.
+          </p>
+          <div className="flex flex-col gap-3 w-full max-w-xs">
+            <button
+              onClick={() => setDismissedOrientationWarning(true)}
+              className="w-full py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors"
+            >
+              I don't care, let me in
+            </button>
+            <button
+              onClick={switchToStandard}
+              className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
+            >
+              Take me to the static site
+            </button>
+          </div>
         </div>
-        <h2 className="text-2xl font-bold mb-3 text-white">Please Rotate Device</h2>
-        <p className="text-gray-400 text-sm max-w-xs leading-relaxed">
-          Glass OS is designed for desktop or landscape viewing. For the best experience, please rotate your phone or switch to a larger screen.
-        </p>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Monitor,
   Mail,
@@ -8,11 +9,16 @@ import {
   GraduationCap,
   Award,
   ExternalLink,
-  Download
+  Download,
+  Menu,
+  X
 } from 'lucide-react';
+
+type SectionId = 'about' | 'work' | 'contact' | null;
 
 interface ResumePageProps {
   onBack: () => void;
+  onNavigate: (section?: SectionId) => void;
   onSwitchToOS: () => void;
 }
 
@@ -66,7 +72,9 @@ const skills = {
   soft: ['Stakeholder Collaboration', 'Cross-functional Coordination', 'Design Systems', 'Visual Communication', 'Documentation']
 };
 
-export const ResumePage = ({ onBack, onSwitchToOS }: ResumePageProps) => {
+export const ResumePage = ({ onBack, onNavigate, onSwitchToOS }: ResumePageProps) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Navigation */}
@@ -78,11 +86,13 @@ export const ResumePage = ({ onBack, onSwitchToOS }: ResumePageProps) => {
           >
             Caylin Yeung
           </button>
-          <div className="flex items-center gap-6">
-            <button onClick={onBack} className="text-sm text-white/70 hover:text-white transition-colors">About</button>
-            <button onClick={onBack} className="text-sm text-white/70 hover:text-white transition-colors">Work</button>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-6">
+            <button onClick={() => onNavigate('about')} className="text-sm text-white/70 hover:text-white transition-colors">About</button>
+            <button onClick={() => onNavigate('work')} className="text-sm text-white/70 hover:text-white transition-colors">Work</button>
             <span className="text-sm text-white font-medium">Resume</span>
-            <button onClick={onBack} className="text-sm text-white/70 hover:text-white transition-colors">Contact</button>
+            <button onClick={() => onNavigate('contact')} className="text-sm text-white/70 hover:text-white transition-colors">Contact</button>
             <a
               href="/Resume (2025).pdf"
               target="_blank"
@@ -99,7 +109,49 @@ export const ResumePage = ({ onBack, onSwitchToOS }: ResumePageProps) => {
               <span>Interactive OS</span>
             </button>
           </div>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
+            >
+              <div className="px-6 py-4 space-y-3">
+                <button onClick={() => { setMobileMenuOpen(false); onNavigate('about'); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">About</button>
+                <button onClick={() => { setMobileMenuOpen(false); onNavigate('work'); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Work</button>
+                <span className="block w-full text-left text-white font-medium py-2">Resume</span>
+                <button onClick={() => { setMobileMenuOpen(false); onNavigate('contact'); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Contact</button>
+                <a
+                  href="/Resume (2025).pdf"
+                  target="_blank"
+                  className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors py-2"
+                >
+                  <Download size={16} />
+                  <span>Download PDF</span>
+                </a>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); onSwitchToOS(); }}
+                  className="flex items-center gap-2 w-full text-left text-white/70 hover:text-white transition-colors py-2"
+                >
+                  <Monitor size={16} />
+                  <span>Interactive OS</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Content */}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail,
   Linkedin,
@@ -8,7 +8,9 @@ import {
   Grid,
   ArrowRight,
   ExternalLink,
-  Monitor
+  Monitor,
+  Menu,
+  X
 } from 'lucide-react';
 import { useViewMode } from '../store/useViewMode';
 import { StandardCaseStudy } from './StandardCaseStudy';
@@ -52,11 +54,25 @@ const caseStudies: CaseStudy[] = [
 ];
 
 type PageView = 'home' | 'case-study' | 'resume';
+type SectionId = 'about' | 'work' | 'contact' | null;
 
 export const StandardPortfolio = () => {
   const { switchToOS } = useViewMode();
   const [currentView, setCurrentView] = useState<PageView>('home');
   const [activeStudyId, setActiveStudyId] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pendingScrollSection, setPendingScrollSection] = useState<SectionId>(null);
+
+  const scrollToSection = (sectionId: SectionId) => {
+    if (sectionId) {
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  };
 
   const handleOpenCaseStudy = (studyId: string) => {
     setActiveStudyId(studyId);
@@ -64,9 +80,12 @@ export const StandardPortfolio = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleBackToHome = () => {
+  const handleBackToHome = (scrollTo?: SectionId) => {
     setCurrentView('home');
     setActiveStudyId(null);
+    if (scrollTo) {
+      setPendingScrollSection(scrollTo);
+    }
   };
 
   const handleOpenResume = () => {
@@ -74,13 +93,30 @@ export const StandardPortfolio = () => {
     window.scrollTo(0, 0);
   };
 
+  const handleNavClick = (sectionId: SectionId) => {
+    setMobileMenuOpen(false);
+    if (currentView === 'home') {
+      scrollToSection(sectionId);
+    } else {
+      handleBackToHome(sectionId);
+    }
+  };
+
+  // Handle pending scroll after view change
+  if (currentView === 'home' && pendingScrollSection) {
+    scrollToSection(pendingScrollSection);
+    setPendingScrollSection(null);
+  }
+
   // Case Study View
   if (currentView === 'case-study' && activeStudyId) {
     return (
       <StandardCaseStudy
         studyId={activeStudyId}
-        onBack={handleBackToHome}
+        onBack={() => handleBackToHome()}
+        onNavigate={handleBackToHome}
         onSwitchToOS={switchToOS}
+        onOpenResume={handleOpenResume}
       />
     );
   }
@@ -89,7 +125,8 @@ export const StandardPortfolio = () => {
   if (currentView === 'resume') {
     return (
       <ResumePage
-        onBack={handleBackToHome}
+        onBack={() => handleBackToHome()}
+        onNavigate={handleBackToHome}
         onSwitchToOS={switchToOS}
       />
     );
@@ -103,16 +140,18 @@ export const StandardPortfolio = () => {
             <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
               <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 <span className="font-semibold text-lg">Caylin Yeung</span>
-                <div className="flex items-center gap-6">
-                  <a href="#about" className="text-sm text-white/70 hover:text-white transition-colors">About</a>
-                  <a href="#work" className="text-sm text-white/70 hover:text-white transition-colors">Work</a>
+
+                {/* Desktop Navigation */}
+                <div className="hidden md:flex items-center gap-6">
+                  <button onClick={() => handleNavClick('about')} className="text-sm text-white/70 hover:text-white transition-colors">About</button>
+                  <button onClick={() => handleNavClick('work')} className="text-sm text-white/70 hover:text-white transition-colors">Work</button>
                   <button
-                    onClick={handleOpenResume}
+                    onClick={() => { setMobileMenuOpen(false); handleOpenResume(); }}
                     className="text-sm text-white/70 hover:text-white transition-colors"
                   >
                     Resume
                   </button>
-                  <a href="#contact" className="text-sm text-white/70 hover:text-white transition-colors">Contact</a>
+                  <button onClick={() => handleNavClick('contact')} className="text-sm text-white/70 hover:text-white transition-colors">Contact</button>
                   <button
                     onClick={switchToOS}
                     className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors"
@@ -121,7 +160,46 @@ export const StandardPortfolio = () => {
                     <span>Interactive OS</span>
                   </button>
                 </div>
+
+                {/* Mobile Hamburger Button */}
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
+                >
+                  {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
               </div>
+
+              {/* Mobile Menu */}
+              <AnimatePresence>
+                {mobileMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
+                  >
+                    <div className="px-6 py-4 space-y-3">
+                      <button onClick={() => handleNavClick('about')} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">About</button>
+                      <button onClick={() => handleNavClick('work')} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Work</button>
+                      <button
+                        onClick={() => { setMobileMenuOpen(false); handleOpenResume(); }}
+                        className="block w-full text-left text-white/70 hover:text-white transition-colors py-2"
+                      >
+                        Resume
+                      </button>
+                      <button onClick={() => handleNavClick('contact')} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Contact</button>
+                      <button
+                        onClick={() => { setMobileMenuOpen(false); switchToOS(); }}
+                        className="flex items-center gap-2 w-full text-left text-white/70 hover:text-white transition-colors py-2"
+                      >
+                        <Monitor size={16} />
+                        <span>Interactive OS</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </nav>
 
             {/* Hero Section */}
@@ -303,7 +381,7 @@ export const StandardPortfolio = () => {
                       Email Me
                     </a>
                     <a
-                      href="https://linkedin.com/in/caylinyeung"
+                      href="https://www.linkedin.com/in/caylin-yeung-01a8a9396/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
