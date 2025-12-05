@@ -1,10 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useFileSystem } from '../store/useFileSystem';
 
+interface PyodideInterface {
+    runPythonAsync: (code: string) => Promise<unknown>;
+    setStdout: (config: { batched: (msg: string) => void }) => void;
+}
+
 declare global {
     interface Window {
-        loadPyodide: any;
-        pyodide: any;
+        loadPyodide: (() => Promise<PyodideInterface>) | undefined;
+        pyodide: PyodideInterface | undefined;
     }
 }
 
@@ -35,8 +40,8 @@ export const Terminal: React.FC = () => {
             setHistory(prev => [...prev, 'Python 3.11.3 initialized. Type "exit()" to quit.']);
             setIsPyodideLoading(false);
             return true;
-        } catch (e: any) {
-            setHistory(prev => [...prev, `Error loading Python: ${e.message}`]);
+        } catch (e) {
+            setHistory(prev => [...prev, `Error loading Python: ${e instanceof Error ? e.message : String(e)}`]);
             setIsPyodideLoading(false);
             return false;
         }
@@ -140,8 +145,8 @@ export const Terminal: React.FC = () => {
             }
 
             try {
-                await window.pyodide.runPythonAsync(cmd);
-            } catch (err: any) {
+                await window.pyodide?.runPythonAsync(cmd);
+            } catch (err) {
                  setHistory(prev => [...prev, String(err)]);
             }
             return;
@@ -262,8 +267,8 @@ export const Terminal: React.FC = () => {
                             } else {
                                 try {
                                     setHistory(prev => [...prev, `Running ${pyFile}...`]);
-                                    await window.pyodide.runPythonAsync(file.content);
-                                } catch (err: any) {
+                                    await window.pyodide?.runPythonAsync(file.content);
+                                } catch (err) {
                                     setHistory(prev => [...prev, String(err)]);
                                 }
                             }

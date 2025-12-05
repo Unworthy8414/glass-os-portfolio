@@ -9,7 +9,7 @@ const INITIAL_SPEED = 120;
 // Simple Audio Synth for beeps
 const playSound = (type: 'eat' | 'die') => {
     try {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioContext = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext;
         if (!AudioContext) return;
         const ctx = new AudioContext();
         const osc = ctx.createOscillator();

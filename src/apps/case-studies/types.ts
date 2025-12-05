@@ -10,7 +10,7 @@ export interface CaseStudyConfig {
     title: string;
     subtitle: string;
     thumbnailGradient: string;
-    icon: ComponentType<any>;
+    icon: ComponentType<{ className?: string; size?: number | string }>;
     date: string;
     role: string;
     component: ComponentType<CaseStudyProps>;

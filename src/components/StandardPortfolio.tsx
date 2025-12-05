@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Mail,
@@ -201,6 +201,12 @@ const CaseStudyCard = ({ study, index, onClick }: { study: CaseStudy; index: num
   </motion.button>
 );
 
+// History state type for browser navigation
+interface HistoryState {
+  view: PageView;
+  studyId?: string | null;
+}
+
 export const StandardPortfolio = () => {
   const { switchToOS } = useViewMode();
   const [currentView, setCurrentView] = useState<PageView>('home');
@@ -218,13 +224,44 @@ export const StandardPortfolio = () => {
     }
   };
 
+  // Navigate with history push (for user-initiated navigation)
+  const navigateWithHistory = useCallback((view: PageView, studyId?: string | null) => {
+    const state: HistoryState = { view, studyId };
+    window.history.pushState(state, '', '');
+  }, []);
+
+  // Handle browser back/forward navigation (mouse buttons 4/5)
+  useEffect(() => {
+    // Set initial history state on mount
+    const initialState: HistoryState = { view: 'home', studyId: null };
+    window.history.replaceState(initialState, '', '');
+
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state as HistoryState | null;
+      if (state) {
+        setCurrentView(state.view);
+        setActiveStudyId(state.studyId ?? null);
+        window.scrollTo(0, 0);
+      } else {
+        // No state means we're at the initial entry, go home
+        setCurrentView('home');
+        setActiveStudyId(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const handleOpenCaseStudy = (studyId: string) => {
+    navigateWithHistory('case-study', studyId);
     setActiveStudyId(studyId);
     setCurrentView('case-study');
     window.scrollTo(0, 0);
   };
 
   const handleBackToHome = (scrollTo?: SectionId) => {
+    navigateWithHistory('home', null);
     setCurrentView('home');
     setActiveStudyId(null);
     if (scrollTo) {
@@ -233,6 +270,7 @@ export const StandardPortfolio = () => {
   };
 
   const handleOpenResume = () => {
+    navigateWithHistory('resume', null);
     setCurrentView('resume');
     window.scrollTo(0, 0);
   };
