@@ -1,16 +1,92 @@
-import { useState } from 'react';
-import { ChevronLeft, Monitor, FileText, ExternalLink, Clock3, Users, Target, Lightbulb, TrendingUp, CheckCircle2, Grid, Search, PenTool, LayoutDashboard, User, Calendar, ShoppingCart, MapPin, AlertTriangle, Bell, List, Clock, RefreshCw, StickyNote, Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ExternalLink, Clock3, Users, Target, Lightbulb, TrendingUp, CheckCircle2, Grid, Search, PenTool, LayoutDashboard, User, Calendar, ShoppingCart, MapPin, AlertTriangle, Bell, List, Clock, RefreshCw, StickyNote, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { StandardNavbar } from './StandardNavbar';
 
 type SectionId = 'about' | 'work' | 'contact' | null;
-
+// TODO: move case studies to separate files for ease of maintenance
 interface StandardCaseStudyProps {
   studyId: string;
   onBack: () => void;
   onNavigate: (section?: SectionId) => void;
   onSwitchToOS: () => void;
   onOpenResume: () => void;
+  onOpenCaseStudy: (studyId: string) => void;
 }
+
+// Floating Orb Component
+const FloatingOrb = ({ delay, duration, size, color, left, top }: {
+  delay: number;
+  duration: number;
+  size: number;
+  color: string;
+  left: string;
+  top: string;
+}) => (
+  <motion.div
+    className="absolute rounded-full pointer-events-none"
+    style={{
+      width: size,
+      height: size,
+      left,
+      top,
+      background: `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
+      filter: 'blur(40px)',
+    }}
+    animate={{
+      y: [0, -30, 0],
+      x: [0, 15, 0],
+      scale: [1, 1.1, 1],
+      opacity: [0.3, 0.6, 0.3],
+    }}
+    transition={{
+      duration,
+      delay,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    }}
+  />
+);
+
+// Animated Section Header
+const SectionHeader = ({ number, title, color, icon: Icon }: {
+  number: string;
+  title: string;
+  color: string;
+  icon: React.ElementType;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, x: -20 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    viewport={{ once: true }}
+    className="flex items-center gap-3 mb-6"
+  >
+    <motion.div
+      className="flex items-center justify-center w-8 h-8 rounded-lg"
+      style={{ backgroundColor: `${color}33` }}
+      whileHover={{ scale: 1.1, rotate: 5 }}
+    >
+      <Icon size={16} style={{ color }} />
+    </motion.div>
+    <h2 className="text-xs font-medium uppercase tracking-wider" style={{ color }}>
+      {number} / {title}
+    </h2>
+  </motion.div>
+);
+
+// Animated Tag Component
+const AnimatedTag = ({ label, color, delay = 0 }: { label: string; color: string; delay?: number }) => (
+  <motion.span
+    initial={{ opacity: 0, scale: 0.8 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    viewport={{ once: true }}
+    transition={{ delay, type: 'spring', stiffness: 200 }}
+    whileHover={{ scale: 1.05, y: -2 }}
+    className="px-3 py-1.5 rounded text-sm cursor-default"
+    style={{ backgroundColor: `${color}26`, color }}
+  >
+    {label}
+  </motion.span>
+);
 
 // Color palette
 const colors = {
@@ -25,115 +101,267 @@ const colors = {
   indigo: '#6366F1',
 };
 
-// Bar chart component
+// Animated Bar chart component
 const BarChart = ({ data, maxValue }: { data: { value: number; label: string; color: string }[], maxValue: number }) => {
-  const maxHeight = 120; // pixels
+  const maxHeight = 120;
   return (
     <div className="space-y-2">
       <div className="flex items-end gap-3 bg-white/5 p-4 pt-8 rounded-lg border border-white/10" style={{ minHeight: '180px' }}>
         {data.map((item, i) => {
           const barHeight = Math.max(8, (item.value / maxValue) * maxHeight);
           return (
-            <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
-              <span className="text-xs font-medium text-white/70 mb-2">{item.value}</span>
-              <div
-                className="w-full rounded-t transition-all duration-500"
-                style={{
-                  height: `${barHeight}px`,
-                  backgroundColor: item.color,
-                }}
+            <motion.div
+              key={i}
+              className="flex-1 flex flex-col items-center justify-end h-full"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <motion.span
+                className="text-xs font-medium text-white/70 mb-2"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+              >
+                {item.value}
+              </motion.span>
+              <motion.div
+                className="w-full rounded-t"
+                style={{ backgroundColor: item.color }}
+                initial={{ height: 0 }}
+                whileInView={{ height: barHeight }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
               />
-            </div>
+            </motion.div>
           );
         })}
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
         {data.map((item, i) => (
-          <div key={i} className="flex items-center">
+          <motion.div
+            key={i}
+            className="flex items-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 + i * 0.05 }}
+          >
             <span className="w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: item.color }} />
             <span className="text-white/60">{item.label}</span>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
   );
 };
 
-// Journey Map component
+// Animated Journey Map component
 const JourneyMap = ({ steps, color }: { steps: { time: string; mood: string; title: string; desc: string }[], color: string }) => (
-  <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10">
+  <motion.div
+    className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 relative overflow-hidden"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+  >
+    {/* Animated background gradient */}
+    <motion.div
+      className="absolute inset-0 opacity-30"
+      style={{
+        background: `linear-gradient(135deg, ${color}10 0%, transparent 50%, ${color}05 100%)`,
+      }}
+      animate={{
+        backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+      }}
+      transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+    />
+
     <div className="relative border-l-2 pl-6 space-y-6" style={{ borderColor: `${color}66` }}>
       {steps.map((step, i) => (
-        <div key={i} className="relative">
-          <div
+        <motion.div
+          key={i}
+          className="relative"
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1 }}
+        >
+          {/* Animated dot */}
+          <motion.div
             className="absolute -left-[29px] w-3.5 h-3.5 rounded-full border-2 border-slate-900"
             style={{ backgroundColor: color }}
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.1 + 0.2, type: 'spring' }}
           />
+          {/* Pulsing ring on first item */}
+          {i === 0 && (
+            <motion.div
+              className="absolute -left-[33px] w-5 h-5 rounded-full"
+              style={{ backgroundColor: `${color}40` }}
+              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          )}
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-medium uppercase" style={{ color }}>{step.time}</span>
-            <span className="text-xs bg-white/10 px-2 py-0.5 rounded text-white/50">{step.mood}</span>
+            <motion.span
+              className="text-xs bg-white/10 px-2 py-0.5 rounded text-white/50"
+              whileHover={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+            >
+              {step.mood}
+            </motion.span>
           </div>
           <h4 className="font-medium text-sm text-white/80 mb-1">{step.title}</h4>
           <p className="text-white/50 text-sm">{step.desc}</p>
-        </div>
+        </motion.div>
       ))}
     </div>
-  </div>
+  </motion.div>
 );
 
-// Persona component
+// Animated Persona component
 const PersonaCard = ({ persona }: { persona: { initials: string; name: string; subtitle: string; details?: string; goals: string[]; painPoints: string[]; extra1?: { title: string; items: string[]; color: string }; extra2?: { title: string; items: string[]; color: string }; color: string } }) => (
-  <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-white/10">
-    <div className="flex items-start gap-4">
-      <div
+  <motion.div
+    className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-white/10 relative overflow-hidden"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+  >
+    {/* Animated background accent */}
+    <motion.div
+      className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-20"
+      style={{ background: `radial-gradient(circle, ${persona.color} 0%, transparent 70%)` }}
+      animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+      transition={{ duration: 4, repeat: Infinity }}
+    />
+
+    <div className="flex items-start gap-4 relative z-10">
+      <motion.div
         className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold border-2 border-white/20 shrink-0"
         style={{ backgroundColor: persona.color }}
+        initial={{ scale: 0, rotate: -180 }}
+        whileInView={{ scale: 1, rotate: 0 }}
+        viewport={{ once: true }}
+        transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+        whileHover={{ scale: 1.1, rotate: 5 }}
       >
         {persona.initials}
-      </div>
+      </motion.div>
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-white">{persona.name}</h3>
-        <p className="text-sm" style={{ color: colors.teal }}>{persona.subtitle}</p>
-        {persona.details && <p className="text-xs text-white/40 mt-1">{persona.details}</p>}
+        <motion.h3
+          className="text-lg font-semibold text-white"
+          initial={{ opacity: 0, x: -10 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+        >
+          {persona.name}
+        </motion.h3>
+        <motion.p
+          className="text-sm"
+          style={{ color: colors.teal }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+        >
+          {persona.subtitle}
+        </motion.p>
+        {persona.details && (
+          <motion.p
+            className="text-xs text-white/40 mt-1"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+          >
+            {persona.details}
+          </motion.p>
+        )}
 
         <div className="grid md:grid-cols-2 gap-4 mt-4">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+          >
             <h4 className="text-xs font-semibold uppercase mb-2" style={{ color: colors.blue }}>Goals</h4>
             <ul className="space-y-1 text-sm text-white/60 list-disc list-inside">
-              {persona.goals.map((goal, i) => <li key={i}>{goal}</li>)}
+              {persona.goals.map((goal, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.6 + i * 0.05 }}
+                >
+                  {goal}
+                </motion.li>
+              ))}
             </ul>
-          </div>
-          <div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
+          >
             <h4 className="text-xs font-semibold uppercase mb-2" style={{ color: colors.red }}>Pain Points</h4>
             <ul className="space-y-1 text-sm text-white/60 list-disc list-inside">
-              {persona.painPoints.map((point, i) => <li key={i}>{point}</li>)}
+              {persona.painPoints.map((point, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.7 + i * 0.05 }}
+                >
+                  {point}
+                </motion.li>
+              ))}
             </ul>
-          </div>
+          </motion.div>
         </div>
 
         {(persona.extra1 || persona.extra2) && (
           <div className="grid md:grid-cols-2 gap-4 mt-4">
             {persona.extra1 && (
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.8 }}
+              >
                 <h4 className="text-xs font-semibold uppercase mb-2" style={{ color: persona.extra1.color }}>{persona.extra1.title}</h4>
                 <ul className="space-y-1 text-sm text-white/60 list-disc list-inside">
                   {persona.extra1.items.map((item, i) => <li key={i}>{item}</li>)}
                 </ul>
-              </div>
+              </motion.div>
             )}
             {persona.extra2 && (
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.9 }}
+              >
                 <h4 className="text-xs font-semibold uppercase mb-2" style={{ color: persona.extra2.color }}>{persona.extra2.title}</h4>
                 <ul className="space-y-1 text-sm text-white/60 list-disc list-inside">
                   {persona.extra2.items.map((item, i) => <li key={i}>{item}</li>)}
                 </ul>
-              </div>
+              </motion.div>
             )}
           </div>
         )}
       </div>
     </div>
-  </div>
+  </motion.div>
 );
 
 // Time Management Study Data
@@ -361,8 +589,7 @@ const agoDigitalData = {
   }
 };
 
-export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, onOpenResume }: StandardCaseStudyProps) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, onOpenResume, onOpenCaseStudy }: StandardCaseStudyProps) => {
   const isTimeMgmt = studyId === 'time-mgmt';
   const data = isTimeMgmt ? timeManagementData : agoDigitalData;
 
@@ -375,86 +602,28 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden">
+      {/* Floating Orbs Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <FloatingOrb delay={0} duration={8} size={300} color={isTimeMgmt ? colors.blue : colors.pink} left="10%" top="20%" />
+        <FloatingOrb delay={2} duration={10} size={200} color={colors.purple} left="70%" top="10%" />
+        <FloatingOrb delay={4} duration={12} size={250} color={isTimeMgmt ? colors.indigo : colors.orange} left="80%" top="60%" />
+        <FloatingOrb delay={1} duration={9} size={180} color={colors.teal} left="20%" top="70%" />
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <button
-            onClick={onBack}
-            className="font-semibold text-lg hover:text-white/80 transition-colors"
-          >
-            Caylin Yeung
-          </button>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <button onClick={() => onNavigate('about')} className="text-sm text-white/70 hover:text-white transition-colors">About</button>
-            <span className="text-sm text-white font-medium">Work</span>
-            <button onClick={onOpenResume} className="text-sm text-white/70 hover:text-white transition-colors">Resume</button>
-            <button onClick={() => onNavigate('contact')} className="text-sm text-white/70 hover:text-white transition-colors">Contact</button>
-            <a
-              href={data.pdfPath}
-              target="_blank"
-              className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm transition-colors"
-            >
-              <FileText size={14} />
-              <span>Full Report</span>
-            </a>
-            <button
-              onClick={onSwitchToOS}
-              className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors"
-            >
-              <Monitor size={14} />
-              <span>Interactive OS</span>
-            </button>
-          </div>
-
-          {/* Mobile Hamburger Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
-            >
-              <div className="px-6 py-4 space-y-3">
-                <button onClick={() => { setMobileMenuOpen(false); onNavigate('about'); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">About</button>
-                <span className="block w-full text-left text-white font-medium py-2">Work</span>
-                <button onClick={() => { setMobileMenuOpen(false); onOpenResume(); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Resume</button>
-                <button onClick={() => { setMobileMenuOpen(false); onNavigate('contact'); }} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Contact</button>
-                <a
-                  href={data.pdfPath}
-                  target="_blank"
-                  className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors py-2"
-                >
-                  <FileText size={16} />
-                  <span>Full Report</span>
-                </a>
-                <button
-                  onClick={() => { setMobileMenuOpen(false); onSwitchToOS(); }}
-                  className="flex items-center gap-2 w-full text-left text-white/70 hover:text-white transition-colors py-2"
-                >
-                  <Monitor size={16} />
-                  <span>Interactive OS</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
+      <StandardNavbar
+        currentPage="case-study"
+        onNavigate={(section) => onNavigate(section)}
+        onOpenCaseStudy={onOpenCaseStudy}
+        onOpenResume={onOpenResume}
+        onSwitchToOS={onSwitchToOS}
+        onLogoClick={onBack}
+        pdfPath={data.pdfPath}
+      />
 
       {/* Content */}
-      <div className="pt-24 pb-16 px-6">
+      <div className="relative z-10 pt-24 pb-16 px-6">
         <div className="max-w-5xl mx-auto space-y-16">
 
           {/* ══════════════════════════════════════════════════════════════════ */}
@@ -464,26 +633,69 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ backgroundColor: `${colors.blue}33` }}>
-                <LayoutDashboard size={16} style={{ color: colors.blue }} />
-              </div>
-              <h2 className="text-xs font-medium uppercase tracking-wider" style={{ color: colors.blue }}>01 / Overview</h2>
-            </div>
+            <SectionHeader number="01" title="Overview" color={colors.blue} icon={LayoutDashboard} />
 
             {/* Hero */}
-            <div className={`h-48 bg-gradient-to-br ${data.gradient} rounded-2xl flex items-center justify-center mb-8 relative overflow-hidden`}>
-              <div className="absolute inset-0 bg-black/20" />
-              {isTimeMgmt ? (
-                <Clock3 className="text-white w-20 h-20 relative z-10 drop-shadow-lg" />
-              ) : (
-                <Grid className="text-white w-20 h-20 relative z-10 drop-shadow-lg" />
-              )}
-            </div>
+            <motion.div
+              className={`h-48 bg-gradient-to-br ${data.gradient} rounded-2xl flex items-center justify-center mb-8 relative overflow-hidden`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.div
+                className="absolute inset-0 bg-black/20"
+                animate={{
+                  background: ['linear-gradient(45deg, rgba(0,0,0,0.2) 0%, transparent 100%)', 'linear-gradient(225deg, rgba(0,0,0,0.2) 0%, transparent 100%)', 'linear-gradient(45deg, rgba(0,0,0,0.2) 0%, transparent 100%)'],
+                }}
+                transition={{ duration: 8, repeat: Infinity }}
+              />
+              {/* Floating particles */}
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 rounded-full bg-white/30"
+                  style={{ left: `${20 + i * 15}%`, top: `${30 + (i % 3) * 20}%` }}
+                  animate={{ y: [0, -20, 0], opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 3, delay: i * 0.4, repeat: Infinity }}
+                />
+              ))}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', delay: 0.4 }}
+              >
+                {isTimeMgmt ? (
+                  <Clock3 className="text-white w-20 h-20 relative z-10 drop-shadow-lg" />
+                ) : (
+                  <Grid className="text-white w-20 h-20 relative z-10 drop-shadow-lg" />
+                )}
+              </motion.div>
+            </motion.div>
 
-            <p className="text-blue-400 font-medium mb-2">{data.subtitle}</p>
-            <h1 className="text-4xl font-bold mb-4">{data.title}</h1>
-            <p className="text-lg text-white/60 leading-relaxed mb-8">{data.overview}</p>
+            <motion.p
+              className="text-blue-400 font-medium mb-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              {data.subtitle}
+            </motion.p>
+            <motion.h1
+              className="text-4xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              {data.title}
+            </motion.h1>
+            <motion.p
+              className="text-lg text-white/60 leading-relaxed mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {data.overview}
+            </motion.p>
 
             {/* Meta info */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -493,52 +705,103 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                 { label: 'Team', value: data.team },
                 { label: 'Methods', value: data.methods },
               ].map((item, i) => (
-                <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/10">
+                <motion.div
+                  key={i}
+                  className="bg-white/5 p-4 rounded-xl border border-white/10"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + i * 0.1 }}
+                  whileHover={{ borderColor: 'rgba(255,255,255,0.2)', y: -2 }}
+                >
                   <div className="text-xs text-white/40 uppercase mb-1">{item.label}</div>
                   <div className="text-sm font-medium">{item.value}</div>
-                </div>
+                </motion.div>
               ))}
             </div>
 
             {/* Challenge & Research Question */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
                 <h3 className="text-lg font-semibold text-white/90 mb-3">The Challenge</h3>
                 <p className="text-sm text-white/60 leading-relaxed">{data.challenge}</p>
-              </div>
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-5">
+              </motion.div>
+              <motion.div
+                className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-5 relative overflow-hidden"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ borderColor: 'rgba(59, 130, 246, 0.5)' }}
+              >
+                <motion.div
+                  className="absolute top-2 right-2"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                >
+                  <Sparkles size={16} className="text-blue-400/50" />
+                </motion.div>
                 <h4 className="font-medium text-blue-400 mb-2 flex items-center gap-2">
                   <Search size={14} /> Research Question
                 </h4>
                 <p className="text-white/80 italic">"{data.researchQuestion}"</p>
-              </div>
+              </motion.div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-8">
+            <motion.div
+              className="bg-white/5 border border-white/10 rounded-xl p-5 mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+            >
               <h4 className="font-medium text-white/80 mb-2 flex items-center gap-2">
-                <Lightbulb size={16} className="text-yellow-400" />
+                <motion.div
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Lightbulb size={16} className="text-yellow-400" />
+                </motion.div>
                 Hypothesis
               </h4>
               <p className="text-white/60">{data.hypothesis}</p>
-            </div>
+            </motion.div>
 
             {/* Approach */}
             <div>
-              <h3 className="text-lg font-semibold text-white/90 mb-4">My Approach</h3>
+              <motion.h3
+                className="text-lg font-semibold text-white/90 mb-4"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+              >
+                My Approach
+              </motion.h3>
               <div className="grid md:grid-cols-3 gap-4">
-                {data.approach.map((step) => (
-                  <div key={step.num} className="bg-white/5 p-5 rounded-xl border border-white/10 flex items-center gap-4">
-                    <div
+                {data.approach.map((step, i) => (
+                  <motion.div
+                    key={step.num}
+                    className="bg-white/5 p-5 rounded-xl border border-white/10 flex items-center gap-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    whileHover={{ borderColor: `${step.color}66`, y: -3 }}
+                  >
+                    <motion.div
                       className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
                       style={{ backgroundColor: `${step.color}33`, color: step.color }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
                     >
                       {step.num}
-                    </div>
+                    </motion.div>
                     <div>
                       <div className="font-medium text-white/80">{step.title}</div>
                       <div className="text-sm text-white/50">{step.sub}</div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -549,52 +812,75 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
           {/* ══════════════════════════════════════════════════════════════════ */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ backgroundColor: `${colors.purple}33` }}>
-                <Search size={16} style={{ color: colors.purple }} />
-              </div>
-              <h2 className="text-xs font-medium uppercase tracking-wider" style={{ color: colors.purple }}>02 / Research</h2>
-            </div>
+            <SectionHeader number="02" title="Research" color={colors.purple} icon={Search} />
 
             {isTimeMgmt ? (
               <div className="space-y-12">
                 {/* Phase 1: Focus Group */}
-                <div className="space-y-4">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-medium uppercase" style={{ backgroundColor: `${colors.purple}33`, color: colors.purple }}>Phase 1</span>
+                    <motion.span
+                      className="px-2 py-0.5 rounded text-xs font-medium uppercase"
+                      style={{ backgroundColor: `${colors.purple}33`, color: colors.purple }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      Phase 1
+                    </motion.span>
                     <h3 className="text-xl font-semibold text-white/90">Focus Group</h3>
                   </div>
                   <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Identify user needs, preferences, and feature priorities.</p>
 
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                    <motion.div
+                      className="bg-white/5 p-5 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><StickyNote size={14} /> Challenges Identified</h4>
                       <div className="flex flex-wrap gap-2">
-                        {timeManagementData.focusGroupChallenges.map(tag => (
-                          <span key={tag} className="px-3 py-1.5 rounded text-sm" style={{ backgroundColor: `${colors.red}26`, color: colors.red }}>{tag}</span>
+                        {timeManagementData.focusGroupChallenges.map((tag, i) => (
+                          <AnimatedTag key={tag} label={tag} color={colors.red} delay={i * 0.05} />
                         ))}
                       </div>
-                    </div>
-                    <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                    </motion.div>
+                    <motion.div
+                      className="bg-white/5 p-5 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><StickyNote size={14} /> Solutions Mentioned</h4>
                       <div className="flex flex-wrap gap-2">
-                        {timeManagementData.focusGroupSolutions.map(tag => (
-                          <span key={tag} className="px-3 py-1.5 rounded text-sm" style={{ backgroundColor: `${colors.yellow}26`, color: colors.yellow }}>{tag}</span>
+                        {timeManagementData.focusGroupSolutions.map((tag, i) => (
+                          <AnimatedTag key={tag} label={tag} color={colors.yellow} delay={i * 0.05} />
                         ))}
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
 
                 <div className="border-t border-white/10" />
 
                 {/* Phase 2: Survey */}
-                <div className="space-y-4">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-medium uppercase" style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}>Phase 2</span>
+                    <motion.span
+                      className="px-2 py-0.5 rounded text-xs font-medium uppercase"
+                      style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      Phase 2
+                    </motion.span>
                     <h3 className="text-xl font-semibold text-white/90">Online Survey</h3>
                   </div>
 
@@ -604,11 +890,19 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                       { label: 'Platform', value: 'JotForm', sub: '12 Questions' },
                       { label: 'Focus', value: 'Usage & Features', sub: 'Anti-procrastination' },
                     ].map((item, i) => (
-                      <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/10">
+                      <motion.div
+                        key={i}
+                        className="bg-white/5 p-4 rounded-xl border border-white/10"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ y: -2, borderColor: 'rgba(255,255,255,0.2)' }}
+                      >
                         <div className="text-xs text-white/40 uppercase">{item.label}</div>
                         <div className="text-lg font-medium text-white/80">{item.value}</div>
                         <div className="text-xs text-white/40">{item.sub}</div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
 
@@ -625,87 +919,178 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                   </div>
 
                   {/* Key Stats */}
-                  <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                  <motion.div
+                    className="bg-white/5 p-5 rounded-xl border border-white/10"
+                    whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                  >
                     <h4 className="font-medium text-white/70 mb-3 text-sm">Key Stats</h4>
                     <div className="space-y-2">
                       {timeManagementData.keyStats.map((stat, i) => (
-                        <div key={i} className="flex justify-between text-sm">
+                        <motion.div
+                          key={i}
+                          className="flex justify-between text-sm"
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 }}
+                        >
                           <span className="text-white/60">{stat.label}</span>
-                          <span className="font-medium text-white/80">{stat.value}</span>
-                        </div>
+                          <motion.span
+                            className="font-medium text-white/80"
+                            whileHover={{ scale: 1.1, color: colors.blue }}
+                          >
+                            {stat.value}
+                          </motion.span>
+                        </motion.div>
                       ))}
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 <div className="border-t border-white/10" />
 
                 {/* Phase 3: Diary Study */}
-                <div className="space-y-4">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-medium uppercase" style={{ backgroundColor: `${colors.green}33`, color: colors.green }}>Phase 3</span>
+                    <motion.span
+                      className="px-2 py-0.5 rounded text-xs font-medium uppercase"
+                      style={{ backgroundColor: `${colors.green}33`, color: colors.green }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      Phase 3
+                    </motion.span>
                     <h3 className="text-xl font-semibold text-white/90">Diary Study</h3>
                   </div>
                   <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Observe real-world behavior over 10 days with 4 participants.</p>
 
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                    <motion.div
+                      className="bg-white/5 p-5 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <h4 className="font-medium text-white/70 mb-3 text-sm">Common Distractions</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        {timeManagementData.diaryDistractions.map(tag => (
-                          <div key={tag} className="p-2 rounded text-sm text-center font-medium" style={{ backgroundColor: `${colors.pink}26`, color: colors.pink }}>{tag}</div>
+                        {timeManagementData.diaryDistractions.map((tag, i) => (
+                          <motion.div
+                            key={tag}
+                            className="p-2 rounded text-sm text-center font-medium"
+                            style={{ backgroundColor: `${colors.pink}26`, color: colors.pink }}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            {tag}
+                          </motion.div>
                         ))}
                       </div>
-                    </div>
-                    <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                    </motion.div>
+                    <motion.div
+                      className="bg-white/5 p-5 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <h4 className="font-medium text-white/70 mb-3 text-sm">Strategies to Refocus</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        {timeManagementData.diaryStrategies.map(tag => (
-                          <div key={tag} className="p-2 rounded text-sm text-center font-medium" style={{ backgroundColor: `${colors.teal}26`, color: colors.teal }}>{tag}</div>
+                        {timeManagementData.diaryStrategies.map((tag, i) => (
+                          <motion.div
+                            key={tag}
+                            className="p-2 rounded text-sm text-center font-medium"
+                            style={{ backgroundColor: `${colors.teal}26`, color: colors.teal }}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            {tag}
+                          </motion.div>
                         ))}
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
               </div>
             ) : (
               <div className="space-y-12">
                 {/* Phase 1: Competitive Analysis */}
-                <div className="space-y-4">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-medium uppercase" style={{ backgroundColor: `${colors.purple}33`, color: colors.purple }}>Phase 1</span>
+                    <motion.span
+                      className="px-2 py-0.5 rounded text-xs font-medium uppercase"
+                      style={{ backgroundColor: `${colors.purple}33`, color: colors.purple }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      Phase 1
+                    </motion.span>
                     <h3 className="text-xl font-semibold text-white/90">Competitive Analysis & Heuristic Evaluation</h3>
                   </div>
                   <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Understand AGO's position in the market and identify usability issues across the entire site.</p>
 
-                  <div className="bg-white/5 p-5 rounded-xl border border-white/10 mb-4">
+                  <motion.div
+                    className="bg-white/5 p-5 rounded-xl border border-white/10 mb-4"
+                    whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                  >
                     <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><Users size={14} style={{ color: colors.purple }} /> Competitors Analyzed</h4>
                     <div className="flex flex-wrap gap-2">
-                      {agoDigitalData.competitors.map(tag => (
-                        <span key={tag} className="px-3 py-1.5 rounded text-sm" style={{ backgroundColor: `${colors.purple}26`, color: colors.purple }}>{tag}</span>
+                      {agoDigitalData.competitors.map((tag, i) => (
+                        <AnimatedTag key={tag} label={tag} color={colors.purple} delay={i * 0.1} />
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                  <motion.div
+                    className="bg-white/5 p-5 rounded-xl border border-white/10"
+                    whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                  >
                     <h4 className="font-medium text-white/70 mb-4 flex items-center gap-2 text-sm"><AlertTriangle size={14} style={{ color: colors.orange }} /> Initial Discovery: Site-Wide Issues</h4>
                     <div className="grid md:grid-cols-3 gap-4">
                       {agoDigitalData.siteIssues.map((issue, i) => (
-                        <div key={i} className="p-4 rounded-lg" style={{ backgroundColor: `${issue.color}1A`, border: `1px solid ${issue.color}33` }}>
+                        <motion.div
+                          key={i}
+                          className="p-4 rounded-lg"
+                          style={{ backgroundColor: `${issue.color}1A`, border: `1px solid ${issue.color}33` }}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 }}
+                          whileHover={{ scale: 1.02, y: -2 }}
+                        >
                           <div className="font-medium mb-1 text-sm" style={{ color: issue.color }}>{issue.title}</div>
                           <p className="text-xs text-white/50">{issue.desc}</p>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 <div className="border-t border-white/10" />
 
                 {/* Phase 2: User Interviews */}
-                <div className="space-y-4">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-medium uppercase" style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}>Phase 2</span>
+                    <motion.span
+                      className="px-2 py-0.5 rounded text-xs font-medium uppercase"
+                      style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      Phase 2
+                    </motion.span>
                     <h3 className="text-xl font-semibold text-white/90">User Interviews</h3>
                   </div>
                   <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Understand user experiences, behaviors, and pain points specifically within the purchase journey.</p>
@@ -716,54 +1101,106 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                       { label: 'Focus', value: 'Purchase Journey', sub: 'Cart, checkout, booking' },
                       { label: 'Synthesis', value: 'Affinity Mapping', sub: 'Thematic analysis' },
                     ].map((item, i) => (
-                      <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/10">
+                      <motion.div
+                        key={i}
+                        className="bg-white/5 p-4 rounded-xl border border-white/10"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ y: -2, borderColor: 'rgba(255,255,255,0.2)' }}
+                      >
                         <div className="text-xs text-white/40 uppercase">{item.label}</div>
                         <div className="text-lg font-medium text-white/80">{item.value}</div>
                         <div className="text-xs text-white/40">{item.sub}</div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
 
-                  <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                  <motion.div
+                    className="bg-white/5 p-5 rounded-xl border border-white/10"
+                    whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                  >
                     <h4 className="font-medium text-white/70 mb-3 text-sm">Hypotheses Tested</h4>
                     <div className="grid md:grid-cols-2 gap-2">
                       {agoDigitalData.hypothesesTested.map((hyp, i) => (
-                        <div key={i} className="flex items-start gap-2 text-sm text-white/60">
-                          <span className="text-xs font-medium px-1.5 py-0.5 rounded shrink-0" style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}>{i + 1}</span>
+                        <motion.div
+                          key={i}
+                          className="flex items-start gap-2 text-sm text-white/60"
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.05 }}
+                        >
+                          <motion.span
+                            className="text-xs font-medium px-1.5 py-0.5 rounded shrink-0"
+                            style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}
+                            whileHover={{ scale: 1.1 }}
+                          >
+                            {i + 1}
+                          </motion.span>
                           {hyp}
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
                 <div className="border-t border-white/10" />
 
                 {/* Phase 3: Ethnographic Research */}
-                <div className="space-y-4">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-xs font-medium uppercase" style={{ backgroundColor: `${colors.green}33`, color: colors.green }}>Phase 3</span>
+                    <motion.span
+                      className="px-2 py-0.5 rounded text-xs font-medium uppercase"
+                      style={{ backgroundColor: `${colors.green}33`, color: colors.green }}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      Phase 3
+                    </motion.span>
                     <h3 className="text-xl font-semibold text-white/90">Ethnographic Research</h3>
                   </div>
                   <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Understand the disconnect between physical and digital purchasing experiences.</p>
 
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                    <motion.div
+                      className="bg-white/5 p-5 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><MapPin size={14} style={{ color: colors.green }} /> Observation Focus Areas</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        {agoDigitalData.observationAreas.map(tag => (
-                          <div key={tag} className="p-2 rounded text-sm text-center font-medium" style={{ backgroundColor: `${colors.green}26`, color: colors.green }}>{tag}</div>
+                        {agoDigitalData.observationAreas.map((tag, i) => (
+                          <motion.div
+                            key={tag}
+                            className="p-2 rounded text-sm text-center font-medium"
+                            style={{ backgroundColor: `${colors.green}26`, color: colors.green }}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            {tag}
+                          </motion.div>
                         ))}
                       </div>
-                    </div>
-                    <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                    </motion.div>
+                    <motion.div
+                      className="bg-white/5 p-5 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><Target size={14} style={{ color: colors.teal }} /> Key Observation</h4>
                       <p className="text-sm text-white/60 italic">
                         "Significant differences between the smooth physical ticket purchasing experience and the frustrating digital experience, creating misaligned mental models."
                       </p>
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
               </div>
             )}
           </motion.section>
@@ -773,31 +1210,49 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
           {/* ══════════════════════════════════════════════════════════════════ */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ backgroundColor: `${colors.yellow}33` }}>
-                <Lightbulb size={16} style={{ color: colors.yellow }} />
-              </div>
-              <h2 className="text-xs font-medium uppercase tracking-wider" style={{ color: colors.yellow }}>03 / {isTimeMgmt ? 'Analysis' : 'Findings'}</h2>
-            </div>
+            <SectionHeader number="03" title={isTimeMgmt ? 'Analysis' : 'Findings'} color={colors.yellow} icon={Lightbulb} />
 
             <div className="space-y-8">
               {/* Key Findings */}
               <div>
-                <h3 className="text-xl font-semibold mb-4 text-white/90">Key Findings</h3>
+                <motion.h3
+                  className="text-xl font-semibold mb-4 text-white/90"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  Key Findings
+                </motion.h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   {isTimeMgmt ? (
                     timeManagementData.keyFindings.map((finding, i) => (
-                      <div key={i} className="bg-white/5 p-5 rounded-xl border border-white/10">
+                      <motion.div
+                        key={i}
+                        className="bg-white/5 p-5 rounded-xl border border-white/10"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ borderColor: `${colors.blue}66`, y: -2 }}
+                      >
                         <h4 className="font-medium text-blue-400 mb-2">{i + 1}. {finding.title}</h4>
                         <p className="text-sm text-white/60">{finding.desc}</p>
-                      </div>
+                      </motion.div>
                     ))
                   ) : (
                     agoDigitalData.keyFindings.map((finding, i) => (
-                      <div key={i} className="bg-white/5 p-5 rounded-xl border border-white/10">
+                      <motion.div
+                        key={i}
+                        className="bg-white/5 p-5 rounded-xl border border-white/10"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ borderColor: `${finding.color}66`, y: -2 }}
+                      >
                         <h4 className="font-medium mb-2" style={{ color: finding.color }}>{i + 1}. {finding.title}</h4>
                         <ul className="text-sm text-white/60 space-y-1 list-disc list-inside mb-2">
                           {finding.items.map((item, j) => <li key={j}>{item}</li>)}
@@ -807,7 +1262,7 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                             {finding.quote}
                           </p>
                         )}
-                      </div>
+                      </motion.div>
                     ))
                   )}
                 </div>
@@ -815,15 +1270,27 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
 
               {/* Persona */}
               <div>
-                <h3 className="text-xl font-semibold mb-4 text-white/90">User Persona</h3>
+                <motion.h3
+                  className="text-xl font-semibold mb-4 text-white/90"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  User Persona
+                </motion.h3>
                 <PersonaCard persona={data.persona} />
               </div>
 
               {/* Journey Map */}
               <div>
-                <h3 className="text-xl font-semibold mb-4 text-white/90">
+                <motion.h3
+                  className="text-xl font-semibold mb-4 text-white/90"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
                   {isTimeMgmt ? 'Daily Journey Map' : 'User Journey Map: AGO Purchase Path'}
-                </h3>
+                </motion.h3>
                 <JourneyMap
                   steps={isTimeMgmt ? timeManagementData.journeyMap : agoDigitalData.journeyMap}
                   color={isTimeMgmt ? colors.blue : colors.pink}
@@ -832,12 +1299,26 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
 
               {/* Cognitive Dissonance (AGO only) */}
               {!isTimeMgmt && (
-                <div className="p-5 rounded-xl border" style={{ backgroundColor: `${colors.teal}1A`, borderColor: `${colors.teal}33` }}>
+                <motion.div
+                  className="p-5 rounded-xl border relative overflow-hidden"
+                  style={{ backgroundColor: `${colors.teal}1A`, borderColor: `${colors.teal}33` }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ borderColor: `${colors.teal}66` }}
+                >
+                  <motion.div
+                    className="absolute top-2 right-2"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <Sparkles size={16} style={{ color: `${colors.teal}80` }} />
+                  </motion.div>
                   <h4 className="font-medium mb-2 flex items-center gap-2" style={{ color: colors.teal }}>
                     <Lightbulb size={14} /> Cognitive Dissonance Discovery
                   </h4>
                   <p className="text-sm text-white/60">{agoDigitalData.cognitiveDissonance}</p>
-                </div>
+                </motion.div>
               )}
             </div>
           </motion.section>
@@ -847,65 +1328,112 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
           {/* ══════════════════════════════════════════════════════════════════ */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ backgroundColor: `${colors.pink}33` }}>
-                <PenTool size={16} style={{ color: colors.pink }} />
-              </div>
-              <h2 className="text-xs font-medium uppercase tracking-wider" style={{ color: colors.pink }}>04 / {isTimeMgmt ? 'Design' : 'Recommendations'}</h2>
-            </div>
+            <SectionHeader number="04" title={isTimeMgmt ? 'Design' : 'Recommendations'} color={colors.pink} icon={PenTool} />
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-xl font-semibold mb-3 text-white/90">Design Recommendations</h3>
-                <p className="text-white/60 mb-6">Translating insights into actionable features.</p>
+                <motion.h3
+                  className="text-xl font-semibold mb-3 text-white/90"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  Design Recommendations
+                </motion.h3>
+                <motion.p
+                  className="text-white/60 mb-6"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                >
+                  Translating insights into actionable features.
+                </motion.p>
               </div>
 
               <div className="space-y-6">
                 {isTimeMgmt ? (
                   timeManagementData.recommendations.map((rec, i) => (
-                    <div key={i} className="flex gap-4">
-                      <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${rec.color}33`, color: rec.color }}>
+                    <motion.div
+                      key={i}
+                      className="flex gap-4"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 }}
+                    >
+                      <motion.div
+                        className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: `${rec.color}33`, color: rec.color }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                      >
                         <rec.icon size={20} />
-                      </div>
+                      </motion.div>
                       <div>
                         <h4 className="font-medium text-white/90 mb-1">{rec.title}</h4>
                         <p className="text-sm text-white/60">{rec.desc}</p>
                       </div>
-                    </div>
+                    </motion.div>
                   ))
                 ) : (
                   agoDigitalData.recommendations.map((rec, i) => (
-                    <div key={i} className="flex gap-4">
-                      <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${rec.color}33`, color: rec.color }}>
+                    <motion.div
+                      key={i}
+                      className="flex gap-4"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 }}
+                    >
+                      <motion.div
+                        className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: `${rec.color}33`, color: rec.color }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                      >
                         <rec.icon size={20} />
-                      </div>
+                      </motion.div>
                       <div>
                         <h4 className="font-medium text-white/90 mb-2">{rec.title}</h4>
                         <ul className="text-sm text-white/60 space-y-1 list-disc list-inside">
                           {rec.items.map((item, j) => <li key={j}>{item}</li>)}
                         </ul>
                       </div>
-                    </div>
+                    </motion.div>
                   ))
                 )}
               </div>
 
               {/* Quick Wins (AGO only) */}
               {!isTimeMgmt && (
-                <div className="bg-white/5 p-5 rounded-xl border border-white/10">
+                <motion.div
+                  className="bg-white/5 p-5 rounded-xl border border-white/10"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                >
                   <h4 className="font-medium text-white/80 mb-4">Quick Wins (High Impact, Low Effort)</h4>
                   <div className="grid md:grid-cols-3 gap-4">
                     {agoDigitalData.quickWins.map((win, i) => (
-                      <div key={i} className="p-4 rounded-lg" style={{ backgroundColor: `${colors.green}1A`, border: `1px solid ${colors.green}33` }}>
+                      <motion.div
+                        key={i}
+                        className="p-4 rounded-lg"
+                        style={{ backgroundColor: `${colors.green}1A`, border: `1px solid ${colors.green}33` }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                      >
                         <div className="font-medium mb-1 text-sm" style={{ color: colors.green }}>{win.title}</div>
                         <p className="text-xs text-white/50">{win.desc}</p>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
             </div>
           </motion.section>
@@ -915,19 +1443,26 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
           {/* ══════════════════════════════════════════════════════════════════ */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ backgroundColor: `${colors.green}33` }}>
-                <TrendingUp size={16} style={{ color: colors.green }} />
-              </div>
-              <h2 className="text-xs font-medium uppercase tracking-wider" style={{ color: colors.green }}>05 / Impact</h2>
-            </div>
+            <SectionHeader number="05" title="Impact" color={colors.green} icon={TrendingUp} />
 
             <div className="space-y-8">
               {/* Research Impact */}
-              <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+              <motion.div
+                className="bg-white/5 rounded-xl p-6 border border-white/10 relative overflow-hidden"
+                whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+              >
+                {/* Animated success indicator */}
+                <motion.div
+                  className="absolute top-4 right-4"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <CheckCircle2 size={24} style={{ color: colors.green }} />
+                </motion.div>
+
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white/90">
                   <CheckCircle2 size={18} style={{ color: colors.green }} />
                   {isTimeMgmt ? 'Research Impact' : 'Validated Hypotheses'}
@@ -944,7 +1479,15 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                       <h4 className="font-medium text-white/60 text-sm uppercase mb-2">Design Principles Uncovered</h4>
                       <ul className="space-y-1 text-sm text-white/60">
                         {timeManagementData.designPrinciples.map((principle, i) => (
-                          <li key={i}>{i + 1}. {principle}</li>
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            {i + 1}. {principle}
+                          </motion.li>
                         ))}
                       </ul>
                     </div>
@@ -952,34 +1495,73 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                 ) : (
                   <div className="space-y-2">
                     {agoDigitalData.validatedHypotheses.map((hyp, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-white/70">
-                        <CheckCircle2 size={14} style={{ color: colors.green }} />
+                      <motion.div
+                        key={i}
+                        className="flex items-center gap-2 text-sm text-white/70"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                      >
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          whileInView={{ scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 + 0.2, type: 'spring' }}
+                        >
+                          <CheckCircle2 size={14} style={{ color: colors.green }} />
+                        </motion.div>
                         {hyp}
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 )}
-              </div>
+              </motion.div>
 
               {/* Business Value */}
               <div>
-                <h3 className="text-lg font-semibold mb-4 text-white/90">Business Value</h3>
+                <motion.h3
+                  className="text-lg font-semibold mb-4 text-white/90"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  Business Value
+                </motion.h3>
                 <div className={`grid gap-4 ${isTimeMgmt ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                   {isTimeMgmt ? (
                     timeManagementData.impact.map((item, i) => (
-                      <div key={i} className="p-5 rounded-xl" style={{ backgroundColor: `${colors.green}1A`, border: `1px solid ${colors.green}33` }}>
+                      <motion.div
+                        key={i}
+                        className="p-5 rounded-xl"
+                        style={{ backgroundColor: `${colors.green}1A`, border: `1px solid ${colors.green}33` }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ scale: 1.02, y: -2 }}
+                      >
                         <div className="font-medium mb-1" style={{ color: colors.green }}>{item.title}</div>
                         <p className="text-sm text-white/60">{item.desc}</p>
-                      </div>
+                      </motion.div>
                     ))
                   ) : (
                     agoDigitalData.businessValue.map((item, i) => (
-                      <div key={i} className="p-5 rounded-xl" style={{ backgroundColor: `${item.color}1A`, border: `1px solid ${item.color}33` }}>
+                      <motion.div
+                        key={i}
+                        className="p-5 rounded-xl"
+                        style={{ backgroundColor: `${item.color}1A`, border: `1px solid ${item.color}33` }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ scale: 1.02, y: -2 }}
+                      >
                         <div className="font-medium mb-2" style={{ color: item.color }}>{item.title}</div>
                         <ul className="text-sm text-white/60 space-y-1 list-disc list-inside">
                           {item.items.map((li, j) => <li key={j}>{li}</li>)}
                         </ul>
-                      </div>
+                      </motion.div>
                     ))
                   )}
                 </div>
@@ -988,17 +1570,38 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
               {/* Methodology & Next Steps */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-medium mb-3 text-white/90">Methodology</h4>
+                  <motion.h4
+                    className="font-medium mb-3 text-white/90"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  >
+                    Methodology
+                  </motion.h4>
                   <div className="space-y-3">
-                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                    <motion.div
+                      className="bg-white/5 p-4 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <div className="text-xs font-medium uppercase mb-2" style={{ color: colors.green }}>What Worked Well</div>
                       <ul className="text-sm text-white/60 list-disc list-inside space-y-1">
                         {(isTimeMgmt ? timeManagementData.methodology.worked : agoDigitalData.methodology.worked).map((item, i) => (
-                          <li key={i}>{item}</li>
+                          <motion.li
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            {item}
+                          </motion.li>
                         ))}
                       </ul>
-                    </div>
-                    <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                    </motion.div>
+                    <motion.div
+                      className="bg-white/5 p-4 rounded-xl border border-white/10"
+                      whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                    >
                       <div className="text-xs font-medium uppercase mb-2" style={{ color: colors.orange }}>Challenges</div>
                       {isTimeMgmt ? (
                         <>
@@ -1008,60 +1611,121 @@ export const StandardCaseStudy = ({ studyId, onBack, onNavigate, onSwitchToOS, o
                       ) : (
                         <ul className="text-sm text-white/60 list-disc list-inside space-y-1">
                           {agoDigitalData.methodology.challenges.map((item, i) => (
-                            <li key={i}>{item}</li>
+                            <motion.li
+                              key={i}
+                              initial={{ opacity: 0, x: -10 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: i * 0.1 }}
+                            >
+                              {item}
+                            </motion.li>
                           ))}
                         </ul>
                       )}
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-3 text-white/90">Next Steps</h4>
-                  <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                  <motion.h4
+                    className="font-medium mb-3 text-white/90"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  >
+                    Next Steps
+                  </motion.h4>
+                  <motion.div
+                    className="bg-white/5 p-4 rounded-xl border border-white/10"
+                    whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
+                  >
                     <div className="text-xs font-medium text-white/40 uppercase mb-2">Recommended Actions</div>
                     <ol className="text-sm text-white/60 list-decimal list-inside space-y-1">
                       {(isTimeMgmt ? timeManagementData.methodology.nextSteps : agoDigitalData.methodology.nextSteps).map((item, i) => (
-                        <li key={i}>{item}</li>
+                        <motion.li
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 }}
+                        >
+                          {item}
+                        </motion.li>
                       ))}
                     </ol>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
 
               {/* Quote */}
-              <div className="text-center pt-4 text-white/30 text-sm italic">
+              <motion.div
+                className="text-center pt-4 text-white/30 text-sm italic"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+              >
                 "This case study demonstrates my ability to design and execute rigorous UX research, synthesize complex data, and deliver recommendations that balance user needs with business objectives."
-              </div>
+              </motion.div>
             </div>
           </motion.section>
 
           {/* CTA */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-center py-12 border-t border-white/10"
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center py-12 border-t border-white/10 relative"
           >
-            <h2 className="text-2xl font-semibold mb-4">Want the full details?</h2>
-            <p className="text-white/60 mb-6">
+            {/* Animated background gradient */}
+            <motion.div
+              className="absolute inset-0 opacity-20"
+              style={{
+                background: `radial-gradient(circle at 50% 50%, ${isTimeMgmt ? colors.blue : colors.pink}40 0%, transparent 70%)`,
+              }}
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.1, 0.2, 0.1],
+              }}
+              transition={{ duration: 4, repeat: Infinity }}
+            />
+
+            <motion.h2
+              className="text-2xl font-semibold mb-4 relative z-10"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              Want the full details?
+            </motion.h2>
+            <motion.p
+              className="text-white/60 mb-6 relative z-10"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
               Download the complete case study PDF with all research data and appendices.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <a
+            </motion.p>
+            <div className="flex flex-wrap justify-center gap-4 relative z-10">
+              <motion.a
                 href={data.pdfPath}
                 target="_blank"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition-colors"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <ExternalLink size={18} />
                 View Full Report
-              </a>
-              <button
+              </motion.a>
+              <motion.button
                 onClick={onBack}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <ChevronLeft size={18} />
                 Back to Portfolio
-              </button>
+              </motion.button>
             </div>
           </motion.section>
         </div>

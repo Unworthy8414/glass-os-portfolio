@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Mail,
   Linkedin,
@@ -8,13 +8,16 @@ import {
   Grid,
   ArrowRight,
   ExternalLink,
-  Monitor,
-  Menu,
-  X
+  Sparkles,
+  Users,
+  Target,
+  Palette,
+  Monitor
 } from 'lucide-react';
 import { useViewMode } from '../store/useViewMode';
 import { StandardCaseStudy } from './StandardCaseStudy';
 import { ResumePage } from './ResumePage';
+import { StandardNavbar } from './StandardNavbar';
 
 interface CaseStudy {
   id: string;
@@ -26,6 +29,7 @@ interface CaseStudy {
   methods: string[];
   gradient: string;
   icon: React.ElementType;
+  color: string;
 }
 
 const caseStudies: CaseStudy[] = [
@@ -38,7 +42,8 @@ const caseStudies: CaseStudy[] = [
     timeline: '3 Months',
     methods: ['Focus Groups', 'Surveys', 'Diary Study'],
     gradient: 'from-blue-500 to-indigo-600',
-    icon: Clock3
+    icon: Clock3,
+    color: '#3B82F6'
   },
   {
     id: 'ago-digital',
@@ -49,18 +54,157 @@ const caseStudies: CaseStudy[] = [
     timeline: '4 Months',
     methods: ['Heuristic Evaluation', 'User Interviews', 'Ethnographic Research'],
     gradient: 'from-pink-500 to-rose-600',
-    icon: Grid
+    icon: Grid,
+    color: '#EC4899'
   }
 ];
 
 type PageView = 'home' | 'case-study' | 'resume';
 type SectionId = 'about' | 'work' | 'contact' | null;
 
+// Floating orb component
+const FloatingOrb = ({ delay, duration, size, color, left, top }: { delay: number; duration: number; size: number; color: string; left: string; top: string }) => (
+  <motion.div
+    className="absolute rounded-full pointer-events-none"
+    style={{
+      width: size,
+      height: size,
+      left,
+      top,
+      background: `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
+      filter: 'blur(40px)',
+    }}
+    animate={{
+      y: [0, -30, 0],
+      x: [0, 15, 0],
+      scale: [1, 1.1, 1],
+      opacity: [0.3, 0.6, 0.3],
+    }}
+    transition={{
+      duration,
+      delay,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    }}
+  />
+);
+
+// Animated skill tag for about section
+const SkillTag = ({ skill, index }: { skill: string; index: number }) => (
+  <motion.span
+    initial={{ opacity: 0, y: 10 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.03, type: 'spring', stiffness: 200 }}
+    whileHover={{ scale: 1.05, y: -2, backgroundColor: 'rgba(255,255,255,0.15)' }}
+    className="px-3 py-1.5 bg-white/10 rounded-lg text-sm text-white/80 border border-white/10 cursor-default transition-all duration-300"
+  >
+    {skill}
+  </motion.span>
+);
+
+// Case study card component
+const CaseStudyCard = ({ study, index, onClick }: { study: CaseStudy; index: number; onClick: () => void }) => (
+  <motion.button
+    onClick={onClick}
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.15, type: 'spring', stiffness: 100 }}
+    whileHover={{ y: -8, scale: 1.02 }}
+    className="group text-left bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden hover:border-white/30 transition-all duration-500"
+  >
+    {/* Gradient header with icon */}
+    <div className={`h-52 bg-gradient-to-br ${study.gradient} flex items-center justify-center relative overflow-hidden`}>
+      <div className="absolute inset-0 bg-black/10" />
+
+      {/* Animated background pattern */}
+      <motion.div
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `radial-gradient(circle at 30% 70%, white 1px, transparent 1px)`,
+          backgroundSize: '30px 30px',
+        }}
+        animate={{ backgroundPosition: ['0px 0px', '30px 30px'] }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+      />
+
+      {/* Large background icon */}
+      <motion.div
+        className="absolute -bottom-10 -right-10"
+        animate={{ rotate: [12, 0, 12], scale: [1, 1.1, 1] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <study.icon className="text-white/10 w-40 h-40" strokeWidth={1} />
+      </motion.div>
+
+      {/* Main icon */}
+      <motion.div
+        whileHover={{ scale: 1.1, rotate: 5 }}
+        transition={{ type: 'spring', stiffness: 300 }}
+        className="relative z-10"
+      >
+        <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-xl">
+          <study.icon className="text-white w-10 h-10" strokeWidth={1.5} />
+        </div>
+      </motion.div>
+
+      {/* Floating particles */}
+      {[...Array(3)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 rounded-full bg-white/30"
+          style={{ left: `${20 + i * 30}%`, top: `${30 + i * 15}%` }}
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{ duration: 3, delay: i * 0.5, repeat: Infinity }}
+        />
+      ))}
+    </div>
+
+    {/* Card content */}
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs text-white/50 font-medium">{study.role} • {study.timeline}</span>
+        <motion.div
+          className="flex items-center gap-1 text-white/30 group-hover:text-white/70"
+          animate={{ x: [0, 3, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">View</span>
+          <ArrowRight size={16} />
+        </motion.div>
+      </div>
+
+      <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">{study.title}</h3>
+      <p className="text-sm text-white/50 mb-3">{study.subtitle}</p>
+      <p className="text-sm text-white/60 leading-relaxed mb-4">{study.description}</p>
+
+      <div className="flex flex-wrap gap-2">
+        {study.methods.map((method) => (
+          <span
+            key={method}
+            className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-300"
+            style={{
+              backgroundColor: `${study.color}15`,
+              color: study.color,
+              border: `1px solid ${study.color}30`,
+            }}
+          >
+            {method}
+          </span>
+        ))}
+      </div>
+    </div>
+  </motion.button>
+);
+
 export const StandardPortfolio = () => {
   const { switchToOS } = useViewMode();
   const [currentView, setCurrentView] = useState<PageView>('home');
   const [activeStudyId, setActiveStudyId] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pendingScrollSection, setPendingScrollSection] = useState<SectionId>(null);
 
   const scrollToSection = (sectionId: SectionId) => {
@@ -94,7 +238,6 @@ export const StandardPortfolio = () => {
   };
 
   const handleNavClick = (sectionId: SectionId) => {
-    setMobileMenuOpen(false);
     if (currentView === 'home') {
       scrollToSection(sectionId);
     } else {
@@ -117,6 +260,7 @@ export const StandardPortfolio = () => {
         onNavigate={handleBackToHome}
         onSwitchToOS={switchToOS}
         onOpenResume={handleOpenResume}
+        onOpenCaseStudy={handleOpenCaseStudy}
       />
     );
   }
@@ -128,285 +272,374 @@ export const StandardPortfolio = () => {
         onBack={() => handleBackToHome()}
         onNavigate={handleBackToHome}
         onSwitchToOS={switchToOS}
+        onOpenCaseStudy={handleOpenCaseStudy}
       />
     );
   }
 
+  const researchMethods = ['User Interviews', 'Contextual Inquiry', 'Ethnography', 'Diary Studies', 'Surveys', 'Usability Testing', 'A/B Testing', 'Heuristic Evaluation', 'Card Sorting', 'Tree Testing'];
+
   // Home View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-y-auto">
-      <div>
-            {/* Navigation */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
-              <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <span className="font-semibold text-lg">Caylin Yeung</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-x-hidden">
+      {/* Animated background orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <FloatingOrb delay={0} duration={8} size={400} color="#3B82F6" left="5%" top="10%" />
+        <FloatingOrb delay={2} duration={10} size={300} color="#EC4899" left="75%" top="5%" />
+        <FloatingOrb delay={4} duration={12} size={350} color="#8B5CF6" left="85%" top="50%" />
+        <FloatingOrb delay={1} duration={9} size={250} color="#10B981" left="10%" top="60%" />
+        <FloatingOrb delay={3} duration={11} size={200} color="#F59E0B" left="50%" top="80%" />
+      </div>
 
-                {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-6">
-                  <button onClick={() => handleNavClick('about')} className="text-sm text-white/70 hover:text-white transition-colors">About</button>
-                  <button onClick={() => handleNavClick('work')} className="text-sm text-white/70 hover:text-white transition-colors">Work</button>
-                  <button
-                    onClick={() => { setMobileMenuOpen(false); handleOpenResume(); }}
-                    className="text-sm text-white/70 hover:text-white transition-colors"
-                  >
-                    Resume
-                  </button>
-                  <button onClick={() => handleNavClick('contact')} className="text-sm text-white/70 hover:text-white transition-colors">Contact</button>
-                  <button
-                    onClick={switchToOS}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition-colors"
-                  >
-                    <Monitor size={14} />
-                    <span>Interactive OS</span>
-                  </button>
-                </div>
+      <div className="relative">
+        <StandardNavbar
+          currentPage="home"
+          onNavigate={handleNavClick}
+          onOpenCaseStudy={handleOpenCaseStudy}
+          onOpenResume={handleOpenResume}
+          onSwitchToOS={switchToOS}
+          onLogoClick={() => handleBackToHome()}
+        />
 
-                {/* Mobile Hamburger Button */}
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
+        {/* Hero Section */}
+        <section className="pt-32 pb-24 px-6 relative">
+          <div className="max-w-7xl mx-auto">
+            <div className="max-w-3xl">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="flex items-center gap-2 mb-6"
+              >
+                <motion.span
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
-                  {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
+                  <Sparkles className="text-yellow-400" size={20} />
+                </motion.span>
+                <span className="text-blue-400 font-medium">UX Design Student</span>
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+              >
+                <span className="bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+                  Hi, I'm Caylin Yeung
+                </span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-xl text-white/60 leading-relaxed mb-10"
+              >
+                Third-year UX Design student with 3+ years leading creative teams and developing design systems for award-winning productions. I combine strong visual design skills with human-centered research training.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex flex-wrap gap-4"
+              >
+                <motion.button
+                  onClick={handleOpenResume}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/25"
+                >
+                  <FileText size={18} />
+                  View Resume
+                </motion.button>
+                <motion.button
+                  onClick={() => scrollToSection('work')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors border border-white/10"
+                >
+                  See My Work
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight size={18} />
+                  </motion.span>
+                </motion.button>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section id="about" className="py-24 px-6 relative">
+          <div className="absolute inset-0 bg-white/[0.02]" />
+          <div className="max-w-7xl mx-auto relative">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-3 mb-12"
+            >
+              <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
+                <Users size={24} className="text-purple-400" />
               </div>
+              <h2 className="text-3xl font-bold">About Me</h2>
+            </motion.div>
 
-              {/* Mobile Menu */}
-              <AnimatePresence>
-                {mobileMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="md:hidden bg-slate-900/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
-                  >
-                    <div className="px-6 py-4 space-y-3">
-                      <button onClick={() => handleNavClick('about')} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">About</button>
-                      <button onClick={() => handleNavClick('work')} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Work</button>
-                      <button
-                        onClick={() => { setMobileMenuOpen(false); handleOpenResume(); }}
-                        className="block w-full text-left text-white/70 hover:text-white transition-colors py-2"
-                      >
-                        Resume
-                      </button>
-                      <button onClick={() => handleNavClick('contact')} className="block w-full text-left text-white/70 hover:text-white transition-colors py-2">Contact</button>
-                      <button
-                        onClick={() => { setMobileMenuOpen(false); switchToOS(); }}
-                        className="flex items-center gap-2 w-full text-left text-white/70 hover:text-white transition-colors py-2"
-                      >
-                        <Monitor size={16} />
-                        <span>Interactive OS</span>
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </nav>
-
-            {/* Hero Section */}
-            <section className="pt-32 pb-20 px-6">
-              <div className="max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="max-w-3xl"
+                  whileHover={{ scale: 1.01 }}
+                  className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
                 >
-                  <p className="text-blue-400 font-medium mb-4">UX Design Student</p>
-                  <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                    Hi, I'm Caylin Yeung
-                  </h1>
-                  <p className="text-xl text-white/60 leading-relaxed mb-8">
-                    Third-year UX Design student with 3+ years leading creative teams and developing design systems for award-winning productions. I combine strong visual design skills with human-centered research training in user interviews, usability testing, and journey mapping.
+                  <p className="text-white/70 leading-relaxed">
+                    I'm a third-year UX Design student at Humber Polytechnic with a unique background in film and television production. My experience leading creative teams and developing design systems for award-winning productions has taught me the importance of translating stakeholder vision and audience needs into cohesive visual solutions.
                   </p>
-                  <div className="flex flex-wrap gap-4">
-                    <button
-                      onClick={handleOpenResume}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition-colors"
-                    >
-                      <FileText size={18} />
-                      View Resume
-                    </button>
-                    <a
-                      href="#work"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
-                    >
-                      See My Work
-                      <ArrowRight size={18} />
-                    </a>
-                  </div>
                 </motion.div>
-              </div>
-            </section>
-
-            {/* About Section */}
-            <section id="about" className="py-20 px-6 bg-white/5">
-              <div className="max-w-7xl mx-auto">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.01 }}
+                  className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
                 >
-                  <h2 className="text-3xl font-bold mb-8">About Me</h2>
-                  <div className="grid md:grid-cols-2 gap-12">
-                    <div>
-                      <p className="text-white/70 leading-relaxed mb-6">
-                        I'm a third-year UX Design student at Humber Polytechnic with a unique background in film and television production. My experience leading creative teams and developing design systems for award-winning productions has taught me the importance of translating stakeholder vision and audience needs into cohesive visual solutions.
-                      </p>
-                      <p className="text-white/70 leading-relaxed">
-                        I combine strong visual design skills with human-centered research training, including user interviews, usability testing, and journey mapping. My approach emphasizes systematic design thinking and cross-functional collaboration to create impactful user experiences.
-                      </p>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">Research Methods</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {['User Interviews', 'Contextual Inquiry', 'Ethnography', 'Diary Studies', 'Surveys', 'Usability Testing', 'A/B Testing', 'Heuristic Evaluation', 'Card Sorting', 'Tree Testing'].map((method) => (
-                          <span
-                            key={method}
-                            className="px-3 py-1.5 bg-white/10 rounded-lg text-sm text-white/80"
-                          >
-                            {method}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-white/70 leading-relaxed">
+                    I combine strong visual design skills with human-centered research training, including user interviews, usability testing, and journey mapping. My approach emphasizes systematic design thinking and cross-functional collaboration to create impactful user experiences.
+                  </p>
                 </motion.div>
-              </div>
-            </section>
+              </motion.div>
 
-            {/* Case Studies Section */}
-            <section id="work" className="py-20 px-6">
-              <div className="max-w-7xl mx-auto">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                >
-                  <h2 className="text-3xl font-bold mb-2">Case Studies</h2>
-                  <p className="text-white/60 mb-12">Recent work in UX research, product design, and strategy.</p>
-
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {caseStudies.map((study, index) => (
-                      <motion.button
-                        key={study.id}
-                        onClick={() => handleOpenCaseStudy(study.id)}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                        className="group text-left bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300"
-                      >
-                        <div className={`h-48 bg-gradient-to-br ${study.gradient} flex items-center justify-center relative overflow-hidden`}>
-                          <div className="absolute inset-0 bg-black/20" />
-                          <study.icon className="text-white/10 w-32 h-32 absolute -bottom-8 -right-8 rotate-12 group-hover:rotate-0 transition-transform duration-500" />
-                          <study.icon className="text-white w-16 h-16 relative z-10 drop-shadow-lg" />
-                        </div>
-                        <div className="p-6">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-xs text-white/50">{study.role} • {study.timeline}</span>
-                            <ArrowRight className="text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all" size={16} />
-                          </div>
-                          <h3 className="text-xl font-semibold mb-2">{study.title}</h3>
-                          <p className="text-sm text-white/50 mb-4">{study.subtitle}</p>
-                          <p className="text-sm text-white/60 leading-relaxed mb-4">{study.description}</p>
-                          <div className="flex flex-wrap gap-2">
-                            {study.methods.map((method) => (
-                              <span
-                                key={method}
-                                className="px-2 py-1 bg-white/10 rounded text-xs text-white/70"
-                              >
-                                {method}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </motion.button>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Target size={18} className="text-blue-400" />
+                    <h3 className="text-lg font-semibold">Research Methods</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {researchMethods.map((method, index) => (
+                      <SkillTag key={method} skill={method} index={index} />
                     ))}
                   </div>
-                </motion.div>
-              </div>
-            </section>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
 
-            {/* Resume Download Section */}
-            <section className="py-20 px-6 bg-white/5">
-              <div className="max-w-7xl mx-auto text-center">
+        {/* Case Studies Section */}
+        <section id="work" className="py-24 px-6">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-3 mb-4"
+            >
+              <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30">
+                <Palette size={24} className="text-blue-400" />
+              </div>
+              <h2 className="text-3xl font-bold">Case Studies</h2>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-white/60 mb-12 max-w-xl"
+            >
+              Recent work in UX research, product design, and strategy.
+            </motion.p>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {caseStudies.map((study, index) => (
+                <CaseStudyCard
+                  key={study.id}
+                  study={study}
+                  index={index}
+                  onClick={() => handleOpenCaseStudy(study.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Resume CTA Section */}
+        <section className="py-24 px-6 relative">
+          <div className="absolute inset-0 bg-white/[0.02]" />
+          <div className="max-w-4xl mx-auto text-center relative">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 p-12 border border-white/10"
+            >
+              {/* Animated gradient */}
+              <motion.div
+                className="absolute inset-0 opacity-30"
+                style={{
+                  background: 'linear-gradient(45deg, #3B82F6, #A855F7, #EC4899, #3B82F6)',
+                  backgroundSize: '400% 400%',
+                }}
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                }}
+                transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+              />
+
+              <div className="relative z-10">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
+                  className="flex justify-center mb-6"
                 >
-                  <h2 className="text-3xl font-bold mb-4">Want to learn more?</h2>
-                  <p className="text-white/60 mb-8 max-w-xl mx-auto">
-                    View my resume to see my full experience, education, and skills.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-4">
-                    <button
-                      onClick={handleOpenResume}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition-colors"
-                    >
-                      <FileText size={18} />
-                      View Resume
-                    </button>
-                    <a
-                      href="/Resume (2025).pdf"
-                      target="_blank"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
-                    >
-                      <ExternalLink size={18} />
-                      Download PDF
-                    </a>
-                  </div>
+                  <motion.div
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="p-3 rounded-2xl bg-white/10 border border-white/20"
+                  >
+                    <FileText size={32} className="text-blue-400" />
+                  </motion.div>
                 </motion.div>
-              </div>
-            </section>
 
-            {/* Contact Section */}
-            <section id="contact" className="py-20 px-6">
-              <div className="max-w-7xl mx-auto text-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                  className="text-3xl font-bold mb-4"
                 >
-                  <h2 className="text-3xl font-bold mb-4">Let's Connect</h2>
-                  <p className="text-white/60 mb-8 max-w-xl mx-auto">
-                    I'm always interested in discussing new design opportunities, collaboration, or just chatting about UX.
-                  </p>
-                  <div className="flex justify-center gap-4">
-                    <a
-                      href="mailto:caylin.yeung@gmail.com"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
-                    >
-                      <Mail size={18} />
-                      Email Me
-                    </a>
-                    <a
-                      href="https://www.linkedin.com/in/caylin-yeung-01a8a9396/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
-                    >
-                      <Linkedin size={18} />
-                      LinkedIn
-                    </a>
-                  </div>
+                  Want to learn more?
+                </motion.h2>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="text-white/60 mb-8 max-w-md mx-auto"
+                >
+                  View my resume to see my full experience, education, and skills.
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                  className="flex flex-wrap justify-center gap-4"
+                >
+                  <motion.button
+                    onClick={handleOpenResume}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-xl font-semibold transition-colors shadow-lg shadow-blue-500/25"
+                  >
+                    <Sparkles size={18} />
+                    View Resume
+                  </motion.button>
+                  <motion.a
+                    href="/Resume (2025).pdf"
+                    target="_blank"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-colors border border-white/10"
+                  >
+                    <ExternalLink size={18} />
+                    Download PDF
+                  </motion.a>
                 </motion.div>
               </div>
-            </section>
+            </motion.div>
+          </div>
+        </section>
 
-            {/* Footer */}
-            <footer className="py-8 px-6 border-t border-white/10">
-              <div className="max-w-7xl mx-auto flex items-center justify-between text-sm text-white/40">
-                <span>© 2025 Caylin Yeung</span>
-                <button
-                  onClick={switchToOS}
-                  className="flex items-center gap-2 hover:text-white/60 transition-colors"
+        {/* Contact Section */}
+        <section id="contact" className="py-24 px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="flex justify-center mb-6"
+              >
+                <div className="p-3 rounded-2xl bg-green-500/20 border border-green-500/30">
+                  <Mail size={32} className="text-green-400" />
+                </div>
+              </motion.div>
+
+              <h2 className="text-3xl font-bold mb-4">Let's Connect</h2>
+              <p className="text-white/60 mb-10 max-w-md mx-auto">
+                I'm always interested in discussing new design opportunities, collaboration, or just chatting about UX.
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-4">
+                <motion.a
+                  href="mailto:caylin.yeung@gmail.com"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-medium transition-all border border-white/10 hover:border-white/20"
                 >
-                  <Monitor size={14} />
-                  Try the interactive OS experience
-                </button>
+                  <div className="p-2 rounded-lg bg-blue-500/20">
+                    <Mail size={20} className="text-blue-400" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs text-white/50">Email</div>
+                    <div className="text-sm">caylin.yeung@gmail.com</div>
+                  </div>
+                </motion.a>
+
+                <motion.a
+                  href="https://www.linkedin.com/in/caylin-yeung-01a8a9396/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-medium transition-all border border-white/10 hover:border-white/20"
+                >
+                  <div className="p-2 rounded-lg bg-blue-600/20">
+                    <Linkedin size={20} className="text-blue-400" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs text-white/50">LinkedIn</div>
+                    <div className="text-sm">Connect with me</div>
+                  </div>
+                </motion.a>
               </div>
-            </footer>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="py-8 px-6 border-t border-white/10">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-sm text-white/40">
+            <span>© 2025 Caylin Yeung</span>
+            <motion.button
+              onClick={switchToOS}
+              whileHover={{ scale: 1.05, color: 'rgba(255,255,255,0.7)' }}
+              className="flex items-center gap-2 transition-colors"
+            >
+              <Monitor size={14} />
+              Try the interactive OS experience
+            </motion.button>
+          </div>
+        </footer>
       </div>
     </div>
   );
