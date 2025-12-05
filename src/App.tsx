@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import { useOSStore } from './store/useOSStore';
 import { useFileSystem } from './store/useFileSystem';
+import { useViewMode } from './store/useViewMode';
 import { Window } from './components/Window';
 import { Dock } from './components/Dock';
 import { LauncherOverlay } from './components/LauncherOverlay';
 import { WelcomeModal } from './components/WelcomeModal';
 import { GlobalContextMenu } from './components/GlobalContextMenu';
 import { DesktopIcons } from './components/DesktopIcons';
+import { ExitToStandardButton } from './components/ExitToStandardButton';
+import { StandardPortfolio } from './components/StandardPortfolio';
 import { useDesktopSelection } from './hooks/useDesktopSelection';
 import { useAppLauncher } from './hooks/useAppLauncher';
 import { useCaseStudiesOpened } from './hooks/useLocalStorage';
@@ -20,11 +23,29 @@ import './App.css';
 function App() {
   const { windows, activeWindowId, wallpaper, globalContextMenu, openContextMenu, closeContextMenu, focusModeActive, snapPreview } = useOSStore();
   const { getItemsInFolder, deleteItem, moveItem, resetFileSystem } = useFileSystem();
+  const { viewMode } = useViewMode();
   const { launchFile } = useAppLauncher();
   const [time, setTime] = useState(new Date());
   const [showHellscape, setShowHellscape] = useState(false);
   const [caseStudiesOpened, markCaseStudiesOpened] = useCaseStudiesOpened();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+  // Handle body overflow based on view mode
+  useEffect(() => {
+    if (viewMode === 'standard') {
+      document.body.style.overflow = 'auto';
+    } else {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = 'hidden';
+    };
+  }, [viewMode]);
+
+  // Render standard portfolio if that view mode is selected
+  if (viewMode === 'standard') {
+    return <StandardPortfolio />;
+  }
 
   const {
     selectionBox,
@@ -227,6 +248,7 @@ function App() {
 
       <Dock />
       <LauncherOverlay />
+      <ExitToStandardButton />
 
       <WelcomeModal
         isOpen={showWelcomeModal}

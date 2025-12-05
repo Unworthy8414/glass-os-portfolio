@@ -79,10 +79,7 @@ export const Process: React.FC<ProcessProps> = ({ size }) => {
                                             <study.icon className={`text-white relative z-10 drop-shadow-lg ${isCompact ? 'w-8 h-8' : 'w-10 h-10'}`} />
                                         </div>
                                         <div className={`flex-1 ${isCompact ? 'p-3 flex flex-col justify-center' : 'p-4'}`}>
-                                            <div className={`flex justify-between items-center w-full ${isCompact ? 'mb-1' : 'mb-2'}`}>
-                                                <span className={`px-2 py-0.5 bg-white/10 text-white/60 font-medium rounded ${isCompact ? 'text-[9px]' : 'text-[10px]'}`}>
-                                                    {study.date}
-                                                </span>
+                                            <div className={`flex justify-end items-center w-full ${isCompact ? 'mb-1' : 'mb-2'}`}>
                                                 <ArrowRight className="text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all" size={isCompact ? 14 : 16} />
                                             </div>
                                             <h3 className={`font-medium text-white/90 ${isCompact ? 'text-sm' : 'text-base mb-0.5'}`}>

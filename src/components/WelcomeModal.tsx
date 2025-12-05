@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { BookOpenText, ArrowDown, X, FolderOpen, LayoutGrid, Trash2, FileText, ScrollText } from 'lucide-react';
+import { useViewMode } from '../store/useViewMode';
 
 interface WelcomeModalProps {
     isOpen: boolean;
@@ -9,6 +10,12 @@ interface WelcomeModalProps {
 
 export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
     const [activeStep, setActiveStep] = useState(0);
+    const { switchToStandard } = useViewMode();
+
+    const handleSwitchToStandard = () => {
+        onClose();
+        switchToStandard();
+    };
 
     // Reset step when modal opens
     useEffect(() => {
@@ -225,12 +232,18 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                             </div>
 
                             {/* Footer */}
-                            <div className="px-6 pb-6">
+                            <div className="px-6 pb-6 space-y-3">
                                 <button
                                     onClick={onClose}
                                     className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
                                 >
                                     Got it, let me explore
+                                </button>
+                                <button
+                                    onClick={handleSwitchToStandard}
+                                    className="w-full py-2.5 text-white/50 hover:text-white/70 text-sm transition-colors"
+                                >
+                                    No thanks, take me to the regular site
                                 </button>
                             </div>
                         </div>
