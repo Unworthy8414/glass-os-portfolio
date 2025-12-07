@@ -1,4 +1,4 @@
-import { Clock3, Grid, Search, Lightbulb, LayoutDashboard, Sparkles } from 'lucide-react';
+import { Clock3, Palette, Search, Lightbulb, LayoutDashboard, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { colors } from '../colors';
 import { SectionHeader } from '../components';
@@ -9,7 +9,7 @@ export const OverviewSection = ({ data, isTimeMgmt }: SectionProps) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
   >
-    <SectionHeader number="01" title="Overview" color={colors.blue} icon={LayoutDashboard} />
+    <SectionHeader number="01" title="Overview" color={colors.charcoal} icon={LayoutDashboard} />
 
     {/* Hero */}
     <motion.div
@@ -43,13 +43,14 @@ export const OverviewSection = ({ data, isTimeMgmt }: SectionProps) => (
         {isTimeMgmt ? (
           <Clock3 className="text-white w-20 h-20 relative z-10 drop-shadow-lg" />
         ) : (
-          <Grid className="text-white w-20 h-20 relative z-10 drop-shadow-lg" />
+          <Palette className="text-white w-20 h-20 relative z-10 drop-shadow-lg" />
         )}
       </motion.div>
     </motion.div>
 
     <motion.p
-      className="text-blue-400 font-medium mb-2"
+      className="font-medium mb-2"
+      style={{ color: isTimeMgmt ? colors.verdigris : colors.burnt }}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.3 }}
@@ -106,20 +107,25 @@ export const OverviewSection = ({ data, isTimeMgmt }: SectionProps) => (
         <p className="text-sm text-white/60 leading-relaxed">{data.challenge}</p>
       </motion.div>
       <motion.div
-        className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-5 relative overflow-hidden"
+        className="rounded-xl p-5 relative overflow-hidden"
+        style={{
+          backgroundColor: isTimeMgmt ? `${colors.verdigris}1A` : `${colors.burnt}1A`,
+          borderWidth: 1,
+          borderColor: isTimeMgmt ? `${colors.verdigris}4D` : `${colors.burnt}4D`
+        }}
         initial={{ opacity: 0, x: 20 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
-        whileHover={{ borderColor: 'rgba(59, 130, 246, 0.5)' }}
+        whileHover={{ borderColor: isTimeMgmt ? `${colors.verdigris}80` : `${colors.burnt}80` }}
       >
         <motion.div
           className="absolute top-2 right-2"
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 4, repeat: Infinity }}
         >
-          <Sparkles size={16} className="text-blue-400/50" />
+          <Sparkles size={16} style={{ color: isTimeMgmt ? `${colors.verdigris}80` : `${colors.burnt}80` }} />
         </motion.div>
-        <h4 className="font-medium text-blue-400 mb-2 flex items-center gap-2">
+        <h4 className="font-medium mb-2 flex items-center gap-2" style={{ color: isTimeMgmt ? colors.verdigris : colors.burnt }}>
           <Search size={14} /> Research Question
         </h4>
         <p className="text-white/80 italic">"{data.researchQuestion}"</p>
@@ -138,7 +144,7 @@ export const OverviewSection = ({ data, isTimeMgmt }: SectionProps) => (
           animate={{ rotate: [0, 15, -15, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <Lightbulb size={16} className="text-yellow-400" />
+          <Lightbulb size={16} style={{ color: colors.jasmine }} />
         </motion.div>
         Hypothesis
       </h4>

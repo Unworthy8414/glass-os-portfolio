@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Clock3, ArrowRight } from 'lucide-react';
+import { Palette, Clock3, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CaseStudyConfig } from './case-studies/types';
 import { TimeManagementStudy } from './case-studies/TimeManagementStudy';
@@ -11,7 +11,7 @@ const caseStudies: CaseStudyConfig[] = [
         id: 'time-mgmt',
         title: 'Time Management App',
         subtitle: 'UX Research & Strategy',
-        thumbnailGradient: 'from-blue-500/80 to-indigo-600/80',
+        thumbnailGradient: 'from-[#2a9d8f]/80 to-[#264653]/80',
         icon: Clock3,
         date: 'Q1 2025',
         role: 'UX Researcher',
@@ -21,8 +21,8 @@ const caseStudies: CaseStudyConfig[] = [
         id: 'ago-digital',
         title: 'AGO Digital Experience',
         subtitle: 'Purchase Journey Optimization',
-        thumbnailGradient: 'from-pink-500/80 to-rose-600/80',
-        icon: Grid,
+        thumbnailGradient: 'from-[#f4a261]/80 to-[#e76f51]/80',
+        icon: Palette,
         date: 'Q4 2024',
         role: 'Lead UX Researcher',
         component: AGODigitalStudy
@@ -42,7 +42,7 @@ export const Process: React.FC<ProcessProps> = ({ size }) => {
         : null;
 
     return (
-        <div className="w-full h-full bg-[#1e1e1e] overflow-hidden font-sans text-white">
+        <div className="w-full h-full bg-white overflow-hidden font-sans">
             <AnimatePresence mode="wait">
                 {!activeStudyId ? (
                     <motion.div
@@ -50,14 +50,14 @@ export const Process: React.FC<ProcessProps> = ({ size }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className={`w-full h-full bg-gradient-to-br from-[#1a1a2e] to-[#16213e] overflow-y-auto ${isCompact ? 'p-4' : 'p-8'}`}
+                        className={`w-full h-full bg-white overflow-y-auto ${isCompact ? 'p-4' : 'p-8'}`}
                     >
                         <div className="max-w-4xl mx-auto">
                             <header className={isCompact ? 'mb-6' : 'mb-10'}>
-                                <h1 className={`font-semibold text-white/90 tracking-tight ${isCompact ? 'text-xl mb-1' : 'text-2xl mb-2'}`}>
+                                <h1 className={`font-semibold text-[#264653] tracking-tight ${isCompact ? 'text-xl mb-1' : 'text-2xl mb-2'}`}>
                                     Case Studies
                                 </h1>
-                                <p className={`text-white/50 ${isCompact ? 'text-xs' : 'text-sm'}`}>
+                                <p className={`text-[#264653]/60 ${isCompact ? 'text-xs' : 'text-sm'}`}>
                                     Recent work in UX research, product design, and strategy.
                                 </p>
                             </header>
@@ -67,7 +67,7 @@ export const Process: React.FC<ProcessProps> = ({ size }) => {
                                     <motion.button
                                         key={study.id}
                                         onClick={() => setActiveStudyId(study.id)}
-                                        className={`group relative text-left bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300 ${isCompact ? 'flex flex-row items-stretch' : 'flex flex-col'}`}
+                                        className={`group relative text-left bg-[#264653]/5 rounded-xl border border-[#264653]/10 overflow-hidden hover:bg-[#264653]/10 hover:border-[#264653]/20 transition-all duration-300 ${isCompact ? 'flex flex-row items-stretch' : 'flex flex-col'}`}
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                     >
@@ -80,16 +80,16 @@ export const Process: React.FC<ProcessProps> = ({ size }) => {
                                         </div>
                                         <div className={`flex-1 ${isCompact ? 'p-3 flex flex-col justify-center' : 'p-4'}`}>
                                             <div className={`flex justify-end items-center w-full ${isCompact ? 'mb-1' : 'mb-2'}`}>
-                                                <ArrowRight className="text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all" size={isCompact ? 14 : 16} />
+                                                <ArrowRight className="text-[#264653]/30 group-hover:text-[#264653]/60 group-hover:translate-x-1 transition-all" size={isCompact ? 14 : 16} />
                                             </div>
-                                            <h3 className={`font-medium text-white/90 ${isCompact ? 'text-sm' : 'text-base mb-0.5'}`}>
+                                            <h3 className={`font-medium text-[#264653] ${isCompact ? 'text-sm' : 'text-base mb-0.5'}`}>
                                                 {study.title}
                                             </h3>
-                                            <p className={`text-white/50 ${isCompact ? 'text-[10px]' : 'text-xs'}`}>
+                                            <p className={`text-[#264653]/60 ${isCompact ? 'text-[10px]' : 'text-xs'}`}>
                                                 {study.subtitle}
                                             </p>
                                             {!isCompact && (
-                                                <div className="mt-3 pt-3 border-t border-white/10 text-[10px] text-white/40">
+                                                <div className="mt-3 pt-3 border-t border-[#264653]/10 text-[10px] text-[#264653]/50">
                                                     {study.role}
                                                 </div>
                                             )}

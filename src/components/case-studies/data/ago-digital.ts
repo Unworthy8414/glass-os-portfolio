@@ -10,7 +10,7 @@ export const agoDigitalData: AGODigitalData = {
   timeline: '4 Months',
   team: 'Solo Researcher',
   methods: 'Heuristic Evaluation, User Interviews, Ethnographic Research',
-  gradient: 'from-pink-500 to-rose-600',
+  gradient: 'from-[#e76f51] to-[#f4a261]',
   pdfPath: '/AGO Digital Experience - UX Research Case Study.pdf',
   challenge: 'The Art Gallery of Ontario wanted to understand their digital user experience but didn\'t have clarity on where issues might exist. My task was to conduct a comprehensive evaluation to uncover usability problems and identify opportunities for improvement.',
   researchQuestion: 'How can we reduce friction in the AGO\'s digital ticket purchase journey while maintaining the cultural experience?',
@@ -24,23 +24,23 @@ export const agoDigitalData: AGODigitalData = {
     details: 'Parent of 2 children (Ages: 5 & 10)',
     goals: ['Know what exhibits suit her children\'s ages', 'Plan logistics (arrival, parking, amenities)', 'Seamlessly purchase tickets'],
     painPoints: ['Searching multiple pages for basic info', 'Mandatory account creation', 'Hidden policies & fees'],
-    extra1: { title: 'Motivations', items: ['Create meaningful experiences for children', 'Maximize time with efficient planning', 'Support arts and local community'], color: colors.green },
-    extra2: { title: 'Behaviour', items: ['Researches on mobile during commute', 'Checks reviews before committing', 'Abandons cart if checkout > 3 min'], color: colors.orange },
-    color: colors.pink
+    extra1: { title: 'Motivations', items: ['Create meaningful experiences for children', 'Maximize time with efficient planning', 'Support arts and local community'], color: colors.verdigris },
+    extra2: { title: 'Behaviour', items: ['Researches on mobile during commute', 'Checks reviews before committing', 'Abandons cart if checkout > 3 min'], color: colors.sandy },
+    color: colors.burnt
   },
 
   approach: [
-    { num: '1', title: 'Competitive Analysis', sub: 'Heuristic Evaluation', color: colors.purple },
-    { num: '2', title: 'User Interviews', sub: '6 In-depth Sessions', color: colors.blue },
-    { num: '3', title: 'Ethnographic Research', sub: 'On-site Observation', color: colors.green },
+    { num: '1', title: 'Competitive Analysis', sub: 'Heuristic Evaluation', color: colors.verdigris },
+    { num: '2', title: 'User Interviews', sub: '6 In-depth Sessions', color: colors.charcoal },
+    { num: '3', title: 'Ethnographic Research', sub: 'On-site Observation', color: colors.sandy },
   ],
 
   competitors: ['Art Gallery of Ontario', 'The Metropolitan Museum of Art', 'The British Museum'],
 
   siteIssues: [
-    { title: 'Missing Digital Experiences', desc: 'AGO lacked virtual tours and digital collection access that competitors offered', color: colors.red },
-    { title: 'Unintuitive Website Design', desc: 'Confusing navigation, poor information architecture, interface friction', color: colors.orange },
-    { title: 'Weak Purchase Conversion', desc: 'Inefficient purchase flows causing user drop-off - became primary focus', color: colors.yellow },
+    { title: 'Missing Digital Experiences', desc: 'AGO lacked virtual tours and digital collection access that competitors offered', color: colors.burnt },
+    { title: 'Unintuitive Website Design', desc: 'Confusing navigation, poor information architecture, interface friction', color: colors.sandy },
+    { title: 'Weak Purchase Conversion', desc: 'Inefficient purchase flows causing user drop-off - became primary focus', color: colors.jasmine },
   ],
 
   hypothesesTested: [
@@ -59,22 +59,22 @@ export const agoDigitalData: AGODigitalData = {
       title: "Account Creation Barriers",
       items: ['Complex account creation process', 'Security and privacy concerns', 'Difficult password management', 'Forced account creation at checkout'],
       quote: '"Why do I need to create an account just to buy a ticket?"',
-      color: colors.red
+      color: colors.burnt
     },
     {
       title: "Cart Management Issues",
       items: ['Cart sessions expiring too quickly', 'Inability to edit cart efficiently', 'Long, complex checkout process', 'Poor cart customization'],
-      color: colors.orange
+      color: colors.sandy
     },
     {
       title: "Ticket Booking Complexity",
       items: ['Over-simplified calendar lacking info', 'Unintuitive time slot booking', 'Missing system status indicators', 'Fees not displayed upfront'],
-      color: colors.yellow
+      color: colors.jasmine
     },
     {
       title: "Information Architecture",
       items: ['Disorganized site structure', 'Critical information hidden', 'Lack of clear wayfinding', 'Users depend on staff for basic info'],
-      color: colors.purple
+      color: colors.verdigris
     },
   ],
 
@@ -89,10 +89,10 @@ export const agoDigitalData: AGODigitalData = {
   cognitiveDissonance: 'Ethnographic research revealed that the physical ticket purchase was easy (2-3 minutes, clear process) while the digital experience was frustrating (+5 steps, account required). This mismatch creates negative brand perception before visitors even arrive.',
 
   recommendations: [
-    { icon: User, color: colors.blue, title: 'Account Creation', items: ['Implement guest checkout option', 'Reduce required personal information', 'Provide clear value proposition for accounts', 'Improve password management UX'] },
-    { icon: ShoppingCart, color: colors.green, title: 'Cart Management', items: ['Extend cart session timeout', 'Enable in-cart editing without restarting', 'Streamline checkout to reduce steps', 'Add cart saving functionality'] },
-    { icon: Calendar, color: colors.purple, title: 'Ticket Booking', items: ['Redesign calendar to show events clearly', 'Add system status indicators', 'Display all fees upfront', 'Align digital with physical mental models'] },
-    { icon: MapPin, color: colors.orange, title: 'Information Architecture', items: ['Reorganize site for intuitive trip planning', 'Develop clear content strategy', 'Improve search and filtering', 'Add digital wayfinding resources'] },
+    { icon: User, color: colors.charcoal, title: 'Account Creation', items: ['Implement guest checkout option', 'Reduce required personal information', 'Provide clear value proposition for accounts', 'Improve password management UX'] },
+    { icon: ShoppingCart, color: colors.verdigris, title: 'Cart Management', items: ['Extend cart session timeout', 'Enable in-cart editing without restarting', 'Streamline checkout to reduce steps', 'Add cart saving functionality'] },
+    { icon: Calendar, color: colors.jasmine, title: 'Ticket Booking', items: ['Redesign calendar to show events clearly', 'Add system status indicators', 'Display all fees upfront', 'Align digital with physical mental models'] },
+    { icon: MapPin, color: colors.sandy, title: 'Information Architecture', items: ['Reorganize site for intuitive trip planning', 'Develop clear content strategy', 'Improve search and filtering', 'Add digital wayfinding resources'] },
   ],
 
   quickWins: [
@@ -109,10 +109,10 @@ export const agoDigitalData: AGODigitalData = {
   ],
 
   businessValue: [
-    { title: 'Revenue Impact', items: ['Clear roadmap to reduce cart abandonment', 'Opportunity to convert visitors into members', 'Decrease dependency on in-person sales'], color: colors.green },
-    { title: 'Competitive Positioning', items: ['Insights vs leading cultural institutions', 'Strategic recommendations to match standards', 'Unique opportunities identified'], color: colors.blue },
-    { title: 'User Experience & Brand', items: ['Data-driven understanding of frustrations', 'Prioritized improvements for satisfaction', 'Framework for consistent experiences'], color: colors.purple },
-    { title: 'Operational Efficiency', items: ['Reduced burden on front desk staff', 'Better traffic flow in physical space', 'Foundation for future product decisions'], color: colors.orange },
+    { title: 'Revenue Impact', items: ['Clear roadmap to reduce cart abandonment', 'Opportunity to convert visitors into members', 'Decrease dependency on in-person sales'], color: colors.verdigris },
+    { title: 'Competitive Positioning', items: ['Insights vs leading cultural institutions', 'Strategic recommendations to match standards', 'Unique opportunities identified'], color: colors.charcoal },
+    { title: 'User Experience & Brand', items: ['Data-driven understanding of frustrations', 'Prioritized improvements for satisfaction', 'Framework for consistent experiences'], color: colors.jasmine },
+    { title: 'Operational Efficiency', items: ['Reduced burden on front desk staff', 'Better traffic flow in physical space', 'Foundation for future product decisions'], color: colors.sandy },
   ],
 
   methodology: {

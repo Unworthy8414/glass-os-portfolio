@@ -293,11 +293,11 @@ function App() {
       {!dismissedOrientationWarning && (
         <div className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center md:hidden portrait:flex hidden">
           <div className="relative mb-6">
-            <Smartphone size={64} className="text-gray-400" />
-            <RotateCw size={32} className="absolute -right-2 -bottom-2 text-blue-500 animate-spin-slow" />
+            <Smartphone size={64} className="text-[#2a9d8f]" />
+            <RotateCw size={32} className="absolute -right-2 -bottom-2 text-[#2a9d8f] animate-spin-slow" />
           </div>
           <h2 className="text-2xl font-bold mb-3 text-white">Please Rotate Device</h2>
-          <p className="text-gray-400 text-sm max-w-xs leading-relaxed mb-6">
+          <p className="text-white/70 text-sm max-w-xs leading-relaxed mb-6">
             Glass OS is designed for desktop or landscape viewing. For the best experience, please rotate your phone or switch to a larger screen.
           </p>
           <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -309,7 +309,7 @@ function App() {
             </button>
             <button
               onClick={switchToStandard}
-              className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
+              className="w-full py-3 bg-[#2a9d8f] hover:bg-[#238b7e] text-white font-medium rounded-xl transition-colors"
             >
               Take me to the static site
             </button>

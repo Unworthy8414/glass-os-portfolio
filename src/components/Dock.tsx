@@ -9,11 +9,11 @@ import { useFileSystem } from '../store/useFileSystem';
 import { useCaseStudiesOpened } from '../hooks/useLocalStorage';
 import type { AppConfig } from '../types';
 
-// Quicklaunch files configuration
+// Quicklaunch files configuration - using GlassOS color palette
 const quickLaunchFiles = [
-  { id: 'resume', fileId: 'resume', title: 'Resume', icon: ScrollText, color: '#30D158' },
-  { id: 'time-mgmt-pdf', fileId: 'project-alpha', title: 'Time Management Case Study', icon: FileText, color: '#0A84FF' },
-  { id: 'ago-pdf', fileId: 'ago-study', title: 'AGO Case Study', icon: FileText, color: '#FF375F' },
+  { id: 'resume', fileId: 'resume', title: 'Resume', icon: ScrollText, color: '#e9c46a' },  // jasmine
+  { id: 'time-mgmt-pdf', fileId: 'project-alpha', title: 'Time Management Case Study', icon: FileText, color: '#2a9d8f' },  // verdigris
+  { id: 'ago-pdf', fileId: 'ago-study', title: 'AGO Case Study', icon: FileText, color: '#f4a261' },  // sandy
 ];
 
 export { quickLaunchFiles };
@@ -235,8 +235,8 @@ function DockItem({ app, onHover, onLeave, onContextMenu, shouldPulse, onPulseSt
             className="w-12 h-12 rounded-[14px] flex items-center justify-center relative focus:outline-none cursor-pointer active:scale-95 active:brightness-90"
         >
              {app.id === 'case-studies' ? (
-                <div className={`w-full h-full rounded-[14px] bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/40 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] hover:brightness-110 transition-all pointer-events-none relative ${shouldPulse ? 'animate-pulse-glow' : ''}`}>
-                    <app.icon className="w-3/5 h-3/5 text-blue-400 drop-shadow-lg" strokeWidth={1.5} />
+                <div className={`w-full h-full rounded-[14px] bg-gradient-to-br from-[#2a9d8f]/20 to-[#264653]/20 border border-[#2a9d8f]/40 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] hover:brightness-110 transition-all pointer-events-none relative ${shouldPulse ? 'animate-pulse-glow' : ''}`}>
+                    <app.icon className="w-3/5 h-3/5 text-[#2a9d8f] drop-shadow-lg" strokeWidth={1.5} />
                 </div>
              ) : (
                 <div className={`w-full h-full rounded-[14px] bg-white/5 border border-white/10 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] group-hover:bg-white/10 transition-colors pointer-events-none relative ${shouldPulse ? 'animate-pulse-glow' : ''}`}>
@@ -246,7 +246,7 @@ function DockItem({ app, onHover, onLeave, onContextMenu, shouldPulse, onPulseSt
 
              {/* Pulse ring effect */}
              {shouldPulse && (
-                <div className="absolute inset-0 rounded-[14px] animate-ping-slow bg-blue-400/30 pointer-events-none" />
+                <div className="absolute inset-0 rounded-[14px] animate-ping-slow bg-[#2a9d8f]/30 pointer-events-none" />
              )}
         </motion.button>
 
@@ -319,9 +319,9 @@ function QuickLaunchButton({ isOpen, onToggle, onClose, onHover, onLeave }: {
                 onMouseLeave={onLeave}
                 className="w-12 h-12 rounded-[14px] flex items-center justify-center relative focus:outline-none cursor-pointer active:scale-95 active:brightness-90"
             >
-                <div className={`w-full h-full rounded-[14px] bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/40 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] hover:brightness-110 transition-all pointer-events-none relative ${isOpen ? 'ring-2 ring-amber-400/50' : ''}`}>
+                <div className={`w-full h-full rounded-[14px] bg-gradient-to-br from-[#f4a261]/20 to-[#e76f51]/20 border border-[#f4a261]/40 shadow-sm flex items-center justify-center overflow-hidden backdrop-blur-[4px] hover:brightness-110 transition-all pointer-events-none relative ${isOpen ? 'ring-2 ring-[#f4a261]/50' : ''}`}>
                     <FolderOpen
-                        className="w-3/5 h-3/5 drop-shadow-lg text-amber-400"
+                        className="w-3/5 h-3/5 drop-shadow-lg text-[#f4a261]"
                         strokeWidth={1.5}
                     />
                 </div>

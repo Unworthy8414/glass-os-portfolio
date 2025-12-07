@@ -29,8 +29,8 @@ export const apps: AppConfig[] = [
     title: 'Case Studies',
     icon: BookOpenText,
     component: Process,
-    defaultSize: { width: 950, height: 700 },
-    defaultPosition: { x: 180, y: 80 }
+    defaultSize: { width: 1100, height: 800 },
+    defaultPosition: { x: 120, y: 40 }
   },
   {
     id: 'calendar',

@@ -202,7 +202,7 @@ export const JourneyMap = ({ steps, color }: { steps: JourneyStep[], color: stri
 // Animated Persona component
 export const PersonaCard = ({ persona }: { persona: Persona }) => (
   <motion.div
-    className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-white/10 relative overflow-hidden"
+    className="bg-gradient-to-br from-[#2a9d8f]/20 via-black/50 to-[#e9c46a]/10 rounded-xl p-6 border border-white/10 relative overflow-hidden"
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -218,7 +218,7 @@ export const PersonaCard = ({ persona }: { persona: Persona }) => (
 
     <div className="flex items-start gap-4 relative z-10">
       <motion.div
-        className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold border-2 border-white/20 shrink-0"
+        className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-heading border-2 border-white/20 shrink-0"
         style={{ backgroundColor: persona.color }}
         initial={{ scale: 0, rotate: -180 }}
         whileInView={{ scale: 1, rotate: 0 }}
@@ -230,7 +230,7 @@ export const PersonaCard = ({ persona }: { persona: Persona }) => (
       </motion.div>
       <div className="flex-1">
         <motion.h3
-          className="text-lg font-semibold text-white"
+          className="text-lg font-heading text-white"
           initial={{ opacity: 0, x: -10 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
@@ -239,8 +239,8 @@ export const PersonaCard = ({ persona }: { persona: Persona }) => (
           {persona.name}
         </motion.h3>
         <motion.p
-          className="text-sm"
-          style={{ color: colors.teal }}
+          className="text-sm font-display"
+          style={{ color: colors.verdigris }}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -267,8 +267,8 @@ export const PersonaCard = ({ persona }: { persona: Persona }) => (
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
           >
-            <h4 className="text-xs font-semibold uppercase mb-2" style={{ color: colors.blue }}>Goals</h4>
-            <ul className="space-y-1 text-sm text-white/60 list-disc list-inside">
+            <h4 className="text-xs font-heading uppercase mb-2" style={{ color: colors.verdigris }}>Goals</h4>
+            <ul className="space-y-1 text-sm text-white/60 list-disc list-inside font-body">
               {persona.goals.map((goal, i) => (
                 <motion.li
                   key={i}
@@ -288,8 +288,8 @@ export const PersonaCard = ({ persona }: { persona: Persona }) => (
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
           >
-            <h4 className="text-xs font-semibold uppercase mb-2" style={{ color: colors.red }}>Pain Points</h4>
-            <ul className="space-y-1 text-sm text-white/60 list-disc list-inside">
+            <h4 className="text-xs font-heading uppercase mb-2" style={{ color: colors.burnt }}>Pain Points</h4>
+            <ul className="space-y-1 text-sm text-white/60 list-disc list-inside font-body">
               {persona.painPoints.map((point, i) => (
                 <motion.li
                   key={i}

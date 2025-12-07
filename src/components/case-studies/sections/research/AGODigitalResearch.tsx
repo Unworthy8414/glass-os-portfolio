@@ -1,7 +1,7 @@
 import { Users, AlertTriangle, Target, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { colors } from '../../colors';
-import { AnimatedTag } from '../../components';
+import { AnimatedTag, JourneyMap } from '../../components';
 import type { AGODigitalData } from '../../types';
 
 export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
@@ -16,23 +16,23 @@ export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
       <div className="flex items-center gap-2">
         <motion.span
           className="px-2 py-0.5 rounded text-xs font-medium uppercase"
-          style={{ backgroundColor: `${colors.purple}33`, color: colors.purple }}
+          style={{ backgroundColor: `${colors.verdigris}33`, color: colors.verdigris }}
           whileHover={{ scale: 1.05 }}
         >
           Phase 1
         </motion.span>
         <h3 className="text-xl font-semibold text-white/90">Competitive Analysis & Heuristic Evaluation</h3>
       </div>
-      <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Understand AGO's position in the market and identify usability issues across the entire site.</p>
+      <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Evaluate AGO's position in the market and conduct a heuristic evaluation across the entire site.</p>
 
       <motion.div
         className="bg-white/5 p-5 rounded-xl border border-white/10 mb-4"
         whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
       >
-        <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><Users size={14} style={{ color: colors.purple }} /> Competitors Analyzed</h4>
+        <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><Users size={14} style={{ color: colors.verdigris }} /> Competitors Analyzed</h4>
         <div className="flex flex-wrap gap-2">
           {data.competitors.map((tag, i) => (
-            <AnimatedTag key={tag} label={tag} color={colors.purple} delay={i * 0.1} />
+            <AnimatedTag key={tag} label={tag} color={colors.verdigris} delay={i * 0.1} />
           ))}
         </div>
       </motion.div>
@@ -74,14 +74,14 @@ export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
       <div className="flex items-center gap-2">
         <motion.span
           className="px-2 py-0.5 rounded text-xs font-medium uppercase"
-          style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}
+          style={{ backgroundColor: `${colors.charcoal}33`, color: colors.charcoal }}
           whileHover={{ scale: 1.05 }}
         >
           Phase 2
         </motion.span>
         <h3 className="text-xl font-semibold text-white/90">User Interviews</h3>
       </div>
-      <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Understand user experiences, behaviors, and pain points specifically within the purchase journey.</p>
+      <p className="text-white/60"><strong className="text-white/80">Goal:</strong> Identify and understand users' mental models and expectations within the purchase journey.</p>
 
       <div className="grid md:grid-cols-3 gap-4 mb-4">
         {[
@@ -122,7 +122,7 @@ export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
             >
               <motion.span
                 className="text-xs font-medium px-1.5 py-0.5 rounded shrink-0"
-                style={{ backgroundColor: `${colors.blue}33`, color: colors.blue }}
+                style={{ backgroundColor: `${colors.charcoal}33`, color: colors.charcoal }}
                 whileHover={{ scale: 1.1 }}
               >
                 {i + 1}
@@ -146,7 +146,7 @@ export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
       <div className="flex items-center gap-2">
         <motion.span
           className="px-2 py-0.5 rounded text-xs font-medium uppercase"
-          style={{ backgroundColor: `${colors.green}33`, color: colors.green }}
+          style={{ backgroundColor: `${colors.sandy}33`, color: colors.sandy }}
           whileHover={{ scale: 1.05 }}
         >
           Phase 3
@@ -160,13 +160,13 @@ export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
           className="bg-white/5 p-5 rounded-xl border border-white/10"
           whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
         >
-          <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><MapPin size={14} style={{ color: colors.green }} /> Observation Focus Areas</h4>
+          <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><MapPin size={14} style={{ color: colors.sandy }} /> Observation Focus Areas</h4>
           <div className="grid grid-cols-2 gap-2">
             {data.observationAreas.map((tag, i) => (
               <motion.div
                 key={tag}
                 className="p-2 rounded text-sm text-center font-medium"
-                style={{ backgroundColor: `${colors.green}26`, color: colors.green }}
+                style={{ backgroundColor: `${colors.sandy}26`, color: colors.sandy }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -182,11 +182,24 @@ export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
           className="bg-white/5 p-5 rounded-xl border border-white/10"
           whileHover={{ borderColor: 'rgba(255,255,255,0.2)' }}
         >
-          <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><Target size={14} style={{ color: colors.teal }} /> Key Observation</h4>
+          <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><Target size={14} style={{ color: colors.verdigris }} /> Key Finding</h4>
           <p className="text-sm text-white/60 italic">
             "Significant differences between the smooth physical ticket purchasing experience and the frustrating digital experience, creating misaligned mental models."
           </p>
         </motion.div>
+      </div>
+
+      {/* User Journey Map - moved here from Analysis */}
+      <div className="mt-6">
+        <motion.h4
+          className="font-medium text-white/70 mb-4 text-sm"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          User Journey Map: AGO Purchase Path
+        </motion.h4>
+        <JourneyMap steps={data.journeyMap} color={colors.burnt} />
       </div>
     </motion.div>
   </div>

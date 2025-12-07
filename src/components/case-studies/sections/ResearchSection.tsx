@@ -12,7 +12,7 @@ export const ResearchSection = ({ data, isTimeMgmt }: SectionProps) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
   >
-    <SectionHeader number="02" title="Research" color={colors.purple} icon={Search} />
+    <SectionHeader number="02" title="Research" color={colors.verdigris} icon={Search} />
 
     {isTimeMgmt && isTimeManagementData(data) ? (
       <TimeManagementResearch data={data} />

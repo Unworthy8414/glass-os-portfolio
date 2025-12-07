@@ -5,7 +5,6 @@ import {
   Linkedin,
   FileText,
   Clock3,
-  Grid,
   ArrowRight,
   ExternalLink,
   Sparkles,
@@ -41,9 +40,9 @@ const caseStudies: CaseStudy[] = [
     role: 'UX Researcher',
     timeline: '3 Months',
     methods: ['Focus Groups', 'Surveys', 'Diary Study'],
-    gradient: 'from-blue-500 to-indigo-600',
+    gradient: 'from-[#264653] to-[#2a9d8f]',
     icon: Clock3,
-    color: '#3B82F6'
+    color: '#2a9d8f'
   },
   {
     id: 'ago-digital',
@@ -53,9 +52,9 @@ const caseStudies: CaseStudy[] = [
     role: 'Lead UX Researcher',
     timeline: '4 Months',
     methods: ['Heuristic Evaluation', 'User Interviews', 'Ethnographic Research'],
-    gradient: 'from-pink-500 to-rose-600',
-    icon: Grid,
-    color: '#EC4899'
+    gradient: 'from-[#e76f51] to-[#f4a261]',
+    icon: Palette,
+    color: '#e76f51'
   }
 ];
 
@@ -97,7 +96,7 @@ const SkillTag = ({ skill, index }: { skill: string; index: number }) => (
     viewport={{ once: true }}
     transition={{ delay: index * 0.03, type: 'spring', stiffness: 200 }}
     whileHover={{ scale: 1.05, y: -2, backgroundColor: 'rgba(255,255,255,0.15)' }}
-    className="px-3 py-1.5 bg-white/10 rounded-lg text-sm text-white/80 border border-white/10 cursor-default transition-all duration-300"
+    className="px-3 py-1.5 bg-white/10 rounded-lg text-sm text-white/80 border border-white/10 cursor-default transition-all duration-300 font-body"
   >
     {skill}
   </motion.span>
@@ -167,26 +166,26 @@ const CaseStudyCard = ({ study, index, onClick }: { study: CaseStudy; index: num
     {/* Card content */}
     <div className="p-6">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs text-white/50 font-medium">{study.role} • {study.timeline}</span>
+        <span className="text-xs text-white/50 font-medium font-display">{study.role} • {study.timeline}</span>
         <motion.div
           className="flex items-center gap-1 text-white/30 group-hover:text-white/70"
           animate={{ x: [0, 3, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">View</span>
+          <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity font-display">View</span>
           <ArrowRight size={16} />
         </motion.div>
       </div>
 
-      <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">{study.title}</h3>
-      <p className="text-sm text-white/50 mb-3">{study.subtitle}</p>
-      <p className="text-sm text-white/60 leading-relaxed mb-4">{study.description}</p>
+      <h3 className="text-xl font-heading mb-2 group-hover:text-white transition-colors">{study.title}</h3>
+      <p className="text-sm text-white/50 mb-3 font-display">{study.subtitle}</p>
+      <p className="text-sm text-white/60 leading-relaxed mb-4 font-body">{study.description}</p>
 
       <div className="flex flex-wrap gap-2">
         {study.methods.map((method) => (
           <span
             key={method}
-            className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-300"
+            className="px-2.5 py-1 rounded-lg text-xs font-medium font-display transition-all duration-300"
             style={{
               backgroundColor: `${study.color}15`,
               color: study.color,
@@ -319,14 +318,14 @@ export const StandardPortfolio = () => {
 
   // Home View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-x-hidden">
-      {/* Animated background orbs */}
+    <div className="min-h-screen bg-gradient-to-br from-[#1a2a32] via-[#162229] to-[#0f171b] text-white overflow-x-hidden">
+      {/* Animated background orbs - glassos palette */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <FloatingOrb delay={0} duration={8} size={400} color="#3B82F6" left="5%" top="10%" />
-        <FloatingOrb delay={2} duration={10} size={300} color="#EC4899" left="75%" top="5%" />
-        <FloatingOrb delay={4} duration={12} size={350} color="#8B5CF6" left="85%" top="50%" />
-        <FloatingOrb delay={1} duration={9} size={250} color="#10B981" left="10%" top="60%" />
-        <FloatingOrb delay={3} duration={11} size={200} color="#F59E0B" left="50%" top="80%" />
+        <FloatingOrb delay={0} duration={8} size={400} color="#264653" left="5%" top="10%" />
+        <FloatingOrb delay={2} duration={10} size={300} color="#e76f51" left="75%" top="5%" />
+        <FloatingOrb delay={4} duration={12} size={350} color="#2a9d8f" left="85%" top="50%" />
+        <FloatingOrb delay={1} duration={9} size={250} color="#f4a261" left="10%" top="60%" />
+        <FloatingOrb delay={3} duration={11} size={200} color="#e9c46a" left="50%" top="80%" />
       </div>
 
       <div className="relative">
@@ -353,18 +352,18 @@ export const StandardPortfolio = () => {
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Sparkles className="text-yellow-400" size={20} />
+                  <Sparkles className="text-[#e9c46a]" size={20} />
                 </motion.span>
-                <span className="text-blue-400 font-medium">UX Design Student</span>
+                <span className="text-[#2a9d8f] font-medium font-display">UX Design Student</span>
               </motion.div>
 
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+                className="text-5xl md:text-7xl font-heading mb-6 leading-tight"
               >
-                <span className="bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-white via-[#e9c46a]/30 to-[#2a9d8f]/30 bg-clip-text text-transparent">
                   Hi, I'm Caylin Yeung
                 </span>
               </motion.h1>
@@ -373,7 +372,7 @@ export const StandardPortfolio = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-xl text-white/60 leading-relaxed mb-10"
+                className="text-xl text-white/60 leading-relaxed mb-10 font-body"
               >
                 Third-year UX Design student with 3+ years leading creative teams and developing design systems for award-winning productions. I combine strong visual design skills with human-centered research training.
               </motion.p>
@@ -388,7 +387,7 @@ export const StandardPortfolio = () => {
                   onClick={handleOpenResume}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition-colors shadow-lg shadow-blue-500/25"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#2a9d8f] hover:bg-[#238b7e] rounded-xl font-medium font-display transition-colors shadow-lg shadow-[#2a9d8f]/25"
                 >
                   <FileText size={18} />
                   View Resume
@@ -397,7 +396,7 @@ export const StandardPortfolio = () => {
                   onClick={() => scrollToSection('work')}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors border border-white/10"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 rounded-xl font-medium font-display transition-colors border border-white/10"
                 >
                   See My Work
                   <motion.span
@@ -422,10 +421,10 @@ export const StandardPortfolio = () => {
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-12"
             >
-              <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
-                <Users size={24} className="text-purple-400" />
+              <div className="p-2 rounded-xl bg-[#2a9d8f]/30 border border-[#2a9d8f]/50">
+                <Users size={24} className="text-[#2a9d8f]" />
               </div>
-              <h2 className="text-3xl font-bold">About Me</h2>
+              <h2 className="text-3xl font-heading">About Me</h2>
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-12">
@@ -439,7 +438,7 @@ export const StandardPortfolio = () => {
                   whileHover={{ scale: 1.01 }}
                   className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
                 >
-                  <p className="text-white/70 leading-relaxed">
+                  <p className="text-white/70 leading-relaxed font-body">
                     I'm a third-year UX Design student at Humber Polytechnic with a unique background in film and television production. My experience leading creative teams and developing design systems for award-winning productions has taught me the importance of translating stakeholder vision and audience needs into cohesive visual solutions.
                   </p>
                 </motion.div>
@@ -447,7 +446,7 @@ export const StandardPortfolio = () => {
                   whileHover={{ scale: 1.01 }}
                   className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
                 >
-                  <p className="text-white/70 leading-relaxed">
+                  <p className="text-white/70 leading-relaxed font-body">
                     I combine strong visual design skills with human-centered research training, including user interviews, usability testing, and journey mapping. My approach emphasizes systematic design thinking and cross-functional collaboration to create impactful user experiences.
                   </p>
                 </motion.div>
@@ -461,8 +460,8 @@ export const StandardPortfolio = () => {
               >
                 <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
                   <div className="flex items-center gap-2 mb-6">
-                    <Target size={18} className="text-blue-400" />
-                    <h3 className="text-lg font-semibold">Research Methods</h3>
+                    <Target size={18} className="text-[#2a9d8f]" />
+                    <h3 className="text-lg font-heading">Research Methods</h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {researchMethods.map((method, index) => (
@@ -484,17 +483,17 @@ export const StandardPortfolio = () => {
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-4"
             >
-              <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30">
-                <Palette size={24} className="text-blue-400" />
+              <div className="p-2 rounded-xl bg-[#e76f51]/20 border border-[#e76f51]/30">
+                <Palette size={24} className="text-[#e76f51]" />
               </div>
-              <h2 className="text-3xl font-bold">Case Studies</h2>
+              <h2 className="text-3xl font-heading">Case Studies</h2>
             </motion.div>
 
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-white/60 mb-12 max-w-xl"
+              className="text-white/60 mb-12 max-w-xl font-body"
             >
               Recent work in UX research, product design, and strategy.
             </motion.p>
@@ -520,13 +519,13 @@ export const StandardPortfolio = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 p-12 border border-white/10"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#264653]/30 via-[#2a9d8f]/20 to-[#e9c46a]/20 p-12 border border-white/10"
             >
               {/* Animated gradient */}
               <motion.div
                 className="absolute inset-0 opacity-30"
                 style={{
-                  background: 'linear-gradient(45deg, #3B82F6, #A855F7, #EC4899, #3B82F6)',
+                  background: 'linear-gradient(45deg, #264653, #2a9d8f, #e9c46a, #264653)',
                   backgroundSize: '400% 400%',
                 }}
                 animate={{
@@ -547,7 +546,7 @@ export const StandardPortfolio = () => {
                     transition={{ duration: 2, repeat: Infinity }}
                     className="p-3 rounded-2xl bg-white/10 border border-white/20"
                   >
-                    <FileText size={32} className="text-blue-400" />
+                    <FileText size={32} className="text-[#2a9d8f]" />
                   </motion.div>
                 </motion.div>
 
@@ -556,7 +555,7 @@ export const StandardPortfolio = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 }}
-                  className="text-3xl font-bold mb-4"
+                  className="text-3xl font-heading mb-4"
                 >
                   Want to learn more?
                 </motion.h2>
@@ -566,7 +565,7 @@ export const StandardPortfolio = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 }}
-                  className="text-white/60 mb-8 max-w-md mx-auto"
+                  className="text-white/60 mb-8 max-w-md mx-auto font-body"
                 >
                   View my resume to see my full experience, education, and skills.
                 </motion.p>
@@ -582,7 +581,7 @@ export const StandardPortfolio = () => {
                     onClick={handleOpenResume}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-xl font-semibold transition-colors shadow-lg shadow-blue-500/25"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-[#2a9d8f] hover:bg-[#238b7e] rounded-xl font-semibold font-display transition-colors shadow-lg shadow-[#2a9d8f]/25"
                   >
                     <Sparkles size={18} />
                     View Resume
@@ -592,7 +591,7 @@ export const StandardPortfolio = () => {
                     target="_blank"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 rounded-xl font-semibold transition-colors border border-white/10"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 rounded-xl font-semibold font-display transition-colors border border-white/10"
                   >
                     <ExternalLink size={18} />
                     Download PDF
@@ -617,13 +616,13 @@ export const StandardPortfolio = () => {
                 viewport={{ once: true }}
                 className="flex justify-center mb-6"
               >
-                <div className="p-3 rounded-2xl bg-green-500/20 border border-green-500/30">
-                  <Mail size={32} className="text-green-400" />
+                <div className="p-3 rounded-2xl bg-[#f4a261]/20 border border-[#f4a261]/30">
+                  <Mail size={32} className="text-[#f4a261]" />
                 </div>
               </motion.div>
 
-              <h2 className="text-3xl font-bold mb-4">Let's Connect</h2>
-              <p className="text-white/60 mb-10 max-w-md mx-auto">
+              <h2 className="text-3xl font-heading mb-4">Let's Connect</h2>
+              <p className="text-white/60 mb-10 max-w-md mx-auto font-body">
                 I'm always interested in discussing new design opportunities, collaboration, or just chatting about UX.
               </p>
 
@@ -632,14 +631,14 @@ export const StandardPortfolio = () => {
                   href="mailto:caylin.yeung@gmail.com"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-medium transition-all border border-white/10 hover:border-white/20"
+                  className="inline-flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-medium font-display transition-all border border-white/10 hover:border-white/20"
                 >
-                  <div className="p-2 rounded-lg bg-blue-500/20">
-                    <Mail size={20} className="text-blue-400" />
+                  <div className="p-2 rounded-lg bg-[#2a9d8f]/20">
+                    <Mail size={20} className="text-[#2a9d8f]" />
                   </div>
                   <div className="text-left">
-                    <div className="text-xs text-white/50">Email</div>
-                    <div className="text-sm">caylin.yeung@gmail.com</div>
+                    <div className="text-xs text-white/50 font-body">Email</div>
+                    <div className="text-sm font-body">caylin.yeung@gmail.com</div>
                   </div>
                 </motion.a>
 
@@ -649,14 +648,14 @@ export const StandardPortfolio = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-medium transition-all border border-white/10 hover:border-white/20"
+                  className="inline-flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-medium font-display transition-all border border-white/10 hover:border-white/20"
                 >
-                  <div className="p-2 rounded-lg bg-blue-600/20">
-                    <Linkedin size={20} className="text-blue-400" />
+                  <div className="p-2 rounded-lg bg-[#2a9d8f]/20">
+                    <Linkedin size={20} className="text-[#2a9d8f]" />
                   </div>
                   <div className="text-left">
-                    <div className="text-xs text-white/50">LinkedIn</div>
-                    <div className="text-sm">Connect with me</div>
+                    <div className="text-xs text-white/50 font-body">LinkedIn</div>
+                    <div className="text-sm font-body">Connect with me</div>
                   </div>
                 </motion.a>
               </div>
@@ -666,12 +665,12 @@ export const StandardPortfolio = () => {
 
         {/* Footer */}
         <footer className="py-8 px-6 border-t border-white/10">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-sm text-white/40">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-sm text-white/40 font-body">
             <span>© 2025 Caylin Yeung</span>
             <motion.button
               onClick={switchToOS}
               whileHover={{ scale: 1.05, color: 'rgba(255,255,255,0.7)' }}
-              className="flex items-center gap-2 transition-colors"
+              className="flex items-center gap-2 transition-colors font-display"
             >
               <Monitor size={14} />
               Try the interactive OS experience

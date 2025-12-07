@@ -10,12 +10,12 @@ export const timeManagementData: TimeManagementData = {
   timeline: '3 Months',
   team: 'Group + Individual',
   methods: 'Focus Groups, Survey, Diary Study',
-  gradient: 'from-blue-500 to-indigo-600',
+  gradient: 'from-[#264653] to-[#2a9d8f]',
   pdfPath: '/Time Management App - UX Research Case Study.pdf',
   challenge: 'Design a time management app that aligns with user expectations. Understand what features users truly need versus what they think they need.',
   researchQuestion: 'Which tools and strategies do individuals who are good at managing their time use?',
   hypothesis: 'Users are more likely to use a time management app with features customizable to their preferences.',
-  overview: 'This project explored how young professionals manage their time, identifying key pain points and opportunities for a productivity app that balances flexibility with smart defaults.',
+  overview: 'Designing a time management app aligned with user expectations and actual usage patterns.',
 
   persona: {
     initials: 'AL',
@@ -23,15 +23,15 @@ export const timeManagementData: TimeManagementData = {
     subtitle: '32 M | Office Worker | Hybrid Work',
     goals: ['Reduce time wasted on distractions', 'Avoid procrastinating on non-urgent tasks', 'Complete all tasks set for the week'],
     painPoints: ['Task switching from coworker interruptions', 'Low motivation on non-urgent tasks', 'Using multiple time management tools'],
-    extra1: { title: 'Tools & Strategies', items: ['Calendar blocking', 'Whiteboard for reminders', 'Prioritizing tasks by urgency'], color: colors.green },
-    extra2: { title: 'Distractions', items: ['Texts, emails & social media', 'Socializing with colleagues', 'Mobile games'], color: colors.orange },
-    color: colors.blue
+    extra1: { title: 'Tools & Strategies', items: ['Calendar blocking', 'Whiteboard for reminders', 'Prioritizing tasks by urgency'], color: colors.verdigris },
+    extra2: { title: 'Distractions', items: ['Texts, emails & social media', 'Socializing with colleagues', 'Mobile games'], color: colors.sandy },
+    color: colors.charcoal
   },
 
   approach: [
-    { num: '1', title: 'Exploratory', sub: 'Focus Group', color: colors.purple },
-    { num: '2', title: 'Validation', sub: 'Online Survey (17 participants)', color: colors.blue },
-    { num: '3', title: 'In-Context', sub: 'Diary Study (10 days)', color: colors.green },
+    { num: '1', title: 'Exploratory', sub: 'Focus Group', color: colors.verdigris },
+    { num: '2', title: 'Validation', sub: 'Online Survey', color: colors.charcoal },
+    { num: '3', title: 'In-Context', sub: 'Diary Study', color: colors.sandy },
   ],
 
   focusGroupChallenges: ['Procrastination', 'Too many tasks', 'Forgot my plan', 'Social Media'],
@@ -39,16 +39,16 @@ export const timeManagementData: TimeManagementData = {
 
   surveyData: {
     q1: [
-      { value: 15, label: "Personal", color: colors.blue },
-      { value: 13, label: "Work", color: colors.teal },
-      { value: 6, label: "Collab", color: colors.orange },
-      { value: 5, label: "Academic", color: "#6B7280" },
+      { value: 15, label: "Personal", color: colors.verdigris },
+      { value: 13, label: "Work", color: colors.burnt },
+      { value: 6, label: "Collab", color: colors.sandy },
+      { value: 5, label: "Academic", color: colors.jasmine },
     ],
     q7: [
-      { value: 9, label: "Deadlines", color: colors.blue },
-      { value: 9, label: "Breakdown", color: colors.teal },
-      { value: 6, label: "None", color: colors.orange },
-      { value: 1, label: "Blocking", color: "#6B7280" },
+      { value: 9, label: "Deadlines", color: colors.verdigris },
+      { value: 9, label: "Breakdown", color: colors.burnt },
+      { value: 6, label: "None", color: colors.sandy },
+      { value: 1, label: "Blocking", color: colors.jasmine },
     ],
   },
 
@@ -62,12 +62,12 @@ export const timeManagementData: TimeManagementData = {
   diaryStrategies: ['To-Do List', 'Time Constraints', 'Reminders', 'Reprioritizing'],
 
   keyFindings: [
-    { title: 'Frequency Drives Engagement', desc: 'Users who successfully manage time use tools multiple times daily.' },
+    { title: 'Frequent Tool Usage', desc: 'Users use time management tools several times a day.' },
+    { title: 'Weekly Calendar Preference', desc: 'Users prefer using the weekly calendar view several times a day.' },
+    { title: 'Top Anti-Procrastination Strategies', desc: 'The strategies used the most to avoid procrastination are setting deadlines and breaking down tasks.' },
+    { title: 'The Customization Paradox', desc: 'Users want flexibility but rarely customize.' },
     { title: 'Mood Impacts Productivity', desc: 'Low mood dramatically increases procrastination.' },
-    { title: 'Interruptions Derail Focus', desc: 'Users struggle to refocus after digital interruptions.' },
-    { title: 'The Customization Paradox', desc: 'Users want flexibility but rarely customize features.' },
-    { title: 'Breaking Tasks is Key', desc: 'Setting deadlines and breaking tasks into smaller steps works best.' },
-    { title: 'Weekly Calendar is Essential', desc: 'Majority accessed weekly calendar view several times daily.' },
+    { title: 'Interruptions Derail Focus', desc: 'Users struggle to refocus after interruptions.' },
   ],
 
   journeyMap: [
@@ -79,18 +79,18 @@ export const timeManagementData: TimeManagementData = {
   ],
 
   recommendations: [
-    { icon: Calendar, color: colors.purple, title: 'Smart Calendar', desc: 'Weekly view default with drag-and-drop rescheduling and widget for at-a-glance planning.' },
-    { icon: List, color: colors.blue, title: 'Intelligent Task Management', desc: 'Automatically prioritize and break down complex work into manageable steps.' },
-    { icon: Target, color: colors.red, title: 'Focus Protection', desc: 'Do Not Disturb mode with visual indicator and notification silencing.' },
-    { icon: Clock, color: colors.teal, title: 'Time Blocking', desc: 'Built-in Pomodoro timer with guided break prompts.' },
-    { icon: Bell, color: colors.orange, title: 'Gentle Nudges', desc: 'Motivational prompts during low-energy periods to combat procrastination.' },
-    { icon: RefreshCw, color: colors.green, title: 'Cross-Device Syncing', desc: '#1 biggest challenge identified - seamless sync across all devices.' },
+    { icon: Calendar, color: colors.verdigris, title: 'Smart Calendar', desc: 'Weekly view default. Widget for at-a-glance planning. Drag-and-drop rescheduling.' },
+    { icon: List, color: colors.charcoal, title: 'Intelligent Task Management', desc: 'Automatically prioritize and break down complex work into manageable steps.' },
+    { icon: Target, color: colors.burnt, title: 'Focus Protection', desc: 'Do Not Disturb mode. Silence notifications. Visual indicator when in focus.' },
+    { icon: Clock, color: colors.sandy, title: 'Time Blocking', desc: 'Built-in Pomodoro timer. Guided break prompts for sustained productivity.' },
+    { icon: Bell, color: colors.jasmine, title: 'Gentle Nudges', desc: 'Motivational prompts during low-energy periods to keep you on track.' },
+    { icon: RefreshCw, color: colors.charcoal, title: 'Cross-Device Syncing', desc: '#1 biggest challenge identified. Seamless sync across all your devices.' },
   ],
 
   impact: [
-    { title: 'Validated Hypothesis', desc: 'Yes, with a caveat: Users want customization but need smart defaults first.' },
-    { title: 'Reduced Risk', desc: 'Validated demand before development investment.' },
-    { title: 'Competitive Edge', desc: 'Differentiation through Focus Mode feature.' },
+    { title: 'Reduced Risk', desc: 'Validated demand before development.' },
+    { title: 'Competitive Edge', desc: 'Differentiation through Focus Mode.' },
+    { title: 'Retention', desc: 'Addressing #1 pain point (syncing).' },
   ],
 
   designPrinciples: [
@@ -100,9 +100,9 @@ export const timeManagementData: TimeManagementData = {
   ],
 
   methodology: {
-    worked: ['Recruiting "productive" users for pattern matching', 'Real-time journaling captured authentic moments'],
-    challenges: 'Low survey response rate.',
-    solution: 'Recruited previous respondents for diary study.',
-    nextSteps: ['Extend diary study to 14 days', 'Add observational component (screen recording)', 'Usability Testing', 'Competitive Analysis']
+    worked: ['Mixed methods approach provided both breadth (survey) and depth (diary study)', 'Recruiting productive users gave insights into successful patterns', 'Real-time journaling captured authentic moments of distraction', 'Three-phase progression allowed each study to inform the next'],
+    challenges: 'Low survey response rate (17 vs. goal of 25)',
+    solution: 'Recruited previous survey respondents for diary study, ensuring highly engaged participants',
+    nextSteps: ['Extend diary study to 14 days to capture full work weeks', 'Include participants who struggle with time management for comparison', 'Add observational component to see actual tool usage vs. self-reported']
   }
 };

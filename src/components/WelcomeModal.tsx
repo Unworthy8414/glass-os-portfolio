@@ -76,11 +76,11 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                                 <div className="flex items-center justify-center gap-2 mb-4">
                                     <button
                                         onClick={() => setActiveStep(0)}
-                                        className={`w-2 h-2 rounded-full transition-all ${activeStep === 0 ? 'bg-blue-400 w-6' : 'bg-white/20 hover:bg-white/30'}`}
+                                        className={`w-2 h-2 rounded-full transition-all ${activeStep === 0 ? 'bg-[#2a9d8f] w-6' : 'bg-white/20 hover:bg-white/30'}`}
                                     />
                                     <button
                                         onClick={() => setActiveStep(1)}
-                                        className={`w-2 h-2 rounded-full transition-all ${activeStep === 1 ? 'bg-amber-400 w-6' : 'bg-white/20 hover:bg-white/30'}`}
+                                        className={`w-2 h-2 rounded-full transition-all ${activeStep === 1 ? 'bg-[#f4a261] w-6' : 'bg-white/20 hover:bg-white/30'}`}
                                     />
                                 </div>
 
@@ -95,13 +95,13 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                                             className="bg-white/5 rounded-xl p-4 border border-white/10 mb-4"
                                         >
                                             <div className="flex items-start gap-4">
-                                                <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/40 flex items-center justify-center shrink-0 animate-pulse-glow">
-                                                    <BookOpenText className="w-7 h-7 text-blue-400" strokeWidth={1.5} />
+                                                <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-[#2a9d8f]/20 to-[#264653]/20 border border-[#2a9d8f]/40 flex items-center justify-center shrink-0 animate-pulse-glow">
+                                                    <BookOpenText className="w-7 h-7 text-[#2a9d8f]" strokeWidth={1.5} />
                                                 </div>
                                                 <div className="flex-1">
                                                     <h3 className="font-medium text-white/90 mb-1">Case Studies</h3>
                                                     <p className="text-xs text-white/50 leading-relaxed">
-                                                        Click the <strong className="text-blue-400">blue books</strong> icon in the dock to view my UX research case studies.
+                                                        Click the <strong className="text-[#2a9d8f]">teal books</strong> icon in the dock to view my UX research case studies.
                                                     </p>
                                                 </div>
                                             </div>
@@ -115,13 +115,13 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                                             className="bg-white/5 rounded-xl p-4 border border-white/10 mb-4"
                                         >
                                             <div className="flex items-start gap-4">
-                                                <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
-                                                    <FolderOpen className="w-7 h-7 text-amber-400" strokeWidth={1.5} />
+                                                <div className="w-14 h-14 rounded-[14px] bg-gradient-to-br from-[#f4a261]/20 to-[#e76f51]/20 border border-[#f4a261]/40 flex items-center justify-center shrink-0">
+                                                    <FolderOpen className="w-7 h-7 text-[#f4a261]" strokeWidth={1.5} />
                                                 </div>
                                                 <div className="flex-1">
                                                     <h3 className="font-medium text-white/90 mb-1">Quick Access</h3>
                                                     <p className="text-xs text-white/50 leading-relaxed">
-                                                        Click the <strong className="text-amber-400">orange folder</strong> icon for quick access to my resume and case study PDFs.
+                                                        Click the <strong className="text-[#f4a261]">orange folder</strong> icon for quick access to my resume and case study PDFs.
                                                     </p>
                                                 </div>
                                             </div>
@@ -153,15 +153,15 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                                             <motion.div
                                                 animate={activeStep === 0 ? {
                                                     scale: [1, 1.1, 1],
-                                                    boxShadow: ['0 0 0px rgba(59,130,246,0)', '0 0 20px rgba(59,130,246,0.5)', '0 0 0px rgba(59,130,246,0)']
+                                                    boxShadow: ['0 0 0px rgba(42,157,143,0)', '0 0 20px rgba(42,157,143,0.5)', '0 0 0px rgba(42,157,143,0)']
                                                 } : {}}
                                                 transition={{ duration: 1.5, repeat: Infinity }}
-                                                className={`w-9 h-9 rounded-xl flex items-center justify-center ${activeStep === 0 ? 'bg-gradient-to-br from-blue-500/30 to-indigo-500/30 border-2 border-blue-400' : 'bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/40'}`}
+                                                className={`w-9 h-9 rounded-xl flex items-center justify-center ${activeStep === 0 ? 'bg-gradient-to-br from-[#2a9d8f]/30 to-[#264653]/30 border-2 border-[#2a9d8f]' : 'bg-gradient-to-br from-[#2a9d8f]/20 to-[#264653]/20 border border-[#2a9d8f]/40'}`}
                                             >
-                                                <BookOpenText className="w-4 h-4 text-blue-400" strokeWidth={1.5} />
+                                                <BookOpenText className="w-4 h-4 text-[#2a9d8f]" strokeWidth={1.5} />
                                             </motion.div>
                                             {activeStep === 0 && (
-                                                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-400 rounded-full animate-ping" />
+                                                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#2a9d8f] rounded-full animate-ping" />
                                             )}
                                         </div>
 
@@ -170,16 +170,16 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                                             <motion.div
                                                 animate={activeStep === 1 ? {
                                                     scale: [1, 1.1, 1],
-                                                    boxShadow: ['0 0 0px rgba(251,191,36,0)', '0 0 20px rgba(251,191,36,0.5)', '0 0 0px rgba(251,191,36,0)']
+                                                    boxShadow: ['0 0 0px rgba(244,162,97,0)', '0 0 20px rgba(244,162,97,0.5)', '0 0 0px rgba(244,162,97,0)']
                                                 } : {}}
                                                 transition={{ duration: 1.5, repeat: Infinity }}
-                                                className={`w-9 h-9 rounded-xl flex items-center justify-center ${activeStep === 1 ? 'bg-gradient-to-br from-amber-500/30 to-orange-500/30 border-2 border-amber-400' : 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/40'}`}
+                                                className={`w-9 h-9 rounded-xl flex items-center justify-center ${activeStep === 1 ? 'bg-gradient-to-br from-[#f4a261]/30 to-[#e76f51]/30 border-2 border-[#f4a261]' : 'bg-gradient-to-br from-[#f4a261]/20 to-[#e76f51]/20 border border-[#f4a261]/40'}`}
                                             >
-                                                <FolderOpen className="w-4 h-4 text-amber-400" strokeWidth={1.5} />
+                                                <FolderOpen className="w-4 h-4 text-[#f4a261]" strokeWidth={1.5} />
                                             </motion.div>
                                             {activeStep === 1 && (
                                                 <>
-                                                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
+                                                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#f4a261] rounded-full animate-ping" />
                                                     {/* Popover preview */}
                                                     <motion.div
                                                         initial={{ opacity: 0, y: 5 }}
@@ -190,20 +190,20 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                                                         <div className="relative flex flex-col items-center -translate-x-1/2">
                                                             <div className="bg-[#2a2a2a] rounded-lg border border-white/20 shadow-xl p-2 w-36">
                                                                 <div className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/10">
-                                                                    <div className="w-5 h-5 rounded bg-green-500/20 flex items-center justify-center">
-                                                                        <ScrollText size={10} className="text-green-400" />
+                                                                    <div className="w-5 h-5 rounded bg-[#e9c46a]/20 flex items-center justify-center">
+                                                                        <ScrollText size={10} className="text-[#e9c46a]" />
                                                                     </div>
                                                                     <span className="text-[10px] text-white/70">Resume</span>
                                                                 </div>
                                                                 <div className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/10">
-                                                                    <div className="w-5 h-5 rounded bg-blue-500/20 flex items-center justify-center">
-                                                                        <FileText size={10} className="text-blue-400" />
+                                                                    <div className="w-5 h-5 rounded bg-[#2a9d8f]/20 flex items-center justify-center">
+                                                                        <FileText size={10} className="text-[#2a9d8f]" />
                                                                     </div>
                                                                     <span className="text-[10px] text-white/70 truncate">Time Mgmt...</span>
                                                                 </div>
                                                                 <div className="flex items-center gap-2 py-1 px-1.5 rounded hover:bg-white/10">
-                                                                    <div className="w-5 h-5 rounded bg-red-500/20 flex items-center justify-center">
-                                                                        <FileText size={10} className="text-red-400" />
+                                                                    <div className="w-5 h-5 rounded bg-[#f4a261]/20 flex items-center justify-center">
+                                                                        <FileText size={10} className="text-[#f4a261]" />
                                                                     </div>
                                                                     <span className="text-[10px] text-white/70">AGO...</span>
                                                                 </div>
@@ -235,7 +235,7 @@ export const WelcomeModal = ({ isOpen, onClose }: WelcomeModalProps) => {
                             <div className="px-6 pb-6 space-y-3">
                                 <button
                                     onClick={onClose}
-                                    className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
+                                    className="w-full py-3 bg-[#2a9d8f] hover:bg-[#238b7e] text-white font-medium rounded-xl transition-colors"
                                 >
                                     Got it, let me explore
                                 </button>

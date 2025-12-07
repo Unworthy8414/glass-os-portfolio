@@ -14,7 +14,7 @@ export const CTASection = ({ data, isTimeMgmt, onBack }: CTASectionProps) => (
     <motion.div
       className="absolute inset-0 opacity-20"
       style={{
-        background: `radial-gradient(circle at 50% 50%, ${isTimeMgmt ? colors.blue : colors.pink}40 0%, transparent 70%)`,
+        background: `radial-gradient(circle at 50% 50%, ${isTimeMgmt ? colors.verdigris : colors.burnt}40 0%, transparent 70%)`,
       }}
       animate={{
         scale: [1, 1.2, 1],
@@ -24,7 +24,7 @@ export const CTASection = ({ data, isTimeMgmt, onBack }: CTASectionProps) => (
     />
 
     <motion.h2
-      className="text-2xl font-semibold mb-4 relative z-10"
+      className="text-2xl font-heading mb-4 relative z-10"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -32,7 +32,7 @@ export const CTASection = ({ data, isTimeMgmt, onBack }: CTASectionProps) => (
       Want the full details?
     </motion.h2>
     <motion.p
-      className="text-white/60 mb-6 relative z-10"
+      className="text-white/60 mb-6 relative z-10 font-body"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
@@ -44,7 +44,7 @@ export const CTASection = ({ data, isTimeMgmt, onBack }: CTASectionProps) => (
       <motion.a
         href={data.pdfPath}
         target="_blank"
-        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-xl font-medium transition-colors"
+        className="inline-flex items-center gap-2 px-6 py-3 bg-[#2a9d8f] hover:bg-[#238b7e] rounded-xl font-medium font-display transition-colors shadow-lg shadow-[#2a9d8f]/25"
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -53,7 +53,7 @@ export const CTASection = ({ data, isTimeMgmt, onBack }: CTASectionProps) => (
       </motion.a>
       <motion.button
         onClick={onBack}
-        className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium transition-colors"
+        className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-medium font-display transition-colors"
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
       >

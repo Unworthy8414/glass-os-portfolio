@@ -67,10 +67,10 @@ const education = [
 ];
 
 const skills = {
-  research: { items: ['User Interviews', 'Contextual Inquiry', 'Ethnography', 'Diary Studies', 'Surveys', 'Usability Testing', 'A/B Testing', 'Heuristic Evaluation', 'Card Sorting', 'Tree Testing'], color: 'blue', icon: Users },
-  analysis: { items: ['Affinity Mapping', 'User Personas', 'Journey Mapping', 'Task Analysis', 'Service Blueprint', 'Competitive Analysis', 'SWOT Analysis'], color: 'purple', icon: Sparkles },
-  tools: { items: ['Figma', 'Adobe XD', 'Framer', 'Miro', 'Figjam', 'Photoshop', 'Illustrator', 'Zbrush', 'Blender'], color: 'green', icon: Code2 },
-  soft: { items: ['Stakeholder Collaboration', 'Cross-functional Coordination', 'Design Systems', 'Visual Communication', 'Documentation'], color: 'amber', icon: Palette }
+  research: { items: ['User Interviews', 'Contextual Inquiry', 'Ethnography', 'Diary Studies', 'Surveys', 'Usability Testing', 'A/B Testing', 'Heuristic Evaluation', 'Card Sorting', 'Tree Testing'], color: 'verdigris', icon: Users },
+  analysis: { items: ['Affinity Mapping', 'User Personas', 'Journey Mapping', 'Task Analysis', 'Service Blueprint', 'Competitive Analysis', 'SWOT Analysis'], color: 'charcoal', icon: Sparkles },
+  tools: { items: ['Figma', 'Adobe XD', 'Framer', 'Miro', 'Figjam', 'Photoshop', 'Illustrator', 'Zbrush', 'Blender'], color: 'jasmine', icon: Code2 },
+  soft: { items: ['Stakeholder Collaboration', 'Cross-functional Coordination', 'Design Systems', 'Visual Communication', 'Documentation'], color: 'sandy', icon: Palette }
 };
 
 // Floating orb component
@@ -103,10 +103,10 @@ const FloatingOrb = ({ delay, duration, size, color, left, top }: { delay: numbe
 // Animated skill tag
 const SkillTag = ({ skill, color, index }: { skill: string; color: string; index: number }) => {
   const colorClasses: Record<string, string> = {
-    blue: 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30 hover:border-blue-400/50 hover:shadow-blue-500/20',
-    purple: 'bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-400/50 hover:shadow-purple-500/20',
-    green: 'bg-green-500/20 text-green-300 border-green-500/30 hover:bg-green-500/30 hover:border-green-400/50 hover:shadow-green-500/20',
-    amber: 'bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30 hover:border-amber-400/50 hover:shadow-amber-500/20',
+    verdigris: 'bg-[#2a9d8f]/20 text-[#2a9d8f] border-[#2a9d8f]/30 hover:bg-[#2a9d8f]/30 hover:border-[#2a9d8f]/50 hover:shadow-[#2a9d8f]/20',
+    charcoal: 'bg-[#2a9d8f]/20 text-[#2a9d8f] border-[#2a9d8f]/30 hover:bg-[#2a9d8f]/30 hover:border-[#2a9d8f]/50 hover:shadow-[#2a9d8f]/20',
+    jasmine: 'bg-[#e9c46a]/20 text-[#e9c46a] border-[#e9c46a]/30 hover:bg-[#e9c46a]/30 hover:border-[#e9c46a]/50 hover:shadow-[#e9c46a]/20',
+    sandy: 'bg-[#f4a261]/20 text-[#f4a261] border-[#f4a261]/30 hover:bg-[#f4a261]/30 hover:border-[#f4a261]/50 hover:shadow-[#f4a261]/20',
   };
 
   return (
@@ -116,7 +116,7 @@ const SkillTag = ({ skill, color, index }: { skill: string; color: string; index
       viewport={{ once: true }}
       transition={{ delay: index * 0.05, type: 'spring', stiffness: 200 }}
       whileHover={{ scale: 1.05, y: -2 }}
-      className={`px-3 py-1.5 rounded-lg text-sm border cursor-default transition-all duration-300 hover:shadow-lg ${colorClasses[color]}`}
+      className={`px-3 py-1.5 rounded-lg text-sm border cursor-default transition-all duration-300 hover:shadow-lg font-body ${colorClasses[color]}`}
     >
       {skill}
     </motion.span>
@@ -173,9 +173,9 @@ const TimelineItem = ({ item, index, color, type }: { item: typeof experience[0]
         whileHover={{ x: 5 }}
       >
         <div className="mb-3">
-          <h3 className="text-lg font-semibold text-white">{isEducation ? edu.degree : job.title}</h3>
-          <p style={{ color }}>{isEducation ? edu.school : job.company}</p>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-white/50 mt-2">
+          <h3 className="text-lg font-heading text-white">{isEducation ? edu.degree : job.title}</h3>
+          <p className="font-display" style={{ color }}>{isEducation ? edu.school : job.company}</p>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-white/50 mt-2 font-body">
             <span className="flex items-center gap-1">
               <Calendar size={12} />
               {isEducation ? edu.period : job.period}
@@ -187,13 +187,13 @@ const TimelineItem = ({ item, index, color, type }: { item: typeof experience[0]
               </span>
             )}
             {isEducation && (
-              <span className="px-2 py-0.5 rounded-full text-xs" style={{ backgroundColor: `${color}20`, color }}>
+              <span className="px-2 py-0.5 rounded-full text-xs font-display" style={{ backgroundColor: `${color}20`, color }}>
                 {edu.focus}
               </span>
             )}
           </div>
         </div>
-        <ul className="space-y-2 text-white/70 text-sm">
+        <ul className="space-y-2 text-white/70 text-sm font-body">
           {(isEducation ? edu.highlights : job.highlights).map((highlight, i) => (
             <motion.li
               key={i}
@@ -220,13 +220,13 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-x-hidden">
-      {/* Animated background orbs */}
+    <div className="min-h-screen bg-gradient-to-br from-[#1a2a32] via-[#162229] to-[#0f171b] text-white overflow-x-hidden">
+      {/* Animated background orbs - glassos palette */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <FloatingOrb delay={0} duration={8} size={300} color="#3B82F6" left="10%" top="20%" />
-        <FloatingOrb delay={2} duration={10} size={250} color="#A855F7" left="70%" top="10%" />
-        <FloatingOrb delay={4} duration={12} size={350} color="#22C55E" left="80%" top="60%" />
-        <FloatingOrb delay={1} duration={9} size={200} color="#F59E0B" left="20%" top="70%" />
+        <FloatingOrb delay={0} duration={8} size={300} color="#264653" left="10%" top="20%" />
+        <FloatingOrb delay={2} duration={10} size={250} color="#2a9d8f" left="70%" top="10%" />
+        <FloatingOrb delay={4} duration={12} size={350} color="#e9c46a" left="80%" top="60%" />
+        <FloatingOrb delay={1} duration={9} size={200} color="#f4a261" left="20%" top="70%" />
       </div>
 
       {/* Navigation */}
@@ -255,13 +255,13 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 p-8 md:p-12 border border-white/10"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#264653]/30 via-[#2a9d8f]/20 to-[#e9c46a]/20 p-8 md:p-12 border border-white/10"
             >
               {/* Animated gradient overlay */}
               <motion.div
                 className="absolute inset-0 opacity-30"
                 style={{
-                  background: 'linear-gradient(45deg, #3B82F6, #A855F7, #EC4899, #3B82F6)',
+                  background: 'linear-gradient(45deg, #264653, #2a9d8f, #e9c46a, #264653)',
                   backgroundSize: '400% 400%',
                 }}
                 animate={{
@@ -281,16 +281,16 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
                     animate={{ rotate: [0, 10, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <Sparkles className="text-yellow-400" size={20} />
+                    <Sparkles className="text-[#e9c46a]" size={20} />
                   </motion.span>
-                  <span className="text-blue-400 font-medium">UX Design Student</span>
+                  <span className="text-[#2a9d8f] font-medium font-display">UX Design Student</span>
                 </motion.div>
 
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent"
+                  className="text-4xl md:text-6xl font-heading mb-4 bg-gradient-to-r from-white via-[#e9c46a]/30 to-[#2a9d8f]/30 bg-clip-text text-transparent"
                 >
                   Caylin Yeung
                 </motion.h1>
@@ -299,7 +299,7 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-white/70 leading-relaxed text-lg max-w-2xl mb-6"
+                  className="text-white/70 leading-relaxed text-lg max-w-2xl mb-6 font-body"
                 >
                   Third-year UX Design student with 3+ years leading creative teams and developing design systems for award-winning productions. Combining strong visual design skills with human-centered research training.
                 </motion.p>
@@ -356,14 +356,14 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-8"
             >
-              <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30">
-                <Briefcase size={24} className="text-blue-400" />
+              <div className="p-2 rounded-xl bg-[#2a9d8f]/20 border border-[#2a9d8f]/30">
+                <Briefcase size={24} className="text-[#2a9d8f]" />
               </div>
-              <h2 className="text-2xl font-bold">Experience</h2>
+              <h2 className="text-2xl font-heading">Experience</h2>
             </motion.div>
             <div className="space-y-6">
               {experience.map((job, index) => (
-                <TimelineItem key={index} item={job} index={index} color="#3B82F6" type="experience" />
+                <TimelineItem key={index} item={job} index={index} color="#2a9d8f" type="experience" />
               ))}
             </div>
           </motion.section>
@@ -381,14 +381,14 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-8"
             >
-              <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
-                <GraduationCap size={24} className="text-purple-400" />
+              <div className="p-2 rounded-xl bg-[#2a9d8f]/20 border border-[#2a9d8f]/30">
+                <GraduationCap size={24} className="text-[#2a9d8f]" />
               </div>
-              <h2 className="text-2xl font-bold">Education</h2>
+              <h2 className="text-2xl font-heading">Education</h2>
             </motion.div>
             <div className="space-y-6">
               {education.map((edu, index) => (
-                <TimelineItem key={index} item={edu} index={index} color="#A855F7" type="education" />
+                <TimelineItem key={index} item={edu} index={index} color="#2a9d8f" type="education" />
               ))}
             </div>
           </motion.section>
@@ -406,14 +406,21 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-8"
             >
-              <div className="p-2 rounded-xl bg-green-500/20 border border-green-500/30">
-                <Award size={24} className="text-green-400" />
+              <div className="p-2 rounded-xl bg-[#e9c46a]/20 border border-[#e9c46a]/30">
+                <Award size={24} className="text-[#e9c46a]" />
               </div>
-              <h2 className="text-2xl font-bold">Skills</h2>
+              <h2 className="text-2xl font-heading">Skills</h2>
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-6">
-              {Object.entries(skills).map(([key, value], sectionIndex) => (
+              {Object.entries(skills).map(([key, value], sectionIndex) => {
+                const iconColors: Record<string, string> = {
+                  verdigris: '#2a9d8f',
+                  charcoal: '#2a9d8f',
+                  jasmine: '#e9c46a',
+                  sandy: '#f4a261'
+                };
+                return (
                 <motion.div
                   key={key}
                   initial={{ opacity: 0, y: 20 }}
@@ -423,8 +430,8 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
                   className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10 hover:border-white/20 transition-all"
                 >
                   <div className="flex items-center gap-2 mb-4">
-                    <value.icon size={16} className={`text-${value.color}-400`} style={{ color: value.color === 'blue' ? '#60A5FA' : value.color === 'purple' ? '#C084FC' : value.color === 'green' ? '#4ADE80' : '#FBBF24' }} />
-                    <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider">
+                    <value.icon size={16} style={{ color: iconColors[value.color] }} />
+                    <h3 className="text-sm font-heading text-white/70 uppercase tracking-wider">
                       {key === 'research' ? 'Research Methods' : key === 'analysis' ? 'Analysis & Synthesis' : key === 'tools' ? 'Tools' : 'Soft Skills'}
                     </h3>
                   </div>
@@ -434,7 +441,7 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
                     ))}
                   </div>
                 </motion.div>
-              ))}
+              );})}
             </div>
           </motion.section>
 
@@ -446,14 +453,14 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
             className="text-center"
           >
             <motion.div
-              className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 p-10 border border-white/10"
+              className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#264653]/30 via-[#2a9d8f]/20 to-[#e9c46a]/20 p-10 border border-white/10"
               whileHover={{ scale: 1.01 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               <motion.div
                 className="absolute inset-0"
                 style={{
-                  background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+                  background: 'radial-gradient(circle at 50% 50%, rgba(42, 157, 143, 0.1) 0%, transparent 50%)',
                 }}
                 animate={{
                   scale: [1, 1.2, 1],
@@ -466,7 +473,7 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="text-2xl font-bold mb-3"
+                  className="text-2xl font-heading mb-3"
                 >
                   See My Work in Action
                 </motion.h2>
@@ -475,7 +482,7 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 }}
-                  className="text-white/60 mb-6 max-w-md mx-auto"
+                  className="text-white/60 mb-6 max-w-md mx-auto font-body"
                 >
                   Check out my case studies to see how I apply these skills in real UX research projects.
                 </motion.p>
@@ -483,7 +490,7 @@ export const ResumePage = ({ onBack, onNavigate, onSwitchToOS, onOpenCaseStudy }
                   onClick={() => onNavigate('work')}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-xl font-semibold transition-colors shadow-lg shadow-blue-500/25"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-[#2a9d8f] hover:bg-[#238b7e] rounded-xl font-semibold font-display transition-colors shadow-lg shadow-[#2a9d8f]/25"
                 >
                   <Sparkles size={18} />
                   View Case Studies
