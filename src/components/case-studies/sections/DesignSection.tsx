@@ -310,14 +310,331 @@ const CrossDeviceSyncAnimation = () => (
   </div>
 );
 
+// AGO Case Study Animations
+const AccountCreationAnimation = () => (
+  <div className="relative w-full h-32 mt-3 bg-white/5 rounded-lg overflow-hidden flex items-center justify-center gap-4">
+    {/* Old way - lengthy form fading out */}
+    <motion.div
+      className="relative w-24 h-24 bg-white/10 rounded-lg border border-white/20 p-2"
+      animate={{
+        opacity: [1, 1, 0.3, 0.3, 1],
+        scale: [1, 1, 0.95, 0.95, 1],
+      }}
+      transition={{ duration: 5, repeat: Infinity, times: [0, 0.2, 0.4, 0.8, 1] }}
+    >
+      <div className="text-[6px] text-white/40 mb-1">Create Account</div>
+      <div className="space-y-1">
+        <div className="h-2 bg-white/20 rounded w-full" />
+        <div className="h-2 bg-white/20 rounded w-full" />
+        <div className="h-2 bg-white/20 rounded w-full" />
+        <div className="h-2 bg-white/20 rounded w-full" />
+        <div className="h-2 bg-white/20 rounded w-3/4" />
+      </div>
+      {/* X overlay */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        animate={{ opacity: [0, 0, 1, 1, 0] }}
+        transition={{ duration: 5, repeat: Infinity, times: [0, 0.2, 0.4, 0.8, 1] }}
+      >
+        <div className="text-[#e76f51] text-2xl font-bold">✕</div>
+      </motion.div>
+    </motion.div>
+
+    {/* Arrow */}
+    <motion.div
+      className="text-white/40 text-lg"
+      animate={{ opacity: [0, 0, 1, 1, 0], x: [-5, -5, 0, 0, -5] }}
+      transition={{ duration: 5, repeat: Infinity, times: [0, 0.3, 0.45, 0.8, 1] }}
+    >
+      →
+    </motion.div>
+
+    {/* New way - simple guest checkout */}
+    <motion.div
+      className="relative w-24 h-24 bg-white/10 rounded-lg border border-white/20 p-2 flex flex-col items-center justify-center gap-2"
+      animate={{
+        opacity: [0.3, 0.3, 1, 1, 0.3],
+        scale: [0.95, 0.95, 1, 1, 0.95],
+        borderColor: ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.2)', '#2a9d8f', '#2a9d8f', 'rgba(255,255,255,0.2)'],
+      }}
+      transition={{ duration: 5, repeat: Infinity, times: [0, 0.3, 0.5, 0.8, 1] }}
+    >
+      <motion.div
+        className="w-8 h-8 rounded-full bg-[#264653]/50 flex items-center justify-center"
+        animate={{ scale: [1, 1, 1.1, 1, 1] }}
+        transition={{ duration: 5, repeat: Infinity, times: [0, 0.4, 0.5, 0.6, 1] }}
+      >
+        <span className="text-white/70 text-xs">👤</span>
+      </motion.div>
+      <motion.div
+        className="bg-[#2a9d8f] rounded px-2 py-1 text-[7px] text-white font-medium"
+        animate={{ scale: [1, 1, 1.05, 1, 1] }}
+        transition={{ duration: 5, repeat: Infinity, times: [0, 0.5, 0.6, 0.7, 1] }}
+      >
+        Guest Checkout
+      </motion.div>
+      <div className="text-[6px] text-white/40">No account needed</div>
+    </motion.div>
+  </div>
+);
+
+const CartManagementAnimation = () => (
+  <div className="relative w-full h-32 mt-3 bg-white/5 rounded-lg overflow-hidden flex items-center justify-center">
+    <div className="relative w-32 h-24 bg-white/10 rounded-lg border border-white/20 p-2">
+      {/* Cart header */}
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[7px] text-white/60">🛒 Your Cart</span>
+        {/* Timer extending animation */}
+        <motion.div
+          className="flex items-center gap-1 text-[6px]"
+          animate={{
+            color: ['#e76f51', '#e76f51', '#2a9d8f', '#2a9d8f', '#e76f51'],
+          }}
+          transition={{ duration: 6, repeat: Infinity, times: [0, 0.2, 0.4, 0.8, 1] }}
+        >
+          <motion.span
+            animate={{
+              opacity: [1, 1, 0, 0, 1],
+            }}
+            transition={{ duration: 6, repeat: Infinity, times: [0, 0.2, 0.3, 0.8, 1] }}
+          >
+            ⏱ 2:00
+          </motion.span>
+          <motion.span
+            className="absolute right-2"
+            animate={{
+              opacity: [0, 0, 1, 1, 0],
+            }}
+            transition={{ duration: 6, repeat: Infinity, times: [0, 0.3, 0.4, 0.8, 1] }}
+          >
+            ⏱ 15:00
+          </motion.span>
+        </motion.div>
+      </div>
+
+      {/* Cart items */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between bg-white/5 rounded px-1.5 py-1">
+          <span className="text-[6px] text-white/70">Adult Ticket</span>
+          <span className="text-[7px] text-white/80 relative">
+            ×{' '}
+            {/* Number 2 - fades out */}
+            <motion.span
+              className="font-medium"
+              animate={{ opacity: [1, 1, 0, 0, 0] }}
+              transition={{ duration: 6, repeat: Infinity, times: [0, 0.35, 0.4, 0.85, 1] }}
+            >
+              2
+            </motion.span>
+            {/* Number 3 - fades in */}
+            <motion.span
+              className="absolute right-0 text-[#2a9d8f] font-medium"
+              animate={{ opacity: [0, 0, 1, 1, 0] }}
+              transition={{ duration: 6, repeat: Infinity, times: [0, 0.45, 0.5, 0.85, 1] }}
+            >
+              3
+            </motion.span>
+          </span>
+        </div>
+        <div className="flex items-center justify-between bg-white/5 rounded px-1.5 py-1">
+          <span className="text-[6px] text-white/70">Child Ticket</span>
+          <span className="text-[7px] text-white/80">× 1</span>
+        </div>
+      </div>
+
+      {/* Edit indicator */}
+      <motion.div
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[6px] text-[#2a9d8f] flex items-center gap-1"
+        animate={{ opacity: [0, 0, 1, 1, 0] }}
+        transition={{ duration: 6, repeat: Infinity, times: [0, 0.45, 0.5, 0.75, 0.85] }}
+      >
+        <span>✓</span> Edit anytime
+      </motion.div>
+    </div>
+  </div>
+);
+
+const TicketBookingAnimation = () => (
+  <div className="relative w-full h-32 mt-3 bg-white/5 rounded-lg overflow-hidden flex items-center justify-center">
+    <div className="relative w-36 h-24 bg-white/10 rounded-lg border border-white/20 p-2">
+      {/* Calendar header */}
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[7px] text-white/80 font-medium">December 2024</span>
+        <div className="flex gap-1">
+          <span className="text-[8px] text-white/40">‹</span>
+          <span className="text-[8px] text-white/40">›</span>
+        </div>
+      </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-0.5 text-[5px] text-white/40 mb-1">
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+          <div key={i} className="text-center">{d}</div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-0.5">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((day) => (
+          <motion.div
+            key={day}
+            className={`text-[5px] text-center py-0.5 rounded ${
+              day === 7 ? 'bg-[#e9c46a]/30 text-[#e9c46a]' :
+              day === 12 ? 'bg-[#2a9d8f]/30 text-[#2a9d8f]' :
+              'text-white/50'
+            }`}
+            animate={day === 7 ? {
+              scale: [1, 1.2, 1],
+              boxShadow: ['0 0 0 rgba(233,196,106,0)', '0 0 8px rgba(233,196,106,0.5)', '0 0 0 rgba(233,196,106,0)'],
+            } : {}}
+            transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+          >
+            {day}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Event indicators appearing */}
+      <motion.div
+        className="absolute -right-1 -top-1 text-[5px] bg-[#e9c46a]/20 text-[#e9c46a] px-1 py-0.5 rounded"
+        animate={{ opacity: [0, 1, 1, 0], x: [5, 0, 0, 5] }}
+        transition={{ duration: 4, repeat: Infinity, times: [0, 0.2, 0.8, 1] }}
+      >
+        🎨 Special Exhibit
+      </motion.div>
+
+      {/* Price shown upfront */}
+      <motion.div
+        className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex items-center gap-2 text-[6px]"
+        animate={{ opacity: [0, 0, 1, 1, 0] }}
+        transition={{ duration: 4, repeat: Infinity, times: [0, 0.3, 0.4, 0.85, 1] }}
+      >
+        <span className="text-white/60">Total:</span>
+        <span className="text-[#2a9d8f] font-medium">$25.00</span>
+        <span className="text-white/40">(incl. fees)</span>
+      </motion.div>
+    </div>
+  </div>
+);
+
+const InfoArchitectureAnimation = () => (
+  <div className="relative w-full h-32 mt-3 bg-white/5 rounded-lg overflow-hidden flex items-center justify-center">
+    {/* Disorganized state */}
+    <motion.div
+      className="absolute inset-0 flex items-center justify-center"
+      animate={{ opacity: [1, 1, 0, 0, 1] }}
+      transition={{ duration: 6, repeat: Infinity, times: [0, 0.25, 0.4, 0.85, 1] }}
+    >
+      <div className="relative w-32 h-24">
+        <motion.div
+          className="absolute bg-[#f4a261]/30 rounded px-1.5 py-1 text-[6px] text-white/70"
+          style={{ top: 5, left: 45 }}
+          animate={{ rotate: [-3, -3, 0, 0, -3] }}
+          transition={{ duration: 6, repeat: Infinity, times: [0, 0.25, 0.4, 0.85, 1] }}
+        >
+          Parking
+        </motion.div>
+        <motion.div
+          className="absolute bg-[#e76f51]/30 rounded px-1.5 py-1 text-[6px] text-white/70"
+          style={{ top: 25, left: 10 }}
+          animate={{ rotate: [5, 5, 0, 0, 5] }}
+          transition={{ duration: 6, repeat: Infinity, times: [0, 0.25, 0.4, 0.85, 1] }}
+        >
+          Hours
+        </motion.div>
+        <motion.div
+          className="absolute bg-[#2a9d8f]/30 rounded px-1.5 py-1 text-[6px] text-white/70"
+          style={{ top: 50, left: 70 }}
+          animate={{ rotate: [-8, -8, 0, 0, -8] }}
+          transition={{ duration: 6, repeat: Infinity, times: [0, 0.25, 0.4, 0.85, 1] }}
+        >
+          Exhibits
+        </motion.div>
+        <motion.div
+          className="absolute bg-[#264653]/50 rounded px-1.5 py-1 text-[6px] text-white/70"
+          style={{ top: 70, left: 25 }}
+          animate={{ rotate: [4, 4, 0, 0, 4] }}
+          transition={{ duration: 6, repeat: Infinity, times: [0, 0.25, 0.4, 0.85, 1] }}
+        >
+          Tickets
+        </motion.div>
+        <motion.div
+          className="absolute bg-[#e9c46a]/30 rounded px-1.5 py-1 text-[6px] text-white/70"
+          style={{ top: 40, left: 5 }}
+          animate={{ rotate: [-6, -6, 0, 0, -6] }}
+          transition={{ duration: 6, repeat: Infinity, times: [0, 0.25, 0.4, 0.85, 1] }}
+        >
+          Cafe
+        </motion.div>
+        {/* X overlay on messy version */}
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          animate={{ opacity: [0, 0, 1, 1, 0] }}
+          transition={{ duration: 6, repeat: Infinity, times: [0, 0.15, 0.25, 0.35, 0.4] }}
+        >
+          <div className="text-[#e76f51] text-3xl font-bold">✕</div>
+        </motion.div>
+      </div>
+    </motion.div>
+
+    {/* Organized state */}
+    <motion.div
+      className="absolute inset-0 flex items-center justify-center"
+      animate={{ opacity: [0, 0, 1, 1, 0] }}
+      transition={{ duration: 6, repeat: Infinity, times: [0, 0.35, 0.5, 0.85, 1] }}
+    >
+      <div className="w-32 bg-white/10 rounded-lg border border-[#f4a261]/30 p-2">
+        <div className="text-[7px] text-white/80 font-medium mb-1.5 flex items-center gap-1">
+          <span className="text-[#f4a261]">📍</span> Plan Your Visit
+        </div>
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-[6px] text-white/60">
+            <div className="w-1 h-1 rounded-full bg-[#264653]" />
+            Tickets & Pricing
+          </div>
+          <div className="flex items-center gap-1.5 text-[6px] text-white/60">
+            <div className="w-1 h-1 rounded-full bg-[#e76f51]" />
+            Hours & Location
+          </div>
+          <div className="flex items-center gap-1.5 text-[6px] text-white/60">
+            <div className="w-1 h-1 rounded-full bg-[#f4a261]" />
+            Parking & Access
+          </div>
+          <div className="flex items-center gap-1.5 text-[6px] text-white/60">
+            <div className="w-1 h-1 rounded-full bg-[#2a9d8f]" />
+            Current Exhibits
+          </div>
+          <div className="flex items-center gap-1.5 text-[6px] text-white/60">
+            <div className="w-1 h-1 rounded-full bg-[#e9c46a]" />
+            Dining & Amenities
+          </div>
+        </div>
+      </div>
+    </motion.div>
+
+    {/* Transition indicator - synced with organized state */}
+    <motion.div
+      className="absolute bottom-2 text-[6px] text-[#f4a261] flex items-center gap-1"
+      animate={{ opacity: [0, 0, 1, 1, 0] }}
+      transition={{ duration: 6, repeat: Infinity, times: [0, 0.35, 0.5, 0.85, 1] }}
+    >
+      <span>✓</span> Easy to find
+    </motion.div>
+  </div>
+);
+
 // Map recommendation titles to their animations
 const recommendationAnimations: Record<string, React.FC> = {
+  // Time Management animations
   'Smart Calendar': SmartCalendarAnimation,
   'Intelligent Task Management': TaskManagementAnimation,
   'Focus Protection': FocusProtectionAnimation,
   'Time Blocking': TimeBlockingAnimation,
   'Gentle Nudges': GentleNudgesAnimation,
   'Cross-Device Syncing': CrossDeviceSyncAnimation,
+  // AGO animations
+  'Account Creation': AccountCreationAnimation,
+  'Cart Management': CartManagementAnimation,
+  'Ticket Booking': TicketBookingAnimation,
+  'Information Architecture': InfoArchitectureAnimation,
 };
 
 export const DesignSection = ({ data, isTimeMgmt }: SectionProps) => {
@@ -412,8 +729,8 @@ export const DesignSection = ({ data, isTimeMgmt }: SectionProps) => {
                 </ul>
               ) : null}
 
-              {/* Render animation for Time Management recommendations */}
-              {isTimeMgmt && recommendationAnimations[rec.title] && (
+              {/* Render animation if available for this recommendation */}
+              {recommendationAnimations[rec.title] && (
                 (() => {
                   const AnimationComponent = recommendationAnimations[rec.title];
                   return <AnimationComponent />;
