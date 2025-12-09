@@ -374,7 +374,7 @@ export const StandardPortfolio = () => {
                 transition={{ delay: 0.3 }}
                 className="text-xl text-white/60 leading-relaxed mb-10 font-body"
               >
-                Third-year UX Design student with 3+ years leading creative teams and developing design systems for award-winning productions. I combine strong visual design skills with human-centered research training.
+                I craft user experiences grounded in research and shaped by my background in film production. From leading creative teams to building design systems, I bring a unique lens to solving complex UX challenges.
               </motion.p>
 
               <motion.div
