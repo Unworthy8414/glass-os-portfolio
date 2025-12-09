@@ -31,8 +31,26 @@ export const AGODigitalResearch = ({ data }: { data: AGODigitalData }) => (
       >
         <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2 text-sm"><Users size={14} style={{ color: colors.verdigris }} /> Competitors Analyzed</h4>
         <div className="flex flex-wrap gap-2">
-          {data.competitors.map((tag, i) => (
-            <AnimatedTag key={tag} label={tag} color={colors.verdigris} delay={i * 0.1} />
+          {data.competitors.map((competitor, i) => (
+            competitor.url ? (
+              <motion.a
+                key={competitor.name}
+                href={competitor.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, type: 'spring', stiffness: 200 }}
+                whileHover={{ scale: 1.08, y: -3 }}
+                className="px-3 py-1.5 rounded text-sm cursor-pointer transition-all"
+                style={{ backgroundColor: `${colors.verdigris}26`, color: colors.verdigris }}
+              >
+                {competitor.name} ↗
+              </motion.a>
+            ) : (
+              <AnimatedTag key={competitor.name} label={competitor.name} color={colors.verdigris} delay={i * 0.1} />
+            )
           ))}
         </div>
       </motion.div>

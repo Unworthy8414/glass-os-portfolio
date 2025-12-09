@@ -35,7 +35,11 @@ export const agoDigitalData: AGODigitalData = {
     { num: '3', title: 'Ethnographic Research', sub: 'On-site Observation', color: colors.sandy },
   ],
 
-  competitors: ['Art Gallery of Ontario', 'The Metropolitan Museum of Art', 'The British Museum'],
+  competitors: [
+    { name: 'Art Gallery of Ontario', url: 'https://ago.ca' },
+    { name: 'The Metropolitan Museum of Art', url: 'https://www.metmuseum.org' },
+    { name: 'The British Museum', url: 'https://www.britishmuseum.org' }
+  ],
 
   siteIssues: [
     { title: 'Missing Digital Experiences', desc: 'AGO lacked virtual tours and digital collection access that competitors offered', color: colors.burnt },

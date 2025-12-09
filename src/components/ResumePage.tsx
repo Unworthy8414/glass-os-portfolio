@@ -203,8 +203,8 @@ const TimelineItem = ({ item, index, color, type }: { item: typeof experience[0]
               transition={{ delay: index * 0.2 + i * 0.1 }}
               className="flex items-start gap-2"
             >
-              <span style={{ color }} className="mt-1.5">●</span>
-              {highlight}
+              <span style={{ color }} className="flex-shrink-0 leading-relaxed">●</span>
+              <span className="leading-relaxed">{highlight}</span>
             </motion.li>
           ))}
         </ul>

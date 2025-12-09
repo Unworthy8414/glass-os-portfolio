@@ -110,7 +110,7 @@ export interface TimeManagementData extends BaseCaseStudyData {
 }
 
 export interface AGODigitalData extends BaseCaseStudyData {
-  competitors: string[];
+  competitors: { name: string; url?: string }[];
   siteIssues: { title: string; desc: string; color: string }[];
   hypothesesTested: string[];
   observationAreas: string[];
