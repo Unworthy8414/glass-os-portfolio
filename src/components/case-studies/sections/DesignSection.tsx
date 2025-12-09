@@ -35,21 +35,21 @@ const SmartCalendarAnimation = () => (
       >
         Task 3
       </motion.div>
+      {/* Cursor */}
+      <motion.div
+        className="absolute w-4 h-4 z-20"
+        style={{ right: 4, top: 42 }}
+        animate={{
+          top: [42, 42, 68, 68, 42],
+          opacity: [1, 1, 1, 0, 0],
+        }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", times: [0, 0.2, 0.5, 0.7, 1] }}
+      >
+        <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4 drop-shadow-md">
+          <path d="M4 0l16 12-7 2-4 8-5-22z" />
+        </svg>
+      </motion.div>
     </div>
-    {/* Cursor */}
-    <motion.div
-      className="absolute w-4 h-4 z-20"
-      animate={{
-        left: ['calc(50% + 30px)', 'calc(50% + 30px)', 'calc(50% + 30px)', 'calc(50% + 30px)', 'calc(50% + 30px)'],
-        top: ['calc(50% - 12px)', 'calc(50% - 12px)', 'calc(50% + 14px)', 'calc(50% + 14px)', 'calc(50% - 12px)'],
-        opacity: [1, 1, 1, 0, 1],
-      }}
-      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", times: [0, 0.2, 0.5, 0.7, 1] }}
-    >
-      <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4 drop-shadow-md">
-        <path d="M4 0l16 12-7 2-4 8-5-22z" />
-      </svg>
-    </motion.div>
   </div>
 );
 
